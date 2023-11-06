@@ -42,6 +42,8 @@ export default function EditProfile() {
     lat: parseFloat(data.lat) || 0,
     lng: parseFloat(data.lng) || 0,
   });
+  const [avatarImage, setAvatarImage] = useState();
+  const [idcardImage, setIdcardImage] = useState();
 
   const params = useParams();
   const navigate = useNavigate();
@@ -65,16 +67,14 @@ export default function EditProfile() {
   }, [data]);
 
   const onSubmit = async (data) => {
-    // Check if the birthDay field has changed
+    // ตรวจสอบว่าฟิลด์วันเกิดมีการเปลี่ยนแปลงหรือไม่
     if (data.birthDay !== dayjs(data.birthDay)) {
-      // Calculate the new age
+      // คำนวณอายุ
       const birthDate = dayjs(data.birthDay);
-
       const currentYear = dayjs().year();
       const birthYear = birthDate.year();
       const age = currentYear - birthYear;
-
-      // Update the age in the form data
+      // Update อายุ
       data.age = age;
     }
 
@@ -86,17 +86,24 @@ export default function EditProfile() {
     const formData = new FormData();
 
     // Append avatarphoto and idcardphoto files to the formData
-    formData.append("avatarphoto", data.avatarphoto[0]);
-    formData.append("idcardphoto", data.idcardphoto[0]);
+    if (data.avatarphoto[0]) {
+      formData.append("avatarphoto", data.avatarphoto[0]);
+    } else {
+      formData.append("avatarphoto", avatarImage);
+    }
+    // Append idcardphoto files to the formData
+    if (data.idcardphoto[0]) {
+      formData.append("idcardphoto", data.idcardphoto[0]);
+    } else {
+      formData.append("idcardphoto", idcardImage);
+    }
 
-    // Append other form data fields (excluding avatarphoto and idcardphoto)
+    // Append other form data
     for (const key in data) {
       if (key !== "avatarphoto" && key !== "idcardphoto") {
         formData.append(key, data[key]);
       }
     }
-
-    console.log(data);
 
     profileEdit(params.id, formData)
       .then((res) => {
@@ -110,6 +117,8 @@ export default function EditProfile() {
     profileUser(token, id)
       .then((res) => {
         setData(res.data);
+        setAvatarImage(res.data.avatarphoto);
+        setIdcardImage(res.data.idcardphoto);
         setLoading(false);
       })
       .catch((error) => console.log(error));
@@ -150,7 +159,11 @@ export default function EditProfile() {
               alignItems: "center",
             }}
           >
-            <Avatar sx={{ width: 150, height: 150 }}></Avatar>
+            <Avatar
+              sx={{ width: 150, height: 150 }}
+              alt="Remy Sharp"
+              src={"http://localhost:5000/uploads/avatar/" + avatarImage}
+            />
             <Box
               component="form"
               noValidate

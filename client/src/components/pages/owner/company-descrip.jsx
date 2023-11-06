@@ -78,11 +78,11 @@ export default function CompanyDescrip() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    loadData(token,params.id);
+    loadData(token, params.id);
   }, []);
 
-  const loadData = async (token,id) => {
-    companyDescrip(token,id)
+  const loadData = async (token, id) => {
+    companyDescrip(token, id)
       .then((res) => {
         setCompany(res.data);
         setLoading(false);
@@ -129,9 +129,10 @@ export default function CompanyDescrip() {
       dailyWage: company.dailyWage,
       numOfEmployee: data.numOfEmployee,
       workDay: highlightedDays,
+      companyphoto: company.companyphoto,
     };
     console.log(value);
-    postWork(token,value)
+    postWork(token, value)
       .then((res) => {
         //console.log(res);
       })
@@ -144,7 +145,11 @@ export default function CompanyDescrip() {
   const dailyWage = company.dailyWage;
 
   // คำนวณระยะเวลาเป็นชั่วโมงและนาที
-  const duration = endTime.diff(startTime, "minute");
+  var duration = endTime.diff(startTime, "minute");
+
+  if (duration < 0) {
+    duration = duration + 24 * 60;
+  }
 
   // แปลงเวลาพักจากชั่วโมงเป็นนาทีแล้วลบออก
   const breakTimeInMinutes = breakTime * 60;

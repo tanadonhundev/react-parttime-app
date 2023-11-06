@@ -68,6 +68,9 @@ exports.profileEdit = async (req, res) => {
             if (req.files['idcardphoto']) {
                 data.idcardphoto = req.files['idcardphoto'][0].filename;
             }
+            if (req.files['companyphoto']) {
+                data.companyphoto = req.files['companyphoto'][0].filename;
+            }
         }
 
         const updated = await User

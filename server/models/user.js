@@ -7,10 +7,8 @@ const userScheme = mongoose.Schema({
     email: String,
     password: String,
     role: String,
-    birthDay: String,
+    birthDay: Date,
     age: Number,
-    lat: Number,
-    lng: Number,
     idCard: Number,
     phoneNumber: String,
     statusVerify: {
@@ -21,8 +19,17 @@ const userScheme = mongoose.Schema({
         type: Boolean,
         default: 'true'
     },
+    lat: {
+        type: Number,
+        default: 13.7563
+    },
+    lng: {
+        type: Number,
+        default: 100.5018
+    },
     avatarphoto: String,
     idcardphoto: String,
+    companyphoto: String,
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userScheme);

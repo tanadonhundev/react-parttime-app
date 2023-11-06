@@ -2,11 +2,13 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        // ตรวจสอบชื่อ field และตั้งค่าปลายทางให้เหมาะสม
+        // ตรวจสอบชื่อ field และตั้งค่าปลายทาง
         if (file.fieldname === 'avatarphoto') {
             cb(null, './uploads/avatar');
         } else if (file.fieldname === 'idcardphoto') {
             cb(null, './uploads/idcard');
+        } else if (file.fieldname === 'companyphoto') {
+            cb(null, './uploads/company');
         } else {
             cb(new Error('Invalid field name'));
         }
@@ -19,5 +21,6 @@ const storage = multer.diskStorage({
 
 exports.upload = multer({ storage: storage }).fields([
     { name: 'avatarphoto' },
-    { name: 'idcardphoto' }
+    { name: 'idcardphoto' },
+    { name: 'companyphoto' }
 ]);

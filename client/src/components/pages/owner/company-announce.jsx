@@ -67,7 +67,10 @@ export default function CompanyAnnounce() {
                   <CardMedia
                     component="img"
                     height="140"
-                    image="https://png.pngtree.com/png-vector/20190726/ourmid/pngtree-cafe-shop-and-restaurant-building-vector-flat-design-illustration-png-image_1606685.jpg"
+                    src={
+                      "http://localhost:5000/uploads/company/" +
+                      item.companyphoto
+                    }
                     alt="Company Image"
                   />
                   <CardContent>

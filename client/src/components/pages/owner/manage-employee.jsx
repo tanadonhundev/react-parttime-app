@@ -45,13 +45,13 @@ export default function ManageEmployee() {
     currentUser(token)
       .then((res) => {
         const id = res.data._id;
-        loadData(token,id);
+        loadData(token, id);
       })
       .catch((error) => console.log(error));
   }, []);
 
-  const loadData = async (token,id) => {
-    workDescripList(token,id)
+  const loadData = async (token, id) => {
+    workDescripList(token, id)
       .then((res) => {
         setData(res.data);
         setLoading(false);
@@ -107,8 +107,8 @@ export default function ManageEmployee() {
                         {dayjs(date).locale("th").format("ddd DD MMM")}
                       </Typography>
                       <Typography variant="h6">
-                        {dayjs(item.workStartTime).locale("th").format("HH:mm")}-
-                        {dayjs(item.workEndTime).locale("th").format("HH:mm")}
+                        {dayjs(item.workStartTime).locale("th").format("HH:mm")}
+                        -{dayjs(item.workEndTime).locale("th").format("HH:mm")}
                       </Typography>
                     </Stack>
                     <TableContainer component={Paper}>
@@ -165,7 +165,12 @@ export default function ManageEmployee() {
                                 <TableCell>
                                   <Avatar
                                     sx={{ width: 35, height: 35 }}
-                                  ></Avatar>
+                                    alt="Remy Sharp"
+                                    src={
+                                      "http://localhost:5000/uploads/avatar/" +
+                                      employee.employeeAvatar
+                                    }
+                                  />
                                 </TableCell>
                                 <TableCell>
                                   {employee.employeeFristName}

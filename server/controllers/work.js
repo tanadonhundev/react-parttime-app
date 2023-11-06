@@ -2,8 +2,8 @@ const Work = require("../models/work");
 
 exports.postWork = async (req, res) => {
     try {
-        const { companyId, companyName, workPosition, workStartTime, workEndTime, workBreakTime, dailyWage, workDay, numOfEmployee } = req.body;
-
+        const { companyId, companyName, workPosition, workStartTime, workEndTime, workBreakTime, dailyWage, workDay, numOfEmployee, companyphoto } = req.body;
+        console.log(req.body)
         // ตรวจสอบว่า workDay มีค่าหรือไม่ และความยาวมากกว่า 0
         if (workDay && workDay.length > 0) {
             // สร้างและบันทึกข้อมูลงานสำหรับแต่ละวันใน workDay
@@ -18,6 +18,7 @@ exports.postWork = async (req, res) => {
                     workBreakTime,
                     dailyWage,
                     numOfEmployee,
+                    companyphoto,
                 });
                 return work.save();
             });
@@ -84,7 +85,8 @@ exports.applyWork = async (req, res) => {
                     work.employees.push({
                         employeeId: req.body.employee._id,
                         employeeFristName: req.body.employee.firstName,
-                        employeeLastName: req.body.employee.lastName
+                        employeeLastName: req.body.employee.lastName,
+                        employeeAvatar: req.body.employee.avatarphoto
                     });
                     await work.save();
                     console.log("สมัครงานสำเร็จ");

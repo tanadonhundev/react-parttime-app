@@ -61,7 +61,6 @@ export default function WorkAnnounce() {
   const loadData = async (token) => {
     workList(token)
       .then((res) => {
-        console.log(res.data)
         setData(res.data);
         const firstTabData = res.data[0];
         if (firstTabData) {
@@ -163,13 +162,13 @@ export default function WorkAnnounce() {
       <Stack spacing={{ xl: 1, sm: 2, md: 4 }} justifyContent="center">
         <Grid container spacing={2}>
           {work.map((item) => (
-            <Grid key={item._id} item lg={2} sm={4} xs={12}>
+            <Grid key={item._id} item lg={3} sm={6} xs={12}>
               <Card sx={{ maxWidth: 350 }}>
                 <CardActionArea>
                   <CardMedia
                     component="img"
                     height="140"
-                    image="https://png.pngtree.com/png-vector/20190726/ourmid/pngtree-cafe-shop-and-restaurant-building-vector-flat-design-illustration-png-image_1606685.jpg"
+                    src={"http://localhost:5000/uploads/company/" + item.companyphoto}
                     alt="Company Image"
                   />
                   <CardContent>

@@ -4,6 +4,7 @@ const employeeSchema = new mongoose.Schema({
   employeeId: String,
   employeeFristName: String,
   employeeLastName: String,
+  employeeAvatar: String,
   employmentStatus: {
     type: String,
     default: 'รอยืนยัน'
@@ -15,8 +16,8 @@ const workScheme = mongoose.Schema({
   companyName: String,
   workPosition: String,
   workDay: String,
-  workStartTime: String,
-  workEndTime: String,
+  workStartTime: Date,
+  workEndTime: Date,
   workBreakTime: Number,
   dailyWage: Number,
   numOfEmployee: Number,
@@ -25,6 +26,7 @@ const workScheme = mongoose.Schema({
     default: 0
   },
   workDetails: String,
+  companyphoto: String,
   employees: [employeeSchema],
 }, { timestamps: true });
 

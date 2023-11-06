@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const connectDB = require("./configs/database");
+const path = require("path");
 
 const auth = require("./routes/auth");
 const user = require("./routes/user");
@@ -14,6 +15,7 @@ connectDB();
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //route
 app.use("/", auth);

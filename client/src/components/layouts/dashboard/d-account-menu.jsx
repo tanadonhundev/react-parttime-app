@@ -18,6 +18,7 @@ import { currentUser } from "../../../services/auth";
 
 export default function AccountMenu() {
   const [data, setData] = useState([]);
+  const [image, setImage] = useState();
   const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -47,9 +48,10 @@ export default function AccountMenu() {
   }, []);
 
   const loadData = async (token, id) => {
-    profileUser(token,id)
+    profileUser(token, id)
       .then((res) => {
         setData(res.data);
+        setImage(res.data.avatarphoto);
       })
       .catch((error) => console.log(error));
   };
@@ -70,7 +72,10 @@ export default function AccountMenu() {
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
           >
-            <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+            <Avatar
+              sx={{ width: 32, height: 32 }}
+              src={"http://localhost:5000/uploads/avatar/" + image}
+            />
           </IconButton>
         </Tooltip>
       </Box>
