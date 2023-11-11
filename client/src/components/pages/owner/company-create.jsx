@@ -74,7 +74,6 @@ export default function CompanyCrate() {
       workBreakTime: data.workBreakTime,
       dailyWage: data.dailyWage,
       workDetails: data.workDetails,
-      companyphoto: companyName.companyphoto,
     };
     createWork(token, value)
       .then((res) => {})

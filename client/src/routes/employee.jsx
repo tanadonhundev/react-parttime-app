@@ -4,6 +4,7 @@ import ProfilePage from "../components/pages/employee/profile-page";
 import EditProfile from "../components/pages/employee/edit-profile";
 import WorkAnnounce from "../components/pages/employee/work-announce";
 import WorkDescrip from "../components/pages/employee/work-descrip";
+import WorkApply from "../components/pages/employee/work-apply";
 
 //layout
 import { DLayout } from "../components/layouts/dashboard/d-layout";
@@ -32,6 +33,10 @@ const routeDashboardEmployee = [
       {
         path: "work-descrip/:id", // localhost:4000/dashboard-employee/work-descrip
         element: <WorkDescrip />,
+      },
+      {
+        path: "work-apply", // localhost:4000/dashboard-employee/work-apply
+        element: <WorkApply />,
       },
     ],
   },

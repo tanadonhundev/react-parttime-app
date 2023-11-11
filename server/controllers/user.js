@@ -55,6 +55,17 @@ exports.profileUser = async (req, res) => {
     }
 }
 
+exports.loadPhoto = async (req, res) => {
+    try {
+        const companyId = req.params.id;
+        const user = await User.findOne({ _id: companyId });
+        res.send(user)
+    } catch (error) {
+        console.log(error);
+        res.send('Server Error');
+    }
+};
+
 exports.profileEdit = async (req, res) => {
     try {
         const id = req.params.id;

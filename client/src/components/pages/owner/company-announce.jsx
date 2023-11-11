@@ -17,10 +17,12 @@ import "dayjs/locale/th";
 import { Link } from "react-router-dom";
 import { currentUser } from "../../../services/auth";
 import { companyList } from "../../../services/company";
+import { profileUser } from "../../../services/user";
 
 export default function CompanyAnnounce() {
   const [data, setData] = useState([]);
   const [companyId, setCompanyId] = useState([]);
+  const [image, setImage] = useState("");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -30,6 +32,7 @@ export default function CompanyAnnounce() {
         const id = res.data._id;
         setCompanyId(id);
         loadData(token, id);
+        loadDataImage(token, id);
       })
       .catch((error) => console.log(error));
   }, []);
@@ -39,6 +42,14 @@ export default function CompanyAnnounce() {
       .then((res) => {
         setData(res.data);
         setLoading(false);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const loadDataImage = async (token, id) => {
+    profileUser(token, id)
+      .then((res) => {
+        setImage(res.data.companyphoto)
       })
       .catch((error) => console.log(error));
   };
@@ -61,7 +72,7 @@ export default function CompanyAnnounce() {
       >
         <Grid container spacing={2}>
           {data.map((item) => (
-            <Grid key={item._id} item lg={2} sm={4} xs={12}>
+            <Grid key={item._id} item lg={3} sm={5} xs={12}>
               <Card sx={{ maxWidth: 350 }}>
                 <CardActionArea>
                   <CardMedia
@@ -69,7 +80,7 @@ export default function CompanyAnnounce() {
                     height="140"
                     src={
                       "http://localhost:5000/uploads/company/" +
-                      item.companyphoto
+                      image
                     }
                     alt="Company Image"
                   />

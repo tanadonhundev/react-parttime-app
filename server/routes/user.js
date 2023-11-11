@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { userList, statusBlacklistUser, statusVerify, removeUser, profileUser, profileEdit } = require("../controllers/user");
+const { userList, statusBlacklistUser, statusVerify, removeUser, profileUser, profileEdit, loadPhoto } = require("../controllers/user");
 
 const { auth } = require("../middleware/auth");
 
@@ -16,6 +16,8 @@ router.post('/verify-user/:id', auth, statusVerify);
 router.delete('/user/:id', auth, removeUser);
 
 router.get('/profile-user/:id', auth, profileUser);
+
+router.get('/profile-photo/:id', auth, loadPhoto);
 
 router.put('/profile-edit/:id', upload, profileEdit);
 

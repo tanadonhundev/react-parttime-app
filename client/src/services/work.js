@@ -39,3 +39,13 @@ export const applyWork = async (authtoken, data) => {
         }
     });
 }
+
+export const applyList = async (authtoken, id,) => {
+    return await axios.get('http://localhost:5000/applyList/' + id, {
+        headers: {
+            authtoken
+        }
+    });
+}
+
+

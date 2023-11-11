@@ -40,6 +40,14 @@ export const profileUser = async (authtoken, id) => {
     });
 }
 
+export const loadPhoto = async (authtoken, id) => {
+    return await axios.get("http://localhost:5000/profile-photo/" + id, {
+        headers: {
+            authtoken,
+        },
+    });
+};
+
 export const profileEdit = async (id, data) => {
     return await axios.put("http://localhost:5000/profile-edit/" + id, data);
 };

@@ -32,34 +32,40 @@ import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import "dayjs/locale/th";
 
-import { workList } from "../../../services/work";
+import { applyList, workList } from "../../../services/work";
+import { currentUser } from "../../../services/auth";
 import { loadPhoto } from "../../../services/user";
 
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="down" ref={ref} {...props} />;
-});
-
-export default function WorkAnnounce() {
+export default function WorkApply() {
   const [data, setData] = useState([]);
-  const [work, setWork] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState(0);
-  const [workPositionChecked, setWorkPositionChecked] = useState({
-    เสิร์ฟ: false,
-    ล้างจาน: false,
-    ครัว: false,
-    แพ็คสินค้า: false,
-    สต๊อกสินค้า: false,
-    คัดแยกสินค้า: false,
-  });
   const [companyId, setCompanyId] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [image, setImage] = useState("");
-  const [open, setOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    loadData(token);
+    currentUser(token)
+      .then((res) => {
+        const id = res.data._id;
+        loadData(token, id);
+        loadDataCompany(token);
+      })
+      .catch((error) => console.log(error));
   }, []);
+
+  useEffect(() => {
+    const currentDate = dayjs();
+    const datesWithData = data.filter((item) =>
+      dayjs(item.workDay).isAfter(currentDate.subtract(1, "day"), "day")
+    );
+    const selectedDate = uniqueDates[selectedTab];
+    const filteredByDate = datesWithData.filter((item) =>
+      dayjs(item.workDay).isSame(selectedDate, "day")
+    );
+    setFilteredData(filteredByDate);
+  }, [data, selectedTab]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -68,21 +74,21 @@ export default function WorkAnnounce() {
     }
   }, [companyId]);
 
-  const loadData = async (token) => {
+  const loadData = async (token, id) => {
+    applyList(token, id)
+      .then((res) => {
+        setData(res.data);
+        setLoading(false);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const loadDataCompany = async (token) => {
     workList(token)
       .then((res) => {
         const companyIdArray = res.data.map((item) => item.companyId);
-
-        // Remove duplicates using a Set
         const uniqueCompanyIdArray = Array.from(new Set(companyIdArray));
-
         setCompanyId(uniqueCompanyIdArray);
-        setData(res.data);
-
-        const firstTabData = res.data[0];
-        if (firstTabData) {
-          setWork([firstTabData]);
-        }
       })
       .catch((error) => console.log(error));
   };
@@ -106,78 +112,18 @@ export default function WorkAnnounce() {
       .catch((error) => console.log(error));
   };
 
-  const handleCheckboxChange = (position) => {
-    setWorkPositionChecked((prev) => ({
-      ...prev,
-      [position]: !prev[position],
-    }));
-  };
+  const uniqueDates = Array.from(
+    new Set(data.map((item) => item.workDay))
+  ).sort((a, b) => (dayjs(a).isBefore(dayjs(b)) ? -1 : 1));
 
-  const onSubmit = async (workDay, tabIndex) => {
-    // Check if any Checkbox is selected
-    const isAnyCheckboxSelected = Object.values(workPositionChecked).some(
-      (checked) => checked
-    );
-
-    if (isAnyCheckboxSelected) {
-      // Filter the data based on the selected checkboxes and the selected date
-      const filteredData = data.filter((work) => {
-        return (
-          work.workDay === workDay && workPositionChecked[work.workPosition]
-        );
-      });
-      setWork(filteredData);
-    } else {
-      // Set the work data based on the selected date only
-      const dateFilteredData = data.filter((work) => work.workDay === workDay);
-      setWork(dateFilteredData);
-    }
-    setSelectedTab(tabIndex);
-  };
-
-  const currentDate = dayjs();
-  // Filter out dates with no data
-  const datesWithData = data
-    .map((item) => item.workDay)
-    .filter((date) =>
-      dayjs(date).isAfter(currentDate.subtract(1, "day"), "day")
-    );
-
-  const uniqueDates = Array.from(new Set(datesWithData));
-
-  // Sort uniqueDates in ascending order
-  uniqueDates.sort((a, b) => (dayjs(a).isBefore(dayjs(b)) ? -1 : 1));
-
-  const handleClickOpen = (user) => {
-    setUserToDelete(user);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setUserToDelete(null);
+  const onSubmit = (date, index) => {
+    setSelectedTab(index);
   };
 
   return (
     <>
       <Box component="form" noValidate>
         <p>Owner-home</p>
-        <FormGroup>
-          <Stack direction={"row"} spacing={1}>
-            {Object.keys(workPositionChecked).map((position) => (
-              <FormControlLabel
-                key={position}
-                control={
-                  <Checkbox
-                    checked={workPositionChecked[position]}
-                    onChange={() => handleCheckboxChange(position)}
-                  />
-                }
-                label={position}
-              />
-            ))}
-          </Stack>
-        </FormGroup>
         <Tabs
           value={selectedTab}
           variant="scrollable"
@@ -196,7 +142,7 @@ export default function WorkAnnounce() {
       </Box>
       <Stack spacing={{ xl: 1, sm: 2, md: 4 }} justifyContent="center">
         <Grid container spacing={2}>
-          {work.map((item) => (
+          {filteredData.map((item) => (
             <Grid key={item._id} item lg={3} sm={6} xs={12}>
               <Card sx={{ maxWidth: 350 }}>
                 <CardActionArea>
@@ -245,15 +191,31 @@ export default function WorkAnnounce() {
                         </Typography>
                       </Stack>
                       <Stack direction={"row"} justifyContent={"flex-end"}>
-                        <Button
-                          component={Link}
-                          to={`/dashboard-employee/work-descrip/${item._id}`}
-                          variant="contained"
-                          color="success"
-                          startIcon={<HowToRegIcon />}
-                        >
-                          สมัครงาน
-                        </Button>
+                        {item.employees[0].employmentStatus === "รอยืนยัน" ? (
+                          <Button
+                            component={Link}
+                            variant="contained"
+                            color="warning"
+                          >
+                            รอยืนยัน
+                          </Button>
+                        ) : item.employees[0].employmentStatus === "เต็ม" ? (
+                          <Button
+                            component={Link}
+                            variant="contained"
+                            color="error"
+                          >
+                            เต็ม
+                          </Button>
+                        ) : (
+                          <Button
+                            component={Link}
+                            variant="contained"
+                            color="success"
+                          >
+                            ยืนยัน
+                          </Button>
+                        )}
                       </Stack>
                     </Stack>
                   </CardContent>

@@ -6,11 +6,11 @@ import { Link } from "react-router-dom";
 
 import EditIcon from "@mui/icons-material/Edit";
 
-import { profileUser } from "../../../services/user";
 import dayjs from "dayjs";
 import "dayjs/locale/th";
 
 import { currentUser } from "../../../services/auth";
+import { profileUser } from "../../../services/user";
 
 export default function ProfilePage() {
   const [data, setData] = useState([]);

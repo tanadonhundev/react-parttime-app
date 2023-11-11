@@ -6,7 +6,7 @@ import DashboardIcon from "@mui/icons-material/Dashboard";
 import PeopleIcon from "@mui/icons-material/People";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import WorkIcon from "@mui/icons-material/Work";
-import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 
 import { NavLink, useLocation } from "react-router-dom";
 import { currentUser } from "../../../services/auth";
@@ -64,6 +64,11 @@ export const DMenu = () => {
       label: "ประกาศจ้างงาน",
       icon: <WorkIcon />,
       href: "/dashboard-employee/work-announce",
+    },
+    {
+      label: "งานที่สมัคร",
+      icon: <ManageAccountsIcon />,
+      href: "/dashboard-employee/work-apply",
     },
   ];
 

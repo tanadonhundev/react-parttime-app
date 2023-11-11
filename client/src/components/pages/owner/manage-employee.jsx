@@ -63,6 +63,12 @@ export default function ManageEmployee() {
     setSelectedTab(newValue);
   };
 
+  const handleConfirm = (item, employeeId) => {
+    console.log(item);
+    console.log("Employee ID:", employeeId);
+    // Perform the confirmation logic with item and employeeId
+  };
+
   const currentDate = dayjs();
   // Filter out dates with no data
   const datesWithData = data.filter((item) =>
@@ -91,7 +97,6 @@ export default function ManageEmployee() {
           />
         ))}
       </Tabs>
-
       {uniqueDates.map((date, index) => (
         <div key={index}>
           {index === selectedTab && (
@@ -112,7 +117,7 @@ export default function ManageEmployee() {
                       </Typography>
                     </Stack>
                     <TableContainer component={Paper}>
-                      <Table>
+                      <Table aria-label="simple table">
                         <TableHead style={{ backgroundColor: "lightblue" }}>
                           <TableRow>
                             <TableCell>ตำแหน่ง</TableCell>
@@ -182,9 +187,29 @@ export default function ManageEmployee() {
                                   {employee.employmentStatus}
                                 </TableCell>
                                 <TableCell style={{ textAlign: "center" }}>
-                                  <Button variant="contained">
-                                    รับเข้าทำงาน
-                                  </Button>
+                                  <Stack
+                                    direction={"row"}
+                                    spacing={1}
+                                    justifyContent={"center"}
+                                  >
+                                    <Button
+                                      variant="contained"
+                                      onClick={() =>
+                                        handleConfirm(
+                                          employee.employmentStatus,
+                                          employee.employeeId
+                                        )
+                                      }
+                                    >
+                                      ยืนยัน
+                                    </Button>
+                                    <Button variant="contained" color="error">
+                                      ปฎิเสธ
+                                    </Button>
+                                    <Button variant="contained" color="success">
+                                      ดูข้อมูล
+                                    </Button>
+                                  </Stack>
                                 </TableCell>
                               </TableRow>
                             ))}

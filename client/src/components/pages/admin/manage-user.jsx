@@ -18,7 +18,8 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { Stack } from "@mui/material";
+import Stack from "@mui/material/Stack";
+import Avatar from "@mui/material/Avatar";
 
 import { useNavigate, Link } from "react-router-dom";
 
@@ -101,7 +102,7 @@ export default function ManageUser() {
   return (
     <>
       <Typography>d-manage-user</Typography>
-      <Container component="main" maxWidth="xl">
+      <Container>
         {loading ? (
           <Box
             style={{
@@ -117,13 +118,15 @@ export default function ManageUser() {
             <Table aria-label="simple table">
               <TableHead style={{ backgroundColor: "lightblue" }}>
                 <TableRow>
+                  <TableCell>รูปโปรไฟล์</TableCell>
                   <TableCell>ชื่อ</TableCell>
                   <TableCell>นามสกุล</TableCell>
-                  <TableCell>อีเมล</TableCell>
                   <TableCell>ตำแหน่ง</TableCell>
-                  <TableCell>การตรวจสอบ</TableCell>
+                  <TableCell style={{ textAlign: "center" }}>
+                    การตรวจสอบ
+                  </TableCell>
                   <TableCell>การแบน</TableCell>
-                  <TableCell>จัดการข้อมูล</TableCell>
+                  <TableCell style={{ textAlign: "center" }}>จัดการ</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -135,11 +138,20 @@ export default function ManageUser() {
                       )
                       .map((item, index) => (
                         <TableRow key={index}>
+                          <TableCell>
+                            <Avatar
+                              sx={{ width: 35, height: 35 }}
+                              alt="Remy Sharp"
+                              src={
+                                "http://localhost:5000/uploads/avatar/" +
+                                item.avatarphoto
+                              }
+                            />
+                          </TableCell>
                           <TableCell>{item.firstName}</TableCell>
                           <TableCell>{item.lastName}</TableCell>
-                          <TableCell>{item.email}</TableCell>
                           <TableCell>{item.role}</TableCell>
-                          <TableCell>
+                          <TableCell style={{ textAlign: "center" }}>
                             <Typography
                               variant="outlined"
                               style={{
@@ -166,15 +178,25 @@ export default function ManageUser() {
                             />
                           </TableCell>
                           <TableCell>
-                            <Stack direction={"row"}>
-                              <Button onClick={() => handleClickOpen(item)}>
-                                <DeleteForeverIcon color="error" />
+                            <Stack
+                              direction={"row"}
+                              spacing={1}
+                              justifyContent={"center"}
+                            >
+                              <Button
+                                variant="contained"
+                                color="error"
+                                onClick={() => handleClickOpen(item)}
+                              >
+                                ลบ
                               </Button>
                               <Button
+                                variant="contained"
                                 component={Link}
                                 to={`/dashboard-admin/verify-user/${item._id}`}
+                                style={{ textAlign: "center" }}
                               >
-                                <ManageAccountsIcon color="primary" />
+                                ดูข้อมูล
                               </Button>
                             </Stack>
                           </TableCell>

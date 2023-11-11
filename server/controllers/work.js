@@ -107,3 +107,24 @@ exports.applyWork = async (req, res) => {
     }
 }
 
+exports.applyList = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const work = await Work.find({ 'employees.employeeId': id });
+
+        if (!work || work.length === 0) {
+            return res.status(404).send('Work not found');
+        }
+
+        const employee = work[0].employees.find((emp) => emp.employeeId === id);
+
+        if (!employee) {
+            return res.status(404).send('Employee not found in the specified work');
+        }
+        res.send(work);
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
