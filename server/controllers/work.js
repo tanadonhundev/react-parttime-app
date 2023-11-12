@@ -128,3 +128,75 @@ exports.applyList = async (req, res) => {
     }
 };
 
+exports.ChangeEmploymentStatus = async (req, res) => {
+    try {
+        const workDay = req.body.workDay;
+        const companyId = req.body.companyId;
+        const employeeId = req.body.employeeId;
+        const status = req.body.status;
+        console.log(req.body);
+
+        // Find the work record based on companyId and workDay
+        const work = await Work.findOne({ companyId: companyId, workDay: workDay });
+
+        //console.log(work)
+
+        if (!work) {
+            return res.status(404).json({ msg: 'Work record not found' });
+        }
+
+        // Find the employee within the work record based on employeeId
+        const employee = work.employees.find(emp => emp.employeeId === employeeId);
+
+        if (!employee) {
+            return res.status(404).json({ msg: 'Employee not found' });
+        }
+
+        // Check if the status is 'รอคัดเลือก' and update it to 'รอยืนยัน'
+        if (status === 'รอคัดเลือก' || status === "ตำแหน่งเต็ม") {
+            employee.employmentStatus = 'รอยืนยัน';
+        } else if (status === 'รอยืนยัน') {
+            employee.employmentStatus = 'ตำแหน่งเต็ม';
+        } else if (status === 'พร้อมเริ่มงาน') {
+            employee.employmentStatus = 'พร้อมเริ่มงาน';
+            work.numOfReady += 1;
+        }
+
+        // Save the changes to the database
+        await work.save();
+
+        res.send({ msg: 'Employment status updated successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
+exports.CancelWork = async (req, res) => {
+    try {
+        const workDay = req.body.workDay;
+        const companyId = req.body.companyId;
+        const employeeId = req.body.employeeId;
+        console.log(req.body);
+
+        const work = await Work.findOne({ companyId: companyId, workDay: workDay });
+
+        if (!work) {
+            return res.status(404).json({ msg: 'Work record not found' });
+        }
+
+        // Use filter to remove the employee from the employees array
+        work.employees = work.employees.filter(emp => emp.employeeId !== employeeId);
+
+        // Decrement numOfReady by 1
+        work.numOfReady -= 1;
+
+        // Save the changes to the database
+        await work.save();
+
+        res.send({ msg: 'Employee canceled successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};

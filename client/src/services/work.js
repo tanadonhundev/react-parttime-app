@@ -48,4 +48,19 @@ export const applyList = async (authtoken, id,) => {
     });
 }
 
+export const ChangeEmploymentStatus = async (authtoken, data) => {
+    return await axios.post('http://localhost:5000/employmentstatus', data, {
+        headers: {
+            authtoken
+        }
+    });
+}
+
+export const CancelWork = async (authtoken, data) => {
+    return await axios.post('http://localhost:5000/cancelwork', data, {
+        headers: {
+            authtoken
+        }
+    });
+}
 

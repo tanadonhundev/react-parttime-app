@@ -32,7 +32,12 @@ import { Link } from "react-router-dom";
 import dayjs from "dayjs";
 import "dayjs/locale/th";
 
-import { applyList, workList } from "../../../services/work";
+import {
+  applyList,
+  workList,
+  ChangeEmploymentStatus,
+  CancelWork,
+} from "../../../services/work";
 import { currentUser } from "../../../services/auth";
 import { loadPhoto } from "../../../services/user";
 
@@ -112,6 +117,41 @@ export default function WorkApply() {
       .catch((error) => console.log(error));
   };
 
+  const handleConfirm = (item, employeeId, companyId, workDay) => {
+    const token = localStorage.getItem("token");
+    const values = {
+      workDay: workDay,
+      companyId: companyId,
+      employeeId: employeeId,
+      status: "พร้อมเริ่มงาน",
+    };
+
+    ChangeEmploymentStatus(token, values)
+      .then((res) => {
+        console.log(res.data);
+        // Load updated data after confirming
+        loadData(token, companyId);
+        loadDataOwner(token);
+        loadDataCompany(token);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const handleCancel = (item, employeeId, companyId, workDay) => {
+    const token = localStorage.getItem("token");
+    const values = {
+      workDay: workDay,
+      companyId: companyId,
+      employeeId: employeeId,
+    };
+    console.log(values);
+    CancelWork(token, values)
+      .then((res) => {
+        console.log(res.data);
+      })
+      .catch((error) => console.log(error));
+  };
+
   const uniqueDates = Array.from(
     new Set(data.map((item) => item.workDay))
   ).sort((a, b) => (dayjs(a).isBefore(dayjs(b)) ? -1 : 1));
@@ -128,9 +168,7 @@ export default function WorkApply() {
           value={selectedTab}
           variant="scrollable"
           scrollButtons="auto"
-          onChange={(event, newValue) =>
-            onSubmit(uniqueDates[newValue], newValue)
-          }
+          onChange={onSubmit}
         >
           {uniqueDates.map((date, index) => (
             <Tab
@@ -180,37 +218,53 @@ export default function WorkApply() {
                         </Typography>
                         <Typography variant="body1">-</Typography>
                         <Typography variant="body1">
-                          {dayjs(item.workEndTime).locale("th").format("hh:mm")}
+                          {dayjs(item.workEndTime).locale("th").format("hh:mm")}{" "}
                           น.
                         </Typography>
                       </Stack>
                       <Stack direction={"row"}>
                         <LocalAtmIcon />
                         <Typography variant="body1">
-                          {item.dailyWage}บาท/ชั่วโมง
+                          {item.dailyWage} บาท/ชั่วโมง
                         </Typography>
                       </Stack>
-                      <Stack direction={"row"} justifyContent={"flex-end"}>
-                        {item.employees[0].employmentStatus === "รอยืนยัน" ? (
-                          <Button
-                            component={Link}
-                            variant="contained"
-                            color="warning"
-                          >
-                            รอยืนยัน
+                      <Stack direction={"row"} justifyContent={"space-between"}>
+                        <Button variant="outlined">
+                          {item.employees[0].employmentStatus}
+                        </Button>
+                        {item.employees[0].employmentStatus ===
+                        "รอคัดเลือก" ? null : item.employees[0]
+                            .employmentStatus === "ตำแหน่งเต็ม" ? (
+                          <Button variant="contained" color="warning">
+                            หางานใหม่
                           </Button>
-                        ) : item.employees[0].employmentStatus === "เต็ม" ? (
+                        ) : item.employees[0].employmentStatus ===
+                          "พร้อมเริ่มงาน" ? (
                           <Button
-                            component={Link}
                             variant="contained"
                             color="error"
+                            onClick={() =>
+                              handleCancel(
+                                item.employees[0].employmentStatus,
+                                item.employees[0].employeeId,
+                                item.companyId,
+                                item.workDay
+                              )
+                            }
                           >
-                            เต็ม
+                            ยกเลิก
                           </Button>
                         ) : (
                           <Button
-                            component={Link}
                             variant="contained"
+                            onClick={() =>
+                              handleConfirm(
+                                item.employees[0].employmentStatus,
+                                item.employees[0].employeeId,
+                                item.companyId,
+                                item.workDay
+                              )
+                            }
                             color="success"
                           >
                             ยืนยัน

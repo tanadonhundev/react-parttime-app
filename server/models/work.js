@@ -7,7 +7,7 @@ const employeeSchema = new mongoose.Schema({
   employeeAvatar: String,
   employmentStatus: {
     type: String,
-    default: 'รอยืนยัน'
+    default: 'รอคัดเลือก'
   }
 });
 

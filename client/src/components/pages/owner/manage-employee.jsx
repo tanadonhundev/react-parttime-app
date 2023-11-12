@@ -34,11 +34,16 @@ import "dayjs/locale/th";
 
 import { workDescripList } from "../../../services/work";
 import { currentUser } from "../../../services/auth";
+import { ChangeEmploymentStatus } from "../../../services/work";
+
+import { useNavigate } from "react-router-dom";
 
 export default function ManageEmployee() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState(0);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -63,10 +68,21 @@ export default function ManageEmployee() {
     setSelectedTab(newValue);
   };
 
-  const handleConfirm = (item, employeeId) => {
-    console.log(item);
-    console.log("Employee ID:", employeeId);
-    // Perform the confirmation logic with item and employeeId
+  const handleConfirm = (item, employeeId, companyId, workDay) => {
+    const token = localStorage.getItem("token");
+    const values = {
+      workDay: workDay,
+      companyId: companyId,
+      employeeId: employeeId,
+      status: item,
+    };
+    console.log(values);
+    ChangeEmploymentStatus(token, values)
+      .then((res) => {
+        console.log(res.data);
+        loadData(token, companyId);
+      })
+      .catch((error) => console.log(error));
   };
 
   const currentDate = dayjs();
@@ -197,13 +213,38 @@ export default function ManageEmployee() {
                                       onClick={() =>
                                         handleConfirm(
                                           employee.employmentStatus,
-                                          employee.employeeId
+                                          employee.employeeId,
+                                          item.companyId,
+                                          item.workDay
                                         )
+                                      }
+                                      disabled={
+                                        employee.employmentStatus ===
+                                          "รอยืนยัน" ||
+                                        employee.employmentStatus ===
+                                          "พร้อมเริ่มงาน"
                                       }
                                     >
                                       ยืนยัน
                                     </Button>
-                                    <Button variant="contained" color="error">
+                                    <Button
+                                      variant="contained"
+                                      color="error"
+                                      onClick={() =>
+                                        handleConfirm(
+                                          employee.employmentStatus,
+                                          employee.employeeId,
+                                          item.companyId,
+                                          item.workDay
+                                        )
+                                      }
+                                      disabled={
+                                        employee.employmentStatus ===
+                                          "ตำแหน่งเต็ม" ||
+                                        employee.employmentStatus ===
+                                          "พร้อมเริ่มงาน"
+                                      }
+                                    >
                                       ปฎิเสธ
                                     </Button>
                                     <Button variant="contained" color="success">
