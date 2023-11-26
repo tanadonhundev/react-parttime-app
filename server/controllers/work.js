@@ -2,7 +2,8 @@ const Work = require("../models/work");
 
 exports.postWork = async (req, res) => {
     try {
-        const { companyId, companyName, workPosition, workStartTime, workEndTime, workBreakTime, dailyWage, workDay, numOfEmployee, companyphoto } = req.body;
+        const { companyId, companyName, workPosition, workStartTime, workEndTime, workBreakTime, dailyWage, workDay, numOfEmployee,
+            workScope, workWelfare, workDress, companyphoto } = req.body;
         console.log(req.body)
         // ตรวจสอบว่า workDay มีค่าหรือไม่ และความยาวมากกว่า 0
         if (workDay && workDay.length > 0) {
@@ -18,6 +19,9 @@ exports.postWork = async (req, res) => {
                     workBreakTime,
                     dailyWage,
                     numOfEmployee,
+                    workScope,
+                    workWelfare,
+                    workDress,
                     companyphoto,
                 });
                 return work.save();
@@ -74,10 +78,9 @@ exports.workDescripList = async (req, res) => {
 
 exports.applyWork = async (req, res) => {
     try {
-        console.log(req.body)
         const work = await Work.findOne({ _id: req.body.company._id }).exec();
         if (work.employees.length >= req.body.company.numOfEmployee) {
-            console.log("พนักงานเต็มแล้ว")
+            res.status(200).send("พนักงานเต็มแล้ว")
         } else {
             if (work) {
                 const employee = work.employees.find(e => e.employeeId === req.body.employee._id);
@@ -89,17 +92,14 @@ exports.applyWork = async (req, res) => {
                         employeeAvatar: req.body.employee.avatarphoto
                     });
                     await work.save();
-                    console.log("สมัครงานสำเร็จ");
-                }
-                else {
-                    console.log("สมัครงานนี้ไปแล้ว")
+                    res.status(200).send("สมัครงานสำเร็จ")
+                } else {
+                    res.status(200).send("สมัครงานนี้ไปแล้ว")
                 }
             } else {
-                console.log("Work document not found for companyId: " + id);
+                //console.log("Work document not found for companyId: " + id);
+                res.status(404).send("Work document not found");
             }
-
-            // Send a response to the client
-            res.send("Employee added or Work document not found.");
         }
     } catch (error) {
         console.log(error);
@@ -174,6 +174,7 @@ exports.ChangeEmploymentStatus = async (req, res) => {
 
 exports.CancelWork = async (req, res) => {
     try {
+        console.log(req.body)
         const workDay = req.body.workDay;
         const companyId = req.body.companyId;
         const employeeId = req.body.employeeId;

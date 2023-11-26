@@ -8,7 +8,9 @@ const userScheme = mongoose.Schema({
     workEndTime: String,
     workBreakTime: Number,
     dailyWage: Number,
-    workDetails: String,
+    workScope: String,
+    workWelfare: String,
+    workDress: String,
 }, { timestamps: true });
 
 module.exports = mongoose.model("Company", userScheme);

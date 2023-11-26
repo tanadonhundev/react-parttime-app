@@ -33,7 +33,7 @@ export const workDescripList = async (authtoken, id) => {
 }
 
 export const applyWork = async (authtoken, data) => {
-    await axios.post('http://localhost:5000/applyWork', data, {
+    return await axios.post('http://localhost:5000/applyWork', data, {
         headers: {
             authtoken
         }

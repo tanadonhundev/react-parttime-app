@@ -14,17 +14,9 @@ import Chip from "@mui/material/Chip";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Slide from "@mui/material/Slide";
-
 import BadgeIcon from "@mui/icons-material/Badge";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
-import NotInterestedIcon from "@mui/icons-material/NotInterested";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 
 import { Link } from "react-router-dom";
@@ -34,10 +26,6 @@ import "dayjs/locale/th";
 
 import { workList } from "../../../services/work";
 import { loadPhoto } from "../../../services/user";
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Slide direction="down" ref={ref} {...props} />;
-});
 
 export default function WorkAnnounce() {
   const [data, setData] = useState([]);
@@ -53,8 +41,6 @@ export default function WorkAnnounce() {
   });
   const [companyId, setCompanyId] = useState([]);
   const [image, setImage] = useState("");
-  const [open, setOpen] = useState(false);
-  const [userToDelete, setUserToDelete] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -79,10 +65,7 @@ export default function WorkAnnounce() {
         setCompanyId(uniqueCompanyIdArray);
         setData(res.data);
 
-        const firstTabData = res.data[0];
-        if (firstTabData) {
-          setWork([firstTabData]);
-        }
+        setWork(res.data);
       })
       .catch((error) => console.log(error));
   };
@@ -147,16 +130,6 @@ export default function WorkAnnounce() {
 
   // Sort uniqueDates in ascending order
   uniqueDates.sort((a, b) => (dayjs(a).isBefore(dayjs(b)) ? -1 : 1));
-
-  const handleClickOpen = (user) => {
-    setUserToDelete(user);
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-    setUserToDelete(null);
-  };
 
   return (
     <>
@@ -230,11 +203,11 @@ export default function WorkAnnounce() {
                         <Typography variant="body1">
                           {dayjs(item.workStartTime)
                             .locale("th")
-                            .format("hh:mm")}
+                            .format("HH:mm")}
                         </Typography>
                         <Typography variant="body1">-</Typography>
                         <Typography variant="body1">
-                          {dayjs(item.workEndTime).locale("th").format("hh:mm")}
+                          {dayjs(item.workEndTime).locale("th").format("HH:mm")}
                           น.
                         </Typography>
                       </Stack>

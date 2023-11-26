@@ -152,23 +152,33 @@ export default function WorkApply() {
       .catch((error) => console.log(error));
   };
 
-  const uniqueDates = Array.from(
-    new Set(data.map((item) => item.workDay))
-  ).sort((a, b) => (dayjs(a).isBefore(dayjs(b)) ? -1 : 1));
+  const currentDate = dayjs();
+  // Filter out dates with no data
+  const datesWithData = data.filter((item) =>
+    dayjs(item.workDay).isAfter(currentDate.subtract(1, "day"), "day")
+  );
 
-  const onSubmit = (date, index) => {
-    setSelectedTab(index);
+  // Extract unique dates from the filtered data
+  const uniqueDates = Array.from(
+    new Set(datesWithData.map((item) => item.workDay))
+  );
+
+  uniqueDates.sort((a, b) => (dayjs(a).isBefore(dayjs(b)) ? -1 : 1));
+
+  const handleTabChange = (event, newValue) => {
+    setSelectedTab(newValue);
   };
 
   return (
     <>
+      {data.length === 0 && <p>ยังไม่มีงานที่สมัคร</p>}
       <Box component="form" noValidate>
         <p>Owner-home</p>
         <Tabs
           value={selectedTab}
           variant="scrollable"
           scrollButtons="auto"
-          onChange={onSubmit}
+          onChange={handleTabChange}
         >
           {uniqueDates.map((date, index) => (
             <Tab
@@ -214,11 +224,11 @@ export default function WorkApply() {
                         <Typography variant="body1">
                           {dayjs(item.workStartTime)
                             .locale("th")
-                            .format("hh:mm")}
+                            .format("HH:mm")}
                         </Typography>
                         <Typography variant="body1">-</Typography>
                         <Typography variant="body1">
-                          {dayjs(item.workEndTime).locale("th").format("hh:mm")}{" "}
+                          {dayjs(item.workEndTime).locale("th").format("HH:mm")}
                           น.
                         </Typography>
                       </Stack>
@@ -232,9 +242,23 @@ export default function WorkApply() {
                         <Button variant="outlined">
                           {item.employees[0].employmentStatus}
                         </Button>
-                        {item.employees[0].employmentStatus ===
-                        "รอคัดเลือก" ? null : item.employees[0]
-                            .employmentStatus === "ตำแหน่งเต็ม" ? (
+                        {item.employees[0].employmentStatus === "รอคัดเลือก" ? (
+                          <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() =>
+                              handleCancel(
+                                item.employees[0].employmentStatus,
+                                item.employees[0].employeeId,
+                                item.companyId,
+                                item.workDay
+                              )
+                            }
+                          >
+                            ยกเลิก
+                          </Button>
+                        ) : item.employees[0].employmentStatus ===
+                          "ตำแหน่งเต็ม" ? (
                           <Button variant="contained" color="warning">
                             หางานใหม่
                           </Button>

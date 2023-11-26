@@ -35,13 +35,13 @@ export default function HomeEmployee() {
     currentUser(token)
       .then((res) => {
         const id = res.data._id;
-        loadData(token,id);
+        loadData(token, id);
       })
       .catch((error) => console.log(error));
   }, []);
 
-  const loadData = async (token,id) => {
-    profileUser(token,id)
+  const loadData = async (token, id) => {
+    profileUser(token, id)
       .then((res) => {
         //console.log(res);
         setData(res.data);
@@ -103,7 +103,7 @@ export default function HomeEmployee() {
       window.open(googleMapsUrl, "_blank");
     }
   };
-  
+
   /*return (
     <div>
       <Card>
@@ -120,17 +120,6 @@ export default function HomeEmployee() {
                 position={{ lat: marker.lat, lng: marker.lng }}
               />
             ))}
-            {clickedLatLng && (
-              <Marker
-                position={{ lat: clickedLatLng.lat, lng: clickedLatLng.lng }}
-              />
-            )}
-            {directionsRenderer && (
-              <DirectionsRenderer
-                directions={directionsRenderer.directions}
-                map={directionsRenderer.getMap()}
-              />
-            )}
           </GoogleMap>
         </CardContent>
         <Button onClick={openGoogleMaps}>เปิดแผนที่</Button>

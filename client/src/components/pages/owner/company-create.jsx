@@ -73,7 +73,9 @@ export default function CompanyCrate() {
       workEndTime: data.workEndTime.$d,
       workBreakTime: data.workBreakTime,
       dailyWage: data.dailyWage,
-      workDetails: data.workDetails,
+      workScope: data.workScope,
+      workWelfare: data.workWelfare,
+      workDress: data.workDress,
     };
     createWork(token, value)
       .then((res) => {})
@@ -186,8 +188,26 @@ export default function CompanyCrate() {
               </Grid>
               <Grid item xs={12} sm={12}>
                 <TextField
-                  {...register("workDetails")}
-                  label="รายละเอียด"
+                  {...register("workScope")}
+                  label="ขอบเขตการทำงาน"
+                  fullWidth
+                  multiline
+                  rows={4}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  {...register("workWelfare")}
+                  label="สวัสดิการ"
+                  fullWidth
+                  multiline
+                  rows={4}
+                />
+              </Grid>
+              <Grid item xs={12} sm={12}>
+                <TextField
+                  {...register("workDress")}
+                  label="การแต่งกาย"
                   fullWidth
                   multiline
                   rows={4}

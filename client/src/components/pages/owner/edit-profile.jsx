@@ -42,7 +42,10 @@ export default function EditProfile() {
     lat: parseFloat(data.lat) || 0,
     lng: parseFloat(data.lng) || 0,
   });
-  const [image, setImage] = useState();
+
+  const [avatarImage, setAvatarImage] = useState();
+  const [idcardImage, setIdcardImage] = useState();
+  const [companyImage, setCompanyImage] = useState();
 
   const params = useParams();
   const navigate = useNavigate();
@@ -87,9 +90,23 @@ export default function EditProfile() {
     const formData = new FormData();
 
     // Append avatarphoto and idcardphoto files to the formData
-    formData.append("avatarphoto", data.avatarphoto[0]);
-    formData.append("idcardphoto", data.idcardphoto[0]);
-    formData.append("companyphoto", data.companyphoto[0]);
+    if (data.avatarphoto[0]) {
+      formData.append("avatarphoto", data.avatarphoto[0]);
+    } else {
+      formData.append("avatarphoto", avatarImage);
+    }
+    // Append idcardphoto files to the formData
+    if (data.idcardphoto[0]) {
+      formData.append("idcardphoto", data.idcardphoto[0]);
+    } else {
+      formData.append("idcardphoto", idcardImage);
+    }
+    // Append companyphoto files to the formData
+    if (data.companyphoto[0]) {
+      formData.append("companyphoto", data.companyphoto[0]);
+    } else {
+      formData.append("companyphoto", companyImage);
+    }
 
     // Append other form data fields (excluding avatarphoto and idcardphoto)
     for (const key in data) {
@@ -114,7 +131,9 @@ export default function EditProfile() {
     profileUser(token, id)
       .then((res) => {
         setData(res.data);
-        setImage(res.data.avatarphoto);
+        setAvatarImage(res.data.avatarphoto);
+        setIdcardImage(res.data.idcardphoto);
+        setCompanyImage(res.data.companyphoto);
         setLoading(false);
       })
       .catch((error) => console.log(error));
@@ -158,7 +177,7 @@ export default function EditProfile() {
             <Avatar
               sx={{ width: 150, height: 150 }}
               alt="Remy Sharp"
-              src={"http://localhost:5000/uploads/avatar/" + image}
+              src={"http://localhost:5000/uploads/avatar/" + avatarImage}
             />
 
             <Box
@@ -244,7 +263,7 @@ export default function EditProfile() {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <InputLabel>ที่อยู่</InputLabel>
+                  <InputLabel>ที่อยู่ปัจจุบัน</InputLabel>
                   <Card>
                     <CardContent>
                       <GoogleMap
@@ -292,7 +311,7 @@ export default function EditProfile() {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <InputLabel>รูปบัตรบริษัท</InputLabel>
+                  <InputLabel>รูปบริษัท</InputLabel>
                   <TextField
                     fullWidth
                     {...register("companyphoto")}

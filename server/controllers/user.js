@@ -47,7 +47,7 @@ exports.profileUser = async (req, res) => {
     try {
         //console.log(req.params.id)
         const id = req.params.id;
-        const user = await User.findOne({ _id: id });
+        const user = await User.findOne({ _id: id }).select('-password');
         res.send(user)
     } catch (error) {
         console.log(error);

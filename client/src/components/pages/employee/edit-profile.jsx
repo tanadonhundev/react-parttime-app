@@ -15,6 +15,8 @@ import dayjs from "dayjs";
 import "dayjs/locale/th";
 
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 
 import toast from "react-hot-toast";
@@ -34,6 +36,7 @@ const mapContainerStyle = {
 export default function EditProfile() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [markers, setMarkers] = useState([]);
   const [clickedLatLng, setClickedLatLng] = useState({
     lat: parseFloat(data.lat) || 0, // ใช้ค่าที่มีอยู่แล้วหรือค่าเริ่มต้น
     lng: parseFloat(data.lng) || 0, // ใช้ค่าที่มีอยู่แล้วหรือค่าเริ่มต้น
@@ -49,9 +52,26 @@ export default function EditProfile() {
   const navigate = useNavigate();
 
   //console.log(params.id);
+  const schema = yup.object().shape({
+    idCard: yup
+      .string()
+      .min(13, "เลขบัตรประชาชนต้องมี 13 หลัก")
+      .max(13, "เลขบัตรประชาชนต้องมี 13 หลัก"),
+    phoneNumber: yup
+      .string()
+      .min(10, "เบอร์โทรศัพท์ต้องมี 10 หลัก")
+      .max(10, "เบอร์โทรศัพท์ต้องมี 10 หลัก"),
+  });
 
-  const { register, handleSubmit, setValue } = useForm();
-
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    mode: "all",
+  });
   useEffect(() => {
     const token = localStorage.getItem("token");
     loadData(token, params.id);
@@ -120,6 +140,9 @@ export default function EditProfile() {
         setAvatarImage(res.data.avatarphoto);
         setIdcardImage(res.data.idcardphoto);
         setLoading(false);
+        setMarkers([
+          { lat: parseFloat(res.data.lat), lng: parseFloat(res.data.lng) },
+        ]);
       })
       .catch((error) => console.log(error));
   };
@@ -130,17 +153,10 @@ export default function EditProfile() {
   });
 
   const handleMapClick = (e) => {
-    console.log("Map clicked:", e.latLng.lat(), e.latLng.lng());
-
     setClickedLatLng({
       lat: e.latLng.lat(),
       lng: e.latLng.lng(),
     });
-
-    /*setCenter({
-      lat: e.latLng.lat(),
-      lng: e.latLng.lng(),
-    });*/
   };
 
   if (loadError) return "Error loading maps";
@@ -225,6 +241,8 @@ export default function EditProfile() {
                 <Grid item xs={12}>
                   <TextField
                     {...register("idCard")}
+                    error={errors.idCard ? true : false}
+                    helperText={errors.idCard && errors.idCard.message}
                     fullWidth
                     label="เลขบัตรประชาชน"
                     defaultValue={data.idCard}
@@ -233,13 +251,17 @@ export default function EditProfile() {
                 <Grid item xs={12}>
                   <TextField
                     {...register("phoneNumber")}
+                    error={errors.phoneNumber ? true : false}
+                    helperText={
+                      errors.phoneNumber && errors.phoneNumber.message
+                    }
                     fullWidth
                     label="เบอร์โทรศัพท์"
                     defaultValue={data.phoneNumber}
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <InputLabel>ที่อยู่</InputLabel>
+                  <InputLabel>ที่อยู่ปัจจุบัน</InputLabel>
                   <Card>
                     <CardContent>
                       <GoogleMap
@@ -256,15 +278,15 @@ export default function EditProfile() {
                             }}
                           />
                         )}
+                        {markers.map((marker, index) => (
+                          <Marker
+                            key={index}
+                            position={{ lat: marker.lat, lng: marker.lng }}
+                          />
+                        ))}
                       </GoogleMap>
                     </CardContent>
                   </Card>
-                  {data && (
-                    <div>
-                      <p>Latitude: {data.lat}</p>
-                      <p>Longitude: {data.lng}</p>
-                    </div>
-                  )}
                 </Grid>
                 <Grid item xs={12}>
                   <InputLabel>รูปประจำตัว</InputLabel>

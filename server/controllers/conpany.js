@@ -3,7 +3,7 @@ const Company = require("../models/company");
 exports.createCompany = async (req, res) => {
     try {
         console.log(req.body)
-        const { companyId, companyName, workPosition, workDay, workStartTime, workEndTime, workBreakTime, dailyWage, workDetails } = req.body;
+        const { companyId, companyName, workPosition, workDay, workStartTime, workEndTime, workBreakTime, dailyWage, workScope, workWelfare, workDress } = req.body;
 
         const company = new Company({
             companyId,
@@ -14,7 +14,9 @@ exports.createCompany = async (req, res) => {
             workEndTime,
             workBreakTime,
             dailyWage,
-            workDetails,
+            workScope,
+            workWelfare,
+            workDress
         });
         await company.save();
         res.send("aaaaaaaaaaaa");

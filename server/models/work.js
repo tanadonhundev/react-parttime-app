@@ -21,11 +21,13 @@ const workScheme = mongoose.Schema({
   workBreakTime: Number,
   dailyWage: Number,
   numOfEmployee: Number,
+  workScope: String,
+  workWelfare: String,
+  workDress: String,
   numOfReady: {
     type: Number,
     default: 0
   },
-  workDetails: String,
   companyphoto: String,
   employees: [employeeSchema],
 }, { timestamps: true });

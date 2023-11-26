@@ -62,7 +62,7 @@ export default function CompanyDescrip() {
   const navigate = useNavigate();
 
   const schema = yup.object().shape({
-    workDay: yup.array().of(yup.date()).required("เลือกวันที่ด้ย").nullable(),
+    workDay: yup.array().of(yup.date()).required("เลือกวันที่ด้วย").nullable(),
     numOfEmployee: yup.number().required("จำนวนที่เปิดรับ ห้ามเป็นค่าว่าง"),
   });
 
@@ -128,6 +128,9 @@ export default function CompanyDescrip() {
       workBreakTime: company.workBreakTime,
       dailyWage: company.dailyWage,
       numOfEmployee: data.numOfEmployee,
+      workScope: company.workScope,
+      workWelfare: company.workWelfare,
+      workDress: company.workDress,
       workDay: highlightedDays,
       companyphoto: company.companyphoto,
     };
