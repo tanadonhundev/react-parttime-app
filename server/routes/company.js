@@ -1,14 +1,16 @@
 const express = require("express");
 const router = express.Router();
 
-const { createCompany, companyList, companyDescrip } = require("../controllers/conpany");
+const { createCompany, deleteCompany, companyList, companyDescrip } = require("../controllers/conpany");
 
 const { auth } = require("../middleware/auth");
 
-router.post("/creatework", auth, createCompany);
+router.post("/createcompany", auth, createCompany);
 
-router.get("/creatework/:id", auth, companyList);
+router.post("/deletecompany", auth, deleteCompany);
 
-router.get("/work-details/:id", auth,companyDescrip);
+router.get("/companylist/:id", auth, companyList);
+
+router.get("/companydescrip/:id", auth, companyDescrip);
 
 module.exports = router;

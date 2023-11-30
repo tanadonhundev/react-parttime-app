@@ -3,17 +3,20 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
-import { InputLabel } from "@mui/material";
+import { InputLabel, Stack } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import FormControl from "@mui/material/FormControl";
 import Badge from "@mui/material/Badge";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
+import Paper from "@mui/material/Paper";
+import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DateCalendar } from "@mui/x-date-pickers/DateCalendar";
 import { PickersDay } from "@mui/x-date-pickers/PickersDay";
+
+import toast from "react-hot-toast";
 
 import dayjs from "dayjs";
 import "dayjs/locale/th";
@@ -40,7 +43,7 @@ function ServerDay(props) {
       overlap="circular"
       badgeContent={
         isSelected ? (
-          <AddCircleIcon style={{ color: "darkorange" }} />
+          <AddCircleTwoToneIcon style={{ color: "darkorange" }} />
         ) : undefined
       }
     >
@@ -134,10 +137,10 @@ export default function CompanyDescrip() {
       workDay: highlightedDays,
       companyphoto: company.companyphoto,
     };
-    console.log(value);
     postWork(token, value)
       .then((res) => {
-        //console.log(res);
+        toast.success(res.data);
+        navigate("/dashboard-owner/manage-employee");
       })
       .catch((error) => console.log(error));
   };
@@ -175,7 +178,8 @@ export default function CompanyDescrip() {
         sx={{
           display: "flex",
           flexDirection: "column",
-          alignItems: "flex-start",
+          alignItems: "center",
+          margin: "auto",
         }}
       >
         {loading ? (
@@ -186,76 +190,158 @@ export default function CompanyDescrip() {
               width: "100%",
               maxWidth: 500,
               textAlign: "start",
-              padding: 2,
             }}
           >
             <Typography variant="h6" gutterBottom>
-              ชื่่อ: {company.companyName}
+              รายละเอียดประกาศจ้างงาน
             </Typography>
-            <Typography variant="h6" gutterBottom>
-              ตำแหน่ง: {company.workPosition}
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              เวลาเรื่มงาน:
-              {dayjs(company.workStartTime).locale("th").format("HH:mm")}
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              เวลาเลิกงาน:
-              {dayjs(company.workEndTime).locale("th").format("HH:mm")}
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              เวลาพัก: {company.workBreakTime}ชั่วโมง
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              รายได้: {company.dailyWage}บาท/ชั่วโมง
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              ระยะเวลาการทำงาน: {workDuration}
-            </Typography>
-            <Typography variant="h6" gutterBottom>
-              รายได้รวม: {income}บาท/วัน
-            </Typography>
-            <Grid item xs={6} sm={6}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateCalendar
-                  {...register("workDay")}
-                  onChange={(newValues) => {
-                    const date = dayjs(newValues);
-                    setValue("workDay", date);
-                    handleDateChange(date);
-                  }}
-                  minDate={dayjs()}
-                  maxDate={dayjs().add(13, "days")}
-                  slots={{
-                    day: ServerDay,
-                  }}
-                  slotProps={{
-                    day: {
-                      highlightedDays,
-                    },
-                  }}
-                />
-                {errors.workDay && (
-                  <p style={{ color: "red" }}>{errors.workDay.message}</p>
-                )}
-              </LocalizationProvider>
-            </Grid>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 1,
+                flexWrap: "wrap",
+              }}
+            >
+              <Paper
+                style={{
+                  flex: "1 1 300px",
+                  padding: 16,
+                  marginBottom: 16,
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  borderRadius: 8,
+                  background: "#fff",
+                }}
+              >
+                <Stack direction={"column"}>
+                  <Typography variant="h7" gutterBottom>
+                    ชื่อ: {company.companyName}
+                  </Typography>
+                  <Typography variant="h7" gutterBottom>
+                    ตำแหน่ง: {company.workPosition}
+                  </Typography>
+                  <Typography variant="h7" gutterBottom>
+                    เวลาเริ่มงาน:
+                    {dayjs(company.workStartTime)
+                      .locale("th")
+                      .format("HH:mm")}{" "}
+                    น.
+                  </Typography>
+                  <Typography variant="h7" gutterBottom>
+                    เวลาเลิกงาน:
+                    {dayjs(company.workEndTime).locale("th").format("HH:mm")} น.
+                  </Typography>
+                  <Typography variant="h7" gutterBottom>
+                    เวลาพัก: {company.workBreakTime} ชั่วโมง
+                  </Typography>
+                  <Typography variant="h7" gutterBottom>
+                    ระยะเวลาการทำงาน: {workDuration}
+                  </Typography>
+                  <Typography variant="h7" gutterBottom>
+                    ค่าจ้าง: {company.dailyWage.toFixed(2)} บาท/ชั่วโมง
+                  </Typography>
+                  <Typography variant="h7" gutterBottom>
+                    ค่าจ้างรวม: {income.toFixed(2)} บาท/วัน
+                  </Typography>
+                </Stack>
+              </Paper>
+              <Paper
+                style={{
+                  flex: "1 1 300px",
+                  padding: 16,
+                  marginBottom: 16,
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  borderRadius: 8,
+                  background: "#fff",
+                }}
+              >
+                <Stack direction={"column"}>
+                  <Typography variant="h6" gutterBottom>
+                    ขอบเขตการทำงาน
+                  </Typography>
+                  <Typography variant="h7" gutterBottom>
+                    <div style={{ whiteSpace: "pre-line" }}>
+                      {company.workScope}
+                    </div>
+                  </Typography>
+                  <Typography variant="h6" gutterBottom>
+                    สวัสดิการ
+                  </Typography>
+                  <Typography variant="h7" gutterBottom>
+                    <div style={{ whiteSpace: "pre-line" }}>
+                      {company.workWelfare}
+                    </div>
+                  </Typography>
+                  <Typography variant="h6" gutterBottom>
+                    การแต่งกาย
+                  </Typography>
+                  <Typography variant="h7" gutterBottom>
+                    <div style={{ whiteSpace: "pre-line" }}>
+                      {company.workDress}
+                    </div>
+                  </Typography>
+                </Stack>
+              </Paper>
+              <Paper
+                style={{
+                  flex: "1 1 300px",
+                  padding: 16,
+                  marginBottom: 16,
+                  boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                  borderRadius: 8,
+                  background: "#fff",
+                }}
+              >
+                <Typography variant="h6" gutterBottom>
+                  เลือกวันที่
+                </Typography>
+                <Grid item xs={6} sm={6}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateCalendar
+                      {...register("workDay")}
+                      onChange={(newValues) => {
+                        const date = dayjs(newValues);
+                        setValue("workDay", date);
+                        handleDateChange(date);
+                      }}
+                      minDate={dayjs()}
+                      maxDate={dayjs().add(13, "days")}
+                      slots={{
+                        day: ServerDay,
+                      }}
+                      slotProps={{
+                        day: {
+                          highlightedDays,
+                        },
+                      }}
+                    />
+                    {errors.workDay && (
+                      <p style={{ color: "red" }}>{errors.workDay.message}</p>
+                    )}
+                  </LocalizationProvider>
+                </Grid>
+              </Paper>
+            </Box>
             <Grid item xs={6} sm={6}>
               <InputLabel>จำนวนที่เปิดรับ</InputLabel>
-              <FormControl variant="outlined">
-                <OutlinedInput
-                  {...register("numOfEmployee")}
-                  endAdornment={
-                    <InputAdornment position="end">คน</InputAdornment>
-                  }
-                />
-              </FormControl>
+              <Stack direction={"row"} spacing={11}>
+                <FormControl variant="outlined">
+                  <OutlinedInput
+                    {...register("numOfEmployee")}
+                    endAdornment={
+                      <InputAdornment position="end">คน</InputAdornment>
+                    }
+                  />
+                </FormControl>
+                <Button type="submit" variant="contained">
+                  ประกาศจ้างงาน
+                </Button>
+              </Stack>
             </Grid>
           </Box>
         ) : (
           <p>No data available</p>
         )}
-        <Button type="submit">ประกาศจ้างงาน</Button>
       </Box>
     </>
   );

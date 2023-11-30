@@ -63,7 +63,15 @@ export default function ProfilePage() {
               padding: 2,
             }}
           >
-            <Paper elevation={3} style={{ padding: "20px" }}>
+            <Paper
+              style={{
+                padding: 16,
+                marginBottom: 16,
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                borderRadius: 8,
+                background: "#fff",
+              }}
+            >
               <Stack alignItems={"center"}>
                 <Typography variant="h6" gutterBottom>
                   ข้อมูลส่วนตัว

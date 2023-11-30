@@ -4,7 +4,6 @@ exports.postWork = async (req, res) => {
     try {
         const { companyId, companyName, workPosition, workStartTime, workEndTime, workBreakTime, dailyWage, workDay, numOfEmployee,
             workScope, workWelfare, workDress, companyphoto } = req.body;
-        console.log(req.body)
         // ตรวจสอบว่า workDay มีค่าหรือไม่ และความยาวมากกว่า 0
         if (workDay && workDay.length > 0) {
             // สร้างและบันทึกข้อมูลงานสำหรับแต่ละวันใน workDay
@@ -30,7 +29,7 @@ exports.postWork = async (req, res) => {
             // รอการบันทึกข้อมูลทั้งหมดเสร็จสิ้น
             await Promise.all(workPromises);
 
-            res.send("สร้างงานสำเร็จ");
+            res.status(200).send("ประกาศจ้างงานสำเร็จ");
         } else {
             res.status(400).send("workDay ไม่ถูกต้องหรือไม่มีข้อมูล");
         }
@@ -44,10 +43,10 @@ exports.postWork = async (req, res) => {
 exports.workList = async (req, res) => {
     try {
         const work = await Work.find({}).exec();
-        res.send(work);
+        res.status(200).send(work);
     } catch (error) {
         console.log(error);
-        res.send('Server Error');
+        res.status(500).send('Server Error');
     }
 }
 
@@ -56,10 +55,10 @@ exports.workDescrip = async (req, res) => {
         const id = req.params.id;
         //console.log(id)
         const work = await Work.find({ _id: id }).exec();
-        res.send(work);
+        res.status(200).send(work);
     } catch (error) {
         console.log(error);
-        res.send('Server Error');
+        res.status(500).send('Server Error');
     }
 }
 
@@ -69,10 +68,10 @@ exports.workDescripList = async (req, res) => {
         const work = await Work.find({
             companyId: id
         }).exec();
-        res.send(work);
+        res.status(200).send(work);
     } catch (error) {
         console.log(error);
-        res.send('Server Error');
+        res.status(500).send('Server Error');
     }
 }
 
@@ -121,7 +120,7 @@ exports.applyList = async (req, res) => {
         if (!employee) {
             return res.status(404).send('Employee not found in the specified work');
         }
-        res.send(work);
+        res.status(200).send(work);
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -134,24 +133,19 @@ exports.ChangeEmploymentStatus = async (req, res) => {
         const companyId = req.body.companyId;
         const employeeId = req.body.employeeId;
         const status = req.body.status;
-        console.log(req.body);
 
         // Find the work record based on companyId and workDay
         const work = await Work.findOne({ companyId: companyId, workDay: workDay });
 
-        //console.log(work)
-
         if (!work) {
             return res.status(404).json({ msg: 'Work record not found' });
         }
-
         // Find the employee within the work record based on employeeId
         const employee = work.employees.find(emp => emp.employeeId === employeeId);
 
         if (!employee) {
             return res.status(404).json({ msg: 'Employee not found' });
         }
-
         // Check if the status is 'รอคัดเลือก' and update it to 'รอยืนยัน'
         if (status === 'รอคัดเลือก' || status === "ตำแหน่งเต็ม") {
             employee.employmentStatus = 'รอยืนยัน';
@@ -161,11 +155,10 @@ exports.ChangeEmploymentStatus = async (req, res) => {
             employee.employmentStatus = 'พร้อมเริ่มงาน';
             work.numOfReady += 1;
         }
-
         // Save the changes to the database
         await work.save();
 
-        res.send({ msg: 'Employment status updated successfully' });
+        res.status(200).send('Employment status updated successfully');
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');
@@ -174,11 +167,10 @@ exports.ChangeEmploymentStatus = async (req, res) => {
 
 exports.CancelWork = async (req, res) => {
     try {
-        console.log(req.body)
         const workDay = req.body.workDay;
         const companyId = req.body.companyId;
         const employeeId = req.body.employeeId;
-        console.log(req.body);
+        const employmentStatus = req.body.employmentStatus
 
         const work = await Work.findOne({ companyId: companyId, workDay: workDay });
 
@@ -189,13 +181,15 @@ exports.CancelWork = async (req, res) => {
         // Use filter to remove the employee from the employees array
         work.employees = work.employees.filter(emp => emp.employeeId !== employeeId);
 
-        // Decrement numOfReady by 1
-        work.numOfReady -= 1;
+        // Decrement numOfReady by 1 only if employmentStatus is not 'รอคัดเลิก'
+        if (employmentStatus !== 'รอคัดเลือก') {
+            work.numOfReady -= 1;
+        }
 
         // Save the changes to the database
         await work.save();
 
-        res.send({ msg: 'Employee canceled successfully' });
+        res.status(200).send('ยกเลิกสมัครงานสำเร็จ');
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');

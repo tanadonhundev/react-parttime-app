@@ -45,35 +45,42 @@ export default function WorkDescrip() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    loadData(token, params.id);
-    loadDataCompany(token, companyId);
     currentUser(token)
       .then((res) => {
         setData(res.data);
+        loadData(token, params.id);
       })
       .catch((error) => console.log(error));
-  }, [params.id, companyId]);
+  }, [params.id]);
 
   const loadData = async (token, id) => {
     workDescrip(token, id)
       .then((res) => {
-        setCompany(res.data[0]);
-        setCompanyId(res.data[0].companyId);
-        setLoading(false);
+        const companyData = res.data[0];
+        if (companyData) {
+          setCompany(companyData);
+          setCompanyId(companyData.companyId);
+          loadDataCompany(token, companyData.companyId);
+          setLoading(false);
+        } else {
+          setLoading(false);
+        }
       })
       .catch((error) => console.log(error));
   };
 
   const loadDataCompany = async (token, id) => {
-    profileUser(token, id)
-      .then((res) => {
-        setcompanyImage(res.data.companyphoto);
-        setLntlng(res.data);
-        setMarkers([
-          { lat: parseFloat(res.data.lat), lng: parseFloat(res.data.lng) },
-        ]);
-      })
-      .catch((error) => console.log(error));
+    if (id) {
+      profileUser(token, id)
+        .then((res) => {
+          setcompanyImage(res.data.companyphoto);
+          setLntlng(res.data);
+          setMarkers([
+            { lat: parseFloat(res.data.lat), lng: parseFloat(res.data.lng) },
+          ]);
+        })
+        .catch((error) => console.log(error));
+    }
   };
 
   const onSubmit = async () => {
@@ -89,6 +96,7 @@ export default function WorkDescrip() {
           navigate("/dashboard-employee/work-announce");
         } else {
           toast.error(res.data);
+          navigate("/dashboard-employee/work-announce");
         }
         console.log(res.data);
       })
@@ -138,7 +146,15 @@ export default function WorkDescrip() {
 
   return (
     <>
-      <Paper>
+      <Paper
+        style={{
+          padding: 16,
+          marginBottom: 16,
+          boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+          borderRadius: 8,
+          background: "#fff",
+        }}
+      >
         <Box
           sx={{
             display: "flex",
@@ -181,10 +197,10 @@ export default function WorkDescrip() {
                   ตำแหน่ง: พนักงาน{company.workPosition}
                 </Typography>
                 <Typography variant="h7" gutterBottom>
-                  รายได้ต่อชั่วโมง {company.dailyWage} บาท/ชั่วโมง
+                  รายได้ต่อชั่วโมง {company.dailyWage.toFixed(2)} บาท/ชั่วโมง
                 </Typography>
                 <Typography variant="h7" gutterBottom>
-                  รายได้รวม {income} บาท/วัน
+                  รายได้รวม {income.toFixed(2)} บาท/วัน
                 </Typography>
               </Stack>
             </Box>
@@ -205,13 +221,13 @@ export default function WorkDescrip() {
             <Box>
               <Stack direction={"column"}>
                 <Typography variant="h7" gutterBottom>
-                  วัน:
+                  วัน:{" "}
                   {dayjs(company.workDay)
                     .locale("th")
                     .format("ddd DD MMM YYYY")}
                 </Typography>
                 <Typography variant="h7" gutterBottom>
-                  เวลา:
+                  เวลา:{" "}
                   {dayjs(company.workStartTime).locale("th").format("HH:mm")}-
                   {dayjs(company.workEndTime).locale("th").format("HH:mm")}
                 </Typography>

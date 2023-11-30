@@ -10,7 +10,6 @@ import { InputLabel } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import FormControl from "@mui/material/FormControl";
-import FormHelperText from "@mui/material/FormHelperText";
 
 import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
@@ -21,16 +20,20 @@ import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 
-import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+
+import { Link, useNavigate } from "react-router-dom";
 
 import { profileUser } from "../../../services/user";
 import { currentUser } from "../../../services/auth";
-import { createWork } from "../../../services/company";
+import { createCompany } from "../../../services/company";
 
 export default function CompanyCrate() {
   const [companyName, setcompanyName] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedWorkPosition, setSelectedWorkPosition] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -51,7 +54,15 @@ export default function CompanyCrate() {
       .catch((error) => console.log(error));
   };
 
-  const schema = yup.object().shape({});
+  const schema = yup.object().shape({
+    workStartTime: yup.date().required(),
+    workEndTime: yup.date().required(),
+    workBreakTime: yup.number().positive().required(),
+    dailyWage: yup.number().positive().required(),
+    workScope: yup.string().required(),
+    workWelfare: yup.string().required(),
+    workDress: yup.string().required(),
+  });
 
   const {
     register,
@@ -69,21 +80,24 @@ export default function CompanyCrate() {
       companyId: companyName._id,
       companyName: companyName.companyName,
       workPosition: selectedWorkPosition,
-      workStartTime: data.workStartTime.$d,
-      workEndTime: data.workEndTime.$d,
+      workStartTime: data.workStartTime,
+      workEndTime: data.workEndTime,
       workBreakTime: data.workBreakTime,
       dailyWage: data.dailyWage,
       workScope: data.workScope,
       workWelfare: data.workWelfare,
       workDress: data.workDress,
     };
-    createWork(token, value)
-      .then((res) => {})
+    console.log(value);
+    createCompany(token, value)
+      .then((res) => {
+        toast.success(res.data);
+        navigate("/dashboard-owner/company-announce");
+      })
       .catch((error) => console.log(error));
   };
   return (
     <>
-      <div>cratework</div>
       <Container component="main" maxWidth="xs">
         <Box
           sx={{

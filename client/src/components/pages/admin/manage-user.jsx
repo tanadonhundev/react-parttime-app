@@ -25,7 +25,6 @@ import { useNavigate, Link } from "react-router-dom";
 
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import NotInterestedIcon from "@mui/icons-material/NotInterested";
-import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 
 import toast from "react-hot-toast";
 

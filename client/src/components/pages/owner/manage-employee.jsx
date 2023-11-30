@@ -11,23 +11,8 @@ import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import Switch from "@mui/material/Switch";
-import CircularProgress from "@mui/material/CircularProgress";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Slide from "@mui/material/Slide";
 import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
-import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
-import { Link } from "react-router-dom";
-
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import NotInterestedIcon from "@mui/icons-material/NotInterested";
-import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 
 import dayjs from "dayjs";
 import "dayjs/locale/th";
@@ -42,6 +27,11 @@ export default function ManageEmployee() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState(0);
+  const [countdown, setCountdown] = useState({
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  });
 
   const navigate = useNavigate();
 
@@ -54,6 +44,29 @@ export default function ManageEmployee() {
       })
       .catch((error) => console.log(error));
   }, []);
+
+  const updateCountdown = () => {
+    const currentDate = dayjs();
+    const targetDate = dayjs(uniqueDates[selectedTab]);
+    const diffInSeconds = targetDate.diff(currentDate, "second");
+
+    const hours = Math.floor(diffInSeconds / 3600);
+    const minutes = Math.floor((diffInSeconds % 3600) / 60);
+    const seconds = diffInSeconds % 60;
+
+    setCountdown({
+      hours: hours >= 0 ? hours : 0,
+      minutes: minutes >= 0 ? minutes : 0,
+      seconds: seconds >= 0 ? seconds : 0,
+    });
+  };
+
+  // Update countdown every second
+  useEffect(() => {
+    const intervalId = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(intervalId);
+  }, [selectedTab]);
 
   const loadData = async (token, id) => {
     workDescripList(token, id)
@@ -98,186 +111,216 @@ export default function ManageEmployee() {
 
   uniqueDates.sort((a, b) => (dayjs(a).isBefore(dayjs(b)) ? -1 : 1));
 
+  // ...
+
   return (
     <Container>
-      <Tabs
-        value={selectedTab}
-        variant="scrollable"
-        scrollButtons="auto"
-        onChange={handleTabChange}
-      >
-        {uniqueDates.map((date, index) => (
-          <Tab
-            key={index}
-            label={dayjs(date).locale("th").format("ddd DD MMM")}
-          />
-        ))}
-      </Tabs>
-      {uniqueDates.map((date, index) => (
-        <div key={index}>
-          {index === selectedTab && (
-            <div>
-              {datesWithData
-                .filter((item) => item.workDay === date)
-                .map((item, itemIndex) => (
-                  <div key={itemIndex}>
-                    <br />
-                    <Stack direction={"row"} spacing={2}>
-                      <Typography variant="h6">รายละเอียดจ้างงาน</Typography>
-                      <Typography variant="h6">
-                        {dayjs(date).locale("th").format("ddd DD MMM")}
-                      </Typography>
-                      <Typography variant="h6">
-                        {dayjs(item.workStartTime).locale("th").format("HH:mm")}
-                        -{dayjs(item.workEndTime).locale("th").format("HH:mm")}
-                      </Typography>
-                    </Stack>
-                    <TableContainer component={Paper}>
-                      <Table aria-label="simple table">
-                        <TableHead style={{ backgroundColor: "lightblue" }}>
-                          <TableRow>
-                            <TableCell>ตำแหน่ง</TableCell>
-                            <TableCell style={{ textAlign: "center" }}>
-                              เปิดรับ
-                            </TableCell>
-                            <TableCell style={{ textAlign: "center" }}>
-                              มาสมัคร
-                            </TableCell>
-                            <TableCell style={{ textAlign: "center" }}>
-                              พร้อมเริ่มงาน
-                            </TableCell>
-                          </TableRow>
-                        </TableHead>
-                        <TableBody>
-                          <TableRow key={itemIndex}>
-                            <TableCell>{item.workPosition}</TableCell>
-                            <TableCell style={{ textAlign: "center" }}>
-                              {item.numOfEmployee}
-                            </TableCell>
-                            <TableCell style={{ textAlign: "center" }}>
-                              {item.employees.length}
-                            </TableCell>
-                            <TableCell style={{ textAlign: "center" }}>
-                              {item.numOfReady}
-                            </TableCell>
-                          </TableRow>
-                        </TableBody>
-                      </Table>
-                    </TableContainer>
-                    <br />
-                    คัดเลือกคนเข้าทำงาน
-                    {item.employees.length > 0 ? (
-                      <TableContainer component={Paper}>
-                        <Table>
-                          <TableHead style={{ backgroundColor: "lightblue" }}>
-                            <TableRow>
-                              <TableCell>รูปโปรไฟล์</TableCell>
-                              <TableCell>ชื่อ</TableCell>
-                              <TableCell>นามสกุล</TableCell>
-                              <TableCell>สถานะ</TableCell>
-                              <TableCell style={{ textAlign: "center" }}>
-                                จัดการ
-                              </TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {item.employees.map((employee, employeeIndex) => (
-                              <TableRow key={employeeIndex}>
-                                <TableCell>
-                                  <Avatar
-                                    sx={{ width: 35, height: 35 }}
-                                    alt="Remy Sharp"
-                                    src={
-                                      "http://localhost:5000/uploads/avatar/" +
-                                      employee.employeeAvatar
-                                    }
-                                  />
-                                </TableCell>
-                                <TableCell>
-                                  {employee.employeeFristName}
-                                </TableCell>
-                                <TableCell>
-                                  {employee.employeeLastName}
-                                </TableCell>
-                                <TableCell>
-                                  {employee.employmentStatus}
+      <Typography variant="h6" gutterBottom>
+        จัดการพนักงาน
+      </Typography>
+      {uniqueDates.length === 0 ? (
+        <Typography variant="h5">ไม่มีข้อมูล</Typography>
+      ) : (
+        <>
+          <Tabs
+            value={selectedTab}
+            variant="scrollable"
+            scrollButtons="auto"
+            onChange={handleTabChange}
+          >
+            {uniqueDates.map((date, index) => (
+              <Tab
+                key={index}
+                label={dayjs(date).locale("th").format("ddd DD MMM")}
+              />
+            ))}
+          </Tabs>
+          {uniqueDates.map((date, index) => (
+            <div key={index}>
+              {index === selectedTab && (
+                <div>
+                  {datesWithData
+                    .filter((item) => item.workDay === date)
+                    .map((item, itemIndex) => (
+                      <div key={itemIndex}>
+                        <br />
+                        <Stack direction={"row"} spacing={2}>
+                          <Typography variant="h6">
+                            รายละเอียดจ้างงาน
+                          </Typography>
+                          <Typography variant="h6">
+                            {dayjs(date).locale("th").format("ddd DD MMM")}
+                          </Typography>
+                          <Typography variant="h6">
+                            {dayjs(item.workStartTime)
+                              .locale("th")
+                              .format("HH:mm")}
+                            -
+                            {dayjs(item.workEndTime)
+                              .locale("th")
+                              .format("HH:mm")}
+                          </Typography>
+                        </Stack>
+                        <TableContainer component={Paper}>
+                          <Table aria-label="simple table">
+                            <TableHead style={{ backgroundColor: "lightblue" }}>
+                              <TableRow>
+                                <TableCell>ตำแหน่ง</TableCell>
+                                <TableCell style={{ textAlign: "center" }}>
+                                  เปิดรับ
                                 </TableCell>
                                 <TableCell style={{ textAlign: "center" }}>
-                                  <Stack
-                                    direction={"row"}
-                                    spacing={1}
-                                    justifyContent={"center"}
-                                  >
-                                    <Button
-                                      variant="contained"
-                                      onClick={() =>
-                                        handleConfirm(
-                                          employee.employmentStatus,
-                                          employee.employeeId,
-                                          item.companyId,
-                                          item.workDay
-                                        )
-                                      }
-                                      disabled={
-                                        employee.employmentStatus ===
-                                          "รอยืนยัน" ||
-                                        employee.employmentStatus ===
-                                          "พร้อมเริ่มงาน"
-                                      }
-                                    >
-                                      ยืนยัน
-                                    </Button>
-                                    <Button
-                                      variant="contained"
-                                      color="error"
-                                      onClick={() =>
-                                        handleConfirm(
-                                          employee.employmentStatus,
-                                          employee.employeeId,
-                                          item.companyId,
-                                          item.workDay
-                                        )
-                                      }
-                                      disabled={
-                                        employee.employmentStatus ===
-                                          "ตำแหน่งเต็ม" ||
-                                        employee.employmentStatus ===
-                                          "พร้อมเริ่มงาน"
-                                      }
-                                    >
-                                      ปฎิเสธ
-                                    </Button>
-                                    <Button variant="contained" color="success">
-                                      ดูข้อมูล
-                                    </Button>
-                                  </Stack>
+                                  มาสมัคร
+                                </TableCell>
+                                <TableCell style={{ textAlign: "center" }}>
+                                  พร้อมเริ่มงาน
                                 </TableCell>
                               </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                    ) : (
-                      <TableContainer component={Paper}>
-                        <Table>
-                          <TableHead
-                            style={{ backgroundColor: "lightslategray" }}
-                          >
-                            <TableRow>
-                              <TableCell style={{ textAlign: "center" }}>
-                                <Typography>ยังไม่มีคนมาสมัครงาน</Typography>
-                              </TableCell>
-                            </TableRow>
-                          </TableHead>
-                        </Table>
-                      </TableContainer>
-                    )}
-                  </div>
-                ))}
+                            </TableHead>
+                            <TableBody>
+                              <TableRow key={itemIndex}>
+                                <TableCell>{item.workPosition}</TableCell>
+                                <TableCell style={{ textAlign: "center" }}>
+                                  {item.numOfEmployee}
+                                </TableCell>
+                                <TableCell style={{ textAlign: "center" }}>
+                                  {item.employees.length}
+                                </TableCell>
+                                <TableCell style={{ textAlign: "center" }}>
+                                  {item.numOfReady}
+                                </TableCell>
+                              </TableRow>
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                        <br />
+                        คัดเลือกคนเข้าทำงาน ${countdown.hours}h $
+                        {countdown.minutes}m ${countdown.seconds}s
+                        {item.employees.length > 0 ? (
+                          <TableContainer component={Paper}>
+                            <Table>
+                              <TableHead
+                                style={{ backgroundColor: "lightblue" }}
+                              >
+                                <TableRow>
+                                  <TableCell>รูปโปรไฟล์</TableCell>
+                                  <TableCell>ชื่อ</TableCell>
+                                  <TableCell>นามสกุล</TableCell>
+                                  <TableCell>สถานะ</TableCell>
+                                  <TableCell style={{ textAlign: "center" }}>
+                                    จัดการ
+                                  </TableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {item.employees.map(
+                                  (employee, employeeIndex) => (
+                                    <TableRow key={employeeIndex}>
+                                      <TableCell>
+                                        <Avatar
+                                          sx={{ width: 35, height: 35 }}
+                                          alt="Remy Sharp"
+                                          src={
+                                            "http://localhost:5000/uploads/avatar/" +
+                                            employee.employeeAvatar
+                                          }
+                                        />
+                                      </TableCell>
+                                      <TableCell>
+                                        {employee.employeeFristName}
+                                      </TableCell>
+                                      <TableCell>
+                                        {employee.employeeLastName}
+                                      </TableCell>
+                                      <TableCell>
+                                        {employee.employmentStatus}
+                                      </TableCell>
+                                      <TableCell
+                                        style={{ textAlign: "center" }}
+                                      >
+                                        <Stack
+                                          direction={"row"}
+                                          spacing={1}
+                                          justifyContent={"center"}
+                                        >
+                                          <Button
+                                            variant="contained"
+                                            onClick={() =>
+                                              handleConfirm(
+                                                employee.employmentStatus,
+                                                employee.employeeId,
+                                                item.companyId,
+                                                item.workDay
+                                              )
+                                            }
+                                            disabled={
+                                              employee.employmentStatus ===
+                                                "รอยืนยัน" ||
+                                              employee.employmentStatus ===
+                                                "พร้อมเริ่มงาน"
+                                            }
+                                          >
+                                            ยืนยัน
+                                          </Button>
+                                          <Button
+                                            variant="contained"
+                                            color="error"
+                                            onClick={() =>
+                                              handleConfirm(
+                                                employee.employmentStatus,
+                                                employee.employeeId,
+                                                item.companyId,
+                                                item.workDay
+                                              )
+                                            }
+                                            disabled={
+                                              employee.employmentStatus ===
+                                                "ตำแหน่งเต็ม" ||
+                                              employee.employmentStatus ===
+                                                "พร้อมเริ่มงาน"
+                                            }
+                                          >
+                                            ปฎิเสธ
+                                          </Button>
+                                          <Button
+                                            variant="contained"
+                                            color="success"
+                                          >
+                                            ดูข้อมูล
+                                          </Button>
+                                        </Stack>
+                                      </TableCell>
+                                    </TableRow>
+                                  )
+                                )}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+                        ) : (
+                          <TableContainer component={Paper}>
+                            <Table>
+                              <TableHead
+                                style={{ backgroundColor: "lightslategray" }}
+                              >
+                                <TableRow>
+                                  <TableCell style={{ textAlign: "center" }}>
+                                    <Typography>
+                                      ยังไม่มีคนมาสมัครงาน
+                                    </Typography>
+                                  </TableCell>
+                                </TableRow>
+                              </TableHead>
+                            </Table>
+                          </TableContainer>
+                        )}
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      ))}
+          ))}
+        </>
+      )}
     </Container>
   );
 }

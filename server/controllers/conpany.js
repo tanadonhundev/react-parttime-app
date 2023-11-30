@@ -2,7 +2,6 @@ const Company = require("../models/company");
 
 exports.createCompany = async (req, res) => {
     try {
-        console.log(req.body)
         const { companyId, companyName, workPosition, workDay, workStartTime, workEndTime, workBreakTime, dailyWage, workScope, workWelfare, workDress } = req.body;
 
         const company = new Company({
@@ -19,7 +18,19 @@ exports.createCompany = async (req, res) => {
             workDress
         });
         await company.save();
-        res.send("aaaaaaaaaaaa");
+        res.send("สร้างประกาศจ้างงานสำเร็จ");
+    } catch (error) {
+        console.log(error);
+        res.send("Server Error");
+        throw error;
+    }
+};
+
+exports.deleteCompany = async (req, res) => {
+    try {
+        id = req.body.id
+        await Company.findOneAndDelete({ _id: id });
+        res.send("ลบประกาศจ้างงานสำเร็จ");
     } catch (error) {
         console.log(error);
         res.send("Server Error");

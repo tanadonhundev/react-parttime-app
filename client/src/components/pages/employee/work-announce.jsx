@@ -134,7 +134,9 @@ export default function WorkAnnounce() {
   return (
     <>
       <Box component="form" noValidate>
-        <p>Owner-home</p>
+        <Typography variant="h6" gutterBottom>
+          ประกาศจ้างงาน
+        </Typography>
         <FormGroup>
           <Stack direction={"row"} spacing={1}>
             {Object.keys(workPositionChecked).map((position) => (

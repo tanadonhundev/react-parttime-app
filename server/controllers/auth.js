@@ -10,7 +10,7 @@ exports.registerUser = async (req, res) => {
         var user = await User.findOne({ email });
 
         if (user) {
-            return res.send("มีผู้ใช้งานในระบบแล้ว");
+            return res.status(200).send("มีผู้ใช้งานในระบบแล้ว");
         }
 
         //Encrypt
@@ -27,10 +27,10 @@ exports.registerUser = async (req, res) => {
         user.password = await bcrypt.hash(password, salt);
         //Save in Database
         await user.save();
-        res.send("สมัครสมาชิกสำเร็จแล้ว");
+        res.status(200).send("สมัครสมาชิกสำเร็จแล้ว");
     } catch (error) {
         console.log(error);
-        res.send("Server Error");
+        res.status(500).send("Server Error");
         throw error;
     }
 };
@@ -44,7 +44,7 @@ exports.loginUser = async (req, res) => {
         if (user) {
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
-                return res.send("รหัสผ่านไม่ถูกต้อง");
+                return res.status(200).send("รหัสผ่านไม่ถูกต้อง");
             } else {
                 //Payload
                 var payload = {
@@ -60,11 +60,11 @@ exports.loginUser = async (req, res) => {
                     res.json({ token, payload })
                 });
             }
-        } else return res.send("อีเมลไม่ถูกต้อง");
-        
+        } else return res.status(200).send("อีเมลไม่ถูกต้อง");
+
     } catch (error) {
         console.log(error);
-        res.send("Server Error");
+        res.status(500).send("Server Error");
     };
 };
 
@@ -74,10 +74,10 @@ exports.currenUser = async (req, res) => {
         const user = await User.findOne({ email: req.user.email })
             .select('-password -idCard')
             .exec()
-        res.send(user)
+        res.status(200).send(user)
 
     } catch (error) {
         console.log(error);
-        res.send("Server Error");
+        res.status(500).send("Server Error");
     }
 };

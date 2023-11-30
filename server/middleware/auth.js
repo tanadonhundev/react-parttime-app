@@ -11,6 +11,6 @@ exports.auth = async (req, res, next) => {
         next();
     } catch (error) {
         console.log(error);
-        res.send("Token invald!!!")
+        res.status(500).send("Token invald!!!")
     }
 }

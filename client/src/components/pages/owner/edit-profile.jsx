@@ -283,12 +283,6 @@ export default function EditProfile() {
                       </GoogleMap>
                     </CardContent>
                   </Card>
-                  {data && (
-                    <div>
-                      <p>Latitude: {data.lat}</p>
-                      <p>Longitude: {data.lng}</p>
-                    </div>
-                  )}
                 </Grid>
                 <Grid item xs={12}>
                   <InputLabel>รูปประจำตัว</InputLabel>
