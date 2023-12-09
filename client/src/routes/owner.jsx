@@ -6,6 +6,7 @@ import CompanyAnnounce from "../components/pages/owner/company-announce";
 import CompanyCreate from "../components/pages/owner/company-create";
 import CompanyDescrip from "../components/pages/owner/company-descrip";
 import ManageEmployee from "../components/pages/owner/manage-employee";
+import ReviewEmployee from "../components/pages/owner/review-employee";
 
 //layout
 import { DLayout } from "../components/layouts/dashboard/d-layout";
@@ -42,6 +43,10 @@ const routeDashboardOwner = [
       {
         path: "manage-employee", // localhost:4000/dashboard-owner/manage-employee
         element: <ManageEmployee />,
+      },
+      {
+        path: "review-employee", // localhost:4000/dashboard-owner/review-employee
+        element: <ReviewEmployee />,
       },
     ],
   },

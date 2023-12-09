@@ -2,12 +2,20 @@ const mongoose = require("mongoose");
 
 const employeeSchema = new mongoose.Schema({
   employeeId: String,
-  employeeFristName: String,
+  employeeFirstName: String,
   employeeLastName: String,
   employeeAvatar: String,
   employmentStatus: {
     type: String,
     default: 'รอคัดเลือก'
+  },
+  employmentStatusRe: {
+    type: String,
+    default: 'รอรีวิว'
+  },
+  ownermentStatusRe: {
+    type: String,
+    default: 'รอรีวิว'
   }
 });
 

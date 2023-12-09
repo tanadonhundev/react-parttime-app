@@ -86,7 +86,7 @@ exports.applyWork = async (req, res) => {
                 if (!employee) {
                     work.employees.push({
                         employeeId: req.body.employee._id,
-                        employeeFristName: req.body.employee.firstName,
+                        employeeFirstName: req.body.employee.firstName,
                         employeeLastName: req.body.employee.lastName,
                         employeeAvatar: req.body.employee.avatarphoto
                     });
@@ -158,7 +158,7 @@ exports.ChangeEmploymentStatus = async (req, res) => {
         // Save the changes to the database
         await work.save();
 
-        res.status(200).send('Employment status updated successfully');
+        res.status(200).send('สถานะพนักงานถูกอัพเดท');
     } catch (error) {
         console.error(error);
         res.status(500).send('Server Error');

@@ -5,9 +5,10 @@ import EditProfile from "../components/pages/employee/edit-profile";
 import WorkAnnounce from "../components/pages/employee/work-announce";
 import WorkDescrip from "../components/pages/employee/work-descrip";
 import WorkApply from "../components/pages/employee/work-apply";
-
+import ReviewOwner from "../components/pages/employee/review-owner";
 //layout
 import { DLayout } from "../components/layouts/dashboard/d-layout";
+
 
 const routeDashboardEmployee = [
   {
@@ -37,6 +38,10 @@ const routeDashboardEmployee = [
       {
         path: "work-apply", // localhost:4000/dashboard-employee/work-apply
         element: <WorkApply />,
+      },
+      {
+        path: "review-owner", // localhost:4000/dashboard-employee/review-owner
+        element: <ReviewOwner />,
       },
     ],
   },

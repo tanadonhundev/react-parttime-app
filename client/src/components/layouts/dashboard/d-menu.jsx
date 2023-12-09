@@ -7,6 +7,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import WorkIcon from "@mui/icons-material/Work";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import ReviewsIcon from "@mui/icons-material/Reviews";
 
 import { NavLink, useLocation } from "react-router-dom";
 import { currentUser } from "../../../services/auth";
@@ -51,6 +52,11 @@ export const DMenu = () => {
       icon: <ManageAccountsIcon />,
       href: "/dashboard-owner/manage-employee",
     },
+    {
+      label: "รีวิวพนักงาน",
+      icon: <ReviewsIcon />,
+      href: "/dashboard-owner/review-employee",
+    },
   ];
 
   const employeeMenu = [
@@ -69,6 +75,11 @@ export const DMenu = () => {
       label: "งานที่สมัคร",
       icon: <ManageAccountsIcon />,
       href: "/dashboard-employee/work-apply",
+    },
+    {
+      label: "รีวิวนายจ้าง",
+      icon: <ReviewsIcon />,
+      href: "/dashboard-employee/review-owner",
     },
   ];
 

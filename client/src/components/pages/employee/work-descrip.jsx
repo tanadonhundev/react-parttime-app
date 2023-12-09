@@ -304,7 +304,7 @@ export default function WorkDescrip() {
           }}
         >
           <Stack alignItems={"flex-end"}>
-            <Button variant="contained" onClick={onSubmit}>
+            <Button variant="contained" color="success" onClick={onSubmit}>
               สมัครงาน
             </Button>
           </Stack>

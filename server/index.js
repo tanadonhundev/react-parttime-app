@@ -8,6 +8,7 @@ const auth = require("./routes/auth");
 const user = require("./routes/user");
 const company = require("./routes/company");
 const work = require("./routes/work");
+const review = require("./routes/review")
 
 connectDB();
 
@@ -22,6 +23,7 @@ app.use("/", auth);
 app.use("/", user);
 app.use("/", company);
 app.use("/", work);
+app.use("/", review);
 
 // connection
 const port = process.env.PORT || 5000;

@@ -12,6 +12,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
+import CircularProgress from "@mui/material/CircularProgress";
 import ContentPasteSearchIcon from "@mui/icons-material/ContentPasteSearch";
 import BadgeIcon from "@mui/icons-material/Badge";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -101,101 +102,109 @@ export default function CompanyAnnounce() {
       <Typography variant="h6" gutterBottom>
         ประกาศจ้างงาน
       </Typography>
-      <Button
-        component={Link}
-        to={`/dashboard-owner/company-create/${companyId}`}
-        variant="contained"
-        color="primary"
-        startIcon={<AddIcon />}
-      >
-        สร้างงาน
-      </Button>
       {loading ? (
-        <p>Loading...</p>
+        <Stack alignItems={"center"}>
+          <CircularProgress />
+        </Stack>
       ) : data.length === 0 ? (
         <p>ยังไม่มีประกาศจ้างงาน</p>
       ) : (
-        <Stack
-          direction={"column"}
-          spacing={{ xl: 1, sm: 2, md: 4 }}
-          justifyContent="center"
-        >
-          <Grid container spacing={2}>
-            {data.map((item) => (
-              <Grid key={item._id} item lg={3} sm={5} xs={12}>
-                <Card sx={{ maxWidth: 350 }}>
-                  <CardActionArea>
-                    <CardMedia
-                      component="img"
-                      height="140"
-                      src={"http://localhost:5000/uploads/company/" + image}
-                      alt="Company Image"
-                    />
-                    <CardContent>
-                      <Stack direction={"column"} spacing={1}>
-                        <Stack
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems="flex-start"
-                        >
-                          <Typography gutterBottom variant="h5" component="div">
-                            {item.companyName}
-                          </Typography>
-                          <Chip
-                            icon={<BadgeIcon />}
-                            label={item.workPosition}
-                            color="info"
-                            variant="outlined"
-                          />
-                        </Stack>
-                        <Stack direction={"row"}>
-                          <AccessTimeIcon />
-                          <Typography variant="body1">
-                            {dayjs(item.workStartTime)
-                              .locale("th")
-                              .format("HH:mm")}
-                          </Typography>
-                          <Typography variant="body1">-</Typography>
-                          <Typography variant="body1">
-                            {dayjs(item.workEndTime)
-                              .locale("th")
-                              .format("HH:mm")}
-                            น.
-                          </Typography>
-                        </Stack>
-                        <Stack direction={"row"}>
-                          <LocalAtmIcon />
-                          <Typography variant="body1">
-                            {item.dailyWage}บาท/ชั่วโมง
-                          </Typography>
-                        </Stack>
-                        <Stack direction={"row"} spacing={1}>
-                          <Button
-                            component={Link}
-                            to={`/dashboard-owner/company-descrip/${item._id}`}
-                            variant="contained"
-                            color="success"
-                            startIcon={<ContentPasteSearchIcon />}
+        <>
+          <Button
+            component={Link}
+            to={`/dashboard-owner/company-create/${companyId}`}
+            variant="contained"
+            color="primary"
+            startIcon={<AddIcon />}
+          >
+            สร้างงาน
+          </Button>
+          <Stack
+            direction={"column"}
+            spacing={{ xl: 1, sm: 2, md: 4 }}
+            justifyContent="center"
+          >
+            <Grid container spacing={2}>
+              {data.map((item) => (
+                <Grid key={item._id} item lg={3} sm={5} xs={12}>
+                  <Card sx={{ maxWidth: 350 }}>
+                    <CardActionArea>
+                      <CardMedia
+                        component="img"
+                        height="140"
+                        src={"http://localhost:5000/uploads/company/" + image}
+                        alt="Company Image"
+                      />
+                      <CardContent>
+                        <Stack direction={"column"} spacing={1}>
+                          <Stack
+                            direction="row"
+                            justifyContent="space-between"
+                            alignItems="flex-start"
                           >
-                            ประกาศจ้าง
-                          </Button>
-                          <Button
-                            variant="contained"
-                            color="error"
-                            onClick={() => handleClickOpen(item)}
-                            startIcon={<DeleteForeverIcon />}
-                          >
-                            ลบ
-                          </Button>
+                            <Typography
+                              gutterBottom
+                              variant="h5"
+                              component="div"
+                            >
+                              {item.companyName}
+                            </Typography>
+                            <Chip
+                              icon={<BadgeIcon />}
+                              label={item.workPosition}
+                              color="info"
+                              variant="outlined"
+                            />
+                          </Stack>
+                          <Stack direction={"row"}>
+                            <AccessTimeIcon />
+                            <Typography variant="body1">
+                              {dayjs(item.workStartTime)
+                                .locale("th")
+                                .format("HH:mm")}
+                            </Typography>
+                            <Typography variant="body1">-</Typography>
+                            <Typography variant="body1">
+                              {dayjs(item.workEndTime)
+                                .locale("th")
+                                .format("HH:mm")}
+                              น.
+                            </Typography>
+                          </Stack>
+                          <Stack direction={"row"}>
+                            <LocalAtmIcon />
+                            <Typography variant="body1">
+                              {item.dailyWage}บาท/ชั่วโมง
+                            </Typography>
+                          </Stack>
+                          <Stack direction={"row"} spacing={1}>
+                            <Button
+                              component={Link}
+                              to={`/dashboard-owner/company-descrip/${item._id}`}
+                              variant="contained"
+                              color="success"
+                              startIcon={<ContentPasteSearchIcon />}
+                            >
+                              ประกาศจ้าง
+                            </Button>
+                            <Button
+                              variant="contained"
+                              color="error"
+                              onClick={() => handleClickOpen(item)}
+                              startIcon={<DeleteForeverIcon />}
+                            >
+                              ลบ
+                            </Button>
+                          </Stack>
                         </Stack>
-                      </Stack>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Stack>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Stack>
+        </>
       )}
       <div>
         <Dialog

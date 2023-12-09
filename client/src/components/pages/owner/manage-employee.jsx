@@ -13,6 +13,7 @@ import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import dayjs from "dayjs";
 import "dayjs/locale/th";
@@ -22,6 +23,7 @@ import { currentUser } from "../../../services/auth";
 import { ChangeEmploymentStatus } from "../../../services/work";
 
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function ManageEmployee() {
   const [data, setData] = useState([]);
@@ -92,8 +94,8 @@ export default function ManageEmployee() {
     console.log(values);
     ChangeEmploymentStatus(token, values)
       .then((res) => {
-        console.log(res.data);
         loadData(token, companyId);
+        toast.success(res.data);
       })
       .catch((error) => console.log(error));
   };
@@ -111,14 +113,18 @@ export default function ManageEmployee() {
 
   uniqueDates.sort((a, b) => (dayjs(a).isBefore(dayjs(b)) ? -1 : 1));
 
-  // ...
-
   return (
-    <Container>
+    <>
       <Typography variant="h6" gutterBottom>
         จัดการพนักงาน
       </Typography>
-      {uniqueDates.length === 0 ? (
+      {loading ? (
+        <Stack alignItems={"center"}>
+          <CircularProgress />
+        </Stack>
+      ) : data.length === 0 ? (
+        <p>ยังไม่มีประกาศจ้างงาน</p>
+      ) : uniqueDates.length === 0 ? (
         <Typography variant="h5">ไม่มีข้อมูล</Typography>
       ) : (
         <>
@@ -194,8 +200,8 @@ export default function ManageEmployee() {
                           </Table>
                         </TableContainer>
                         <br />
-                        คัดเลือกคนเข้าทำงาน ${countdown.hours}h $
-                        {countdown.minutes}m ${countdown.seconds}s
+                        คัดเลือกคนเข้าทำงาน {countdown.hours}h{" "}
+                        {countdown.minutes}m {countdown.seconds}s
                         {item.employees.length > 0 ? (
                           <TableContainer component={Paper}>
                             <Table>
@@ -227,7 +233,7 @@ export default function ManageEmployee() {
                                         />
                                       </TableCell>
                                       <TableCell>
-                                        {employee.employeeFristName}
+                                        {employee.employeeFirstName}
                                       </TableCell>
                                       <TableCell>
                                         {employee.employeeLastName}
@@ -321,6 +327,6 @@ export default function ManageEmployee() {
           ))}
         </>
       )}
-    </Container>
+    </>
   );
 }

@@ -14,6 +14,7 @@ import Chip from "@mui/material/Chip";
 import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
+import CircularProgress from "@mui/material/CircularProgress";
 import BadgeIcon from "@mui/icons-material/Badge";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
@@ -41,6 +42,7 @@ export default function WorkAnnounce() {
   });
   const [companyId, setCompanyId] = useState([]);
   const [image, setImage] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -57,15 +59,16 @@ export default function WorkAnnounce() {
   const loadData = async (token) => {
     workList(token)
       .then((res) => {
-        const companyIdArray = res.data.map((item) => item.companyId);
-
-        // Remove duplicates using a Set
-        const uniqueCompanyIdArray = Array.from(new Set(companyIdArray));
-
+        const filteredData = res.data.filter((item) =>
+          dayjs(item.workDay).isAfter(dayjs().subtract(1, "day"))
+        );
+        const uniqueCompanyIdArray = Array.from(
+          new Set(filteredData.map((item) => item.companyId))
+        );
         setCompanyId(uniqueCompanyIdArray);
-        setData(res.data);
-
-        setWork(res.data);
+        setData(filteredData);
+        setWork(filteredData);
+        setLoading(false);
       })
       .catch((error) => console.log(error));
   };
@@ -125,7 +128,7 @@ export default function WorkAnnounce() {
     .filter((date) =>
       dayjs(date).isAfter(currentDate.subtract(1, "day"), "day")
     );
-
+    
   const uniqueDates = Array.from(new Set(datesWithData));
 
   // Sort uniqueDates in ascending order
@@ -170,73 +173,81 @@ export default function WorkAnnounce() {
         </Tabs>
       </Box>
       <Stack spacing={{ xl: 1, sm: 2, md: 4 }} justifyContent="center">
-        <Grid container spacing={2}>
-          {work.map((item) => (
-            <Grid key={item._id} item lg={3} sm={6} xs={12}>
-              <Card sx={{ maxWidth: 350 }}>
-                <CardActionArea>
-                  <CardMedia
-                    component="img"
-                    height="140"
-                    src={`http://localhost:5000/uploads/company/${
-                      image[item.companyId]
-                    }`}
-                    alt="Company Image"
-                  />
-                  <CardContent>
-                    <Stack direction={"column"} spacing={1}>
-                      <Stack
-                        direction="row"
-                        justifyContent="space-between"
-                        alignItems="flex-start"
-                      >
-                        <Typography gutterBottom variant="h5" component="div">
-                          {item.companyName}
-                        </Typography>
-                        <Chip
-                          icon={<BadgeIcon />}
-                          label={item.workPosition}
-                          color="info"
-                          variant="outlined"
-                        />
-                      </Stack>
-                      <Stack direction={"row"}>
-                        <AccessTimeIcon />
-                        <Typography variant="body1">
-                          {dayjs(item.workStartTime)
-                            .locale("th")
-                            .format("HH:mm")}
-                        </Typography>
-                        <Typography variant="body1">-</Typography>
-                        <Typography variant="body1">
-                          {dayjs(item.workEndTime).locale("th").format("HH:mm")}
-                          น.
-                        </Typography>
-                      </Stack>
-                      <Stack direction={"row"}>
-                        <LocalAtmIcon />
-                        <Typography variant="body1">
-                          {item.dailyWage}บาท/ชั่วโมง
-                        </Typography>
-                      </Stack>
-                      <Stack direction={"row"} justifyContent={"flex-end"}>
-                        <Button
-                          component={Link}
-                          to={`/dashboard-employee/work-descrip/${item._id}`}
-                          variant="contained"
-                          color="success"
-                          startIcon={<HowToRegIcon />}
+        {loading ? (
+          <Stack alignItems={"center"}>
+            <CircularProgress />
+          </Stack>
+        ) : (
+          <Grid container spacing={2}>
+            {work.map((item) => (
+              <Grid key={item._id} item lg={3} sm={6} xs={12}>
+                <Card sx={{ maxWidth: 350 }}>
+                  <CardActionArea>
+                    <CardMedia
+                      component="img"
+                      height="140"
+                      src={`http://localhost:5000/uploads/company/${
+                        image[item.companyId]
+                      }`}
+                      alt="Company Image"
+                    />
+                    <CardContent>
+                      <Stack direction={"column"} spacing={1}>
+                        <Stack
+                          direction="row"
+                          justifyContent="space-between"
+                          alignItems="flex-start"
                         >
-                          สมัครงาน
-                        </Button>
+                          <Typography gutterBottom variant="h5" component="div">
+                            {item.companyName}
+                          </Typography>
+                          <Chip
+                            icon={<BadgeIcon />}
+                            label={item.workPosition}
+                            color="info"
+                            variant="outlined"
+                          />
+                        </Stack>
+                        <Stack direction={"row"}>
+                          <AccessTimeIcon />
+                          <Typography variant="body1">
+                            {dayjs(item.workStartTime)
+                              .locale("th")
+                              .format("HH:mm")}
+                          </Typography>
+                          <Typography variant="body1">-</Typography>
+                          <Typography variant="body1">
+                            {dayjs(item.workEndTime)
+                              .locale("th")
+                              .format("HH:mm")}
+                            น.
+                          </Typography>
+                        </Stack>
+                        <Stack direction={"row"}>
+                          <LocalAtmIcon />
+                          <Typography variant="body1">
+                            {item.dailyWage}บาท/ชั่วโมง
+                          </Typography>
+                        </Stack>
+                        <Stack direction={"row"} justifyContent={"flex-end"}>
+                          <Button
+                            component={Link}
+                            to={`/dashboard-employee/work-descrip/${item._id}`}
+                            variant="contained"
+                            color="success"
+                            startIcon={<HowToRegIcon />}
+                          >
+                            สมัครงาน
+                          </Button>
+                        </Stack>
                       </Stack>
-                    </Stack>
-                  </CardContent>
-                </CardActionArea>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+                    </CardContent>
+                  </CardActionArea>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        )}
       </Stack>
     </>
   );
