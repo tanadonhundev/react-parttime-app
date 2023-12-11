@@ -122,7 +122,6 @@ exports.applyWork = async (req, res) => {
     }
 };
 
-
 exports.applyList = async (req, res) => {
     try {
         const id = req.params.id;
@@ -150,6 +149,7 @@ exports.ChangeEmploymentStatus = async (req, res) => {
         const companyId = req.body.companyId;
         const employeeId = req.body.employeeId;
         const status = req.body.status;
+        //const action = req.body.action;
 
         // Find the work record based on companyId and workDay
         const work = await Work.findOne({ companyId: companyId, workDay: workDay });
@@ -163,8 +163,10 @@ exports.ChangeEmploymentStatus = async (req, res) => {
         if (!employee) {
             return res.status(404).json({ msg: 'Employee not found' });
         }
-        // Check if the status is 'รอคัดเลือก' and update it to 'รอยืนยัน'
-        if (status === 'รอคัดเลือก' || status === "ตำแหน่งเต็ม") {
+
+        if (status === '') {
+            employee.employmentStatus = 'ตำแหน่งเต็ม';
+        } else if (status === 'รอคัดเลือก' || status === 'ตำแหน่งเต็ม') {
             employee.employmentStatus = 'รอยืนยัน';
         } else if (status === 'รอยืนยัน') {
             employee.employmentStatus = 'ตำแหน่งเต็ม';
@@ -181,6 +183,7 @@ exports.ChangeEmploymentStatus = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
 
 exports.CancelWork = async (req, res) => {
     try {
