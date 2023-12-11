@@ -78,33 +78,50 @@ exports.workDescripList = async (req, res) => {
 exports.applyWork = async (req, res) => {
     try {
         const work = await Work.findOne({ _id: req.body.company._id }).exec();
-        if (work.employees.length >= req.body.company.numOfEmployee) {
-            res.status(200).send("พนักงานเต็มแล้ว")
-        } else {
-            if (work) {
-                const employee = work.employees.find(e => e.employeeId === req.body.employee._id);
-                if (!employee) {
-                    work.employees.push({
-                        employeeId: req.body.employee._id,
-                        employeeFirstName: req.body.employee.firstName,
-                        employeeLastName: req.body.employee.lastName,
-                        employeeAvatar: req.body.employee.avatarphoto
-                    });
-                    await work.save();
-                    res.status(200).send("สมัครงานสำเร็จ")
-                } else {
-                    res.status(200).send("สมัครงานนี้ไปแล้ว")
-                }
-            } else {
-                //console.log("Work document not found for companyId: " + id);
-                res.status(404).send("Work document not found");
-            }
+        if (!work) {
+            return res.status(404).send("Work document not found");
         }
+
+        // Check if the maximum number of employees has been reached
+        if (work.employees.length >= req.body.company.numOfEmployee) {
+            return res.status(200).send("พนักงานเต็มแล้ว");
+        }
+
+        // Check if the employee has already applied for this job
+        const employee = work.employees.find(e => e.employeeId === req.body.employee._id);
+        if (employee) {
+            return res.status(200).send("สมัครงานนี้ไปแล้ว");
+        }
+
+        // Check for other jobs with employmentStatus==="พร้อมเริ่มงาน" on the same day
+        const otherJobsOnSameDay = await Work.find({
+            _id: { $ne: req.body.company._id }, // Exclude the current job
+            workDay: work.workDay, // Assuming workDay is the field representing the day
+            "employees.employmentStatus": "พร้อมเริ่มงาน"
+        }).exec();
+
+        if (otherJobsOnSameDay.length > 0) {
+            return res.status(200).send("มีงานในวันนี้แล้ว");
+        }
+
+        // Add the employee to the current job
+        work.employees.push({
+            employeeId: req.body.employee._id,
+            employeeFirstName: req.body.employee.firstName,
+            employeeLastName: req.body.employee.lastName,
+            employeeAvatar: req.body.employee.avatarphoto,
+        });
+
+        // Save the updated work document
+        await work.save();
+
+        res.status(200).send("สมัครงานสำเร็จ");
     } catch (error) {
-        console.log(error);
+        console.error(error);
         res.status(500).send('Server Error');
     }
-}
+};
+
 
 exports.applyList = async (req, res) => {
     try {

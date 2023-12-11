@@ -102,6 +102,15 @@ export default function CompanyAnnounce() {
       <Typography variant="h6" gutterBottom>
         ประกาศจ้างงาน
       </Typography>
+      <Button
+        component={Link}
+        to={`/dashboard-owner/company-create/${companyId}`}
+        variant="contained"
+        color="primary"
+        startIcon={<AddIcon />}
+      >
+        สร้างงาน
+      </Button>
       {loading ? (
         <Stack alignItems={"center"}>
           <CircularProgress />
@@ -110,15 +119,6 @@ export default function CompanyAnnounce() {
         <p>ยังไม่มีประกาศจ้างงาน</p>
       ) : (
         <>
-          <Button
-            component={Link}
-            to={`/dashboard-owner/company-create/${companyId}`}
-            variant="contained"
-            color="primary"
-            startIcon={<AddIcon />}
-          >
-            สร้างงาน
-          </Button>
           <Stack
             direction={"column"}
             spacing={{ xl: 1, sm: 2, md: 4 }}

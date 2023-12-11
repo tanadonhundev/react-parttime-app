@@ -15,3 +15,11 @@ export const reviewOwner = async (authtoken, data) => {
         }
     });
 }
+
+export const getReviewEmployee = async (authtoken, id) => {
+    return await axios.get("http://localhost:5000/reviewemployee/" + id, {
+        headers: {
+            authtoken,
+        },
+    });
+};

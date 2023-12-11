@@ -15,10 +15,12 @@ import "dayjs/locale/th";
 
 import { currentUser } from "../../../services/auth";
 import { profileUser } from "../../../services/user";
+import { getReviewEmployee } from "../../../services/review";
 import { Divider } from "@mui/material";
 
 export default function ProfilePage() {
   const [data, setData] = useState([]);
+  const [review, setReview] = useState([]);
   const [avatarImage, setAvatarImage] = useState();
   const [idcardImage, setIdcardImage] = useState();
   const [loading, setLoading] = useState(true);
@@ -29,6 +31,7 @@ export default function ProfilePage() {
       .then((res) => {
         const id = res.data._id;
         loadData(token, id);
+        loadReview(token, id);
       })
       .catch((error) => console.log(error));
   }, []);
@@ -40,6 +43,14 @@ export default function ProfilePage() {
         setAvatarImage(res.data.avatarphoto);
         setIdcardImage(res.data.idcardphoto);
         setLoading(false);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const loadReview = async (token, id) => {
+    getReviewEmployee(token, id)
+      .then((res) => {
+        setReview(res.data);
       })
       .catch((error) => console.log(error));
   };
@@ -112,6 +123,51 @@ export default function ProfilePage() {
                   แก้ไขข้อมูลส่วนตัว
                 </Button>
               </Stack>
+            </Paper>
+            <Paper
+              style={{
+                padding: 16,
+                marginBottom: 16,
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                borderRadius: 8,
+                background: "#fff",
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
+                รีวิว
+              </Typography>
+              {review.length === 0 ? (
+                <Typography variant="body1">ไม่มีรีวิว</Typography>
+              ) : (
+                review.map((reviewItem, index) => (
+                  <div key={index}>
+                    <Divider sx={{ margin: "8px 0" }} />
+                    <Stack>
+                      <Typography variant="subtitle1">
+                        {reviewItem.companyName}
+                      </Typography>
+                      <Typography variant="subtitle1">
+                        {dayjs(reviewItem.workDay)
+                          .locale("th")
+                          .format("ddd DD MMM")}
+                      </Typography>
+                      <Typography variant="subtitle1">
+                        วัน-เวลาที่รีวิว:{" "}
+                        {dayjs(reviewItem.createdAt)
+                          .locale("th")
+                          .format("ddd DD MMM HH:mm:ss")}
+                      </Typography>
+                      <Typography variant="body1">
+                        คะแนน: {reviewItem.employeeRating}
+                      </Typography>
+                      <Typography variant="body1">
+                        ข้อความ: {reviewItem.employeeReviewText}
+                      </Typography>
+                      <Divider sx={{ margin: "8px 0" }} />
+                    </Stack>
+                  </div>
+                ))
+              )}
             </Paper>
           </Box>
         ) : (

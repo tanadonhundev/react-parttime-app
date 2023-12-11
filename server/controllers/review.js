@@ -4,13 +4,16 @@ const Work = require("../models/work");
 
 exports.reviewEmployee = async (req, res) => {
     try {
-        const { companyId, workDay, employeeId, employeeRating, employeeReviewText, status } = req.body;
+        const { companyId, companyName, workDay, employeeId, employeeRating, employeeReviewText, status } = req.body;
+
         const review = new ReviewEmployee({
             employeeId,
+            companyName,
+            workDay,
             employeeRating,
             employeeReviewText
         })
-        console.log(req.body)
+
         const work = await Work.findOne({ companyId: companyId, workDay: workDay });
         if (!work) {
             return res.status(404).json({ msg: 'Work record not found' });
@@ -36,14 +39,21 @@ exports.reviewEmployee = async (req, res) => {
     }
 };
 
+
+
 exports.reviewOwner = async (req, res) => {
     try {
-        const { companyId, workDay, employeeId, employeeRating, employeeReviewText, status } = req.body;
+        const { companyId, workDay, employeeId, employeeFirstName, employeeLastName, employeeRating, employeeReviewText, status } = req.body;
+        console.log(req.body)
         const review = new ReviewOwner({
             employeeId,
+            employeeFirstName,
+            employeeLastName,
+            workDay,
             employeeRating,
             employeeReviewText
         })
+
         const work = await Work.findOne({ companyId: companyId, workDay: workDay });
         if (!work) {
             return res.status(404).json({ msg: 'Work record not found' });
@@ -62,6 +72,29 @@ exports.reviewOwner = async (req, res) => {
         await work.save();
         await review.save();
         res.send("รีวิวนายจ้างสำเร็จ");
+    } catch (error) {
+        console.log(error);
+        res.send("Server Error");
+        throw error;
+    }
+};
+
+exports.getReviewEmployee = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const review = await ReviewEmployee.find({ employeeId: id })
+        res.status(200).send(review);
+    } catch (error) {
+        console.log(error);
+        res.send("Server Error");
+        throw error;
+    }
+};
+exports.getReviewEmployee = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const review = await ReviewEmployee.find({ employeeId: id })
+        res.status(200).send(review);
     } catch (error) {
         console.log(error);
         res.send("Server Error");
