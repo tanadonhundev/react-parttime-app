@@ -174,8 +174,7 @@ export default function ReviewOwner() {
       const values = {
         companyId: ownerToReview.companyId,
         workDay: ownerToReview.workDay,
-        employeeId: ownerToReview.employees[0].employeeId,
-        status: ownerToReview.employees[0].ownermentStatusRe,
+        employeeId: employeeId,
         employeeRating: value,
         employeeReviewText: reviewText,
       };
@@ -367,6 +366,7 @@ export default function ReviewOwner() {
                     </span>
                     <Stack direction={"row"} spacing={2}>
                       <span>ชื่อ: {ownerToReview.companyName}</span>
+                      <span>ชื่อ: {ownerToReview.ownermentStatusRe}</span>
                     </Stack>
                     <br />
                     <Box

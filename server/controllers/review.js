@@ -4,7 +4,7 @@ const Work = require("../models/work");
 
 exports.reviewEmployee = async (req, res) => {
     try {
-        const { companyId, companyName, workDay, employeeId, employeeRating, employeeReviewText, status } = req.body;
+        const { companyId, companyName, workDay, employeeId, employeeRating, employeeReviewText } = req.body;
 
         const review = new ReviewEmployee({
             employeeId,
@@ -24,10 +24,9 @@ exports.reviewEmployee = async (req, res) => {
         if (!employee) {
             return res.status(404).json({ msg: 'Employee not found' });
         }
-        // Check if the status is 'รอคัดเลือก' and update it to 'รอยืนยัน'
-        if (status === 'รอรีวิว') {
-            employee.employmentStatusRe = 'รีวิวแล้ว';
-        }
+
+        employee.employmentStatusRe = 'รีวิวแล้ว';
+
         // Save the changes to the database
         await work.save();
         await review.save();
@@ -43,8 +42,8 @@ exports.reviewEmployee = async (req, res) => {
 
 exports.reviewOwner = async (req, res) => {
     try {
-        const { companyId, workDay, employeeId, employeeFirstName, employeeLastName, employeeRating, employeeReviewText, status } = req.body;
-        console.log(req.body)
+        const { companyId, workDay, employeeId, employeeFirstName, employeeLastName, employeeRating, employeeReviewText } = req.body;
+
         const review = new ReviewOwner({
             employeeId,
             employeeFirstName,
@@ -61,13 +60,14 @@ exports.reviewOwner = async (req, res) => {
         // Find the employee within the work record based on employeeId
         const employee = work.employees.find(emp => emp.employeeId === employeeId);
 
+        console.log(employee)
+
         if (!employee) {
             return res.status(404).json({ msg: 'Employee not found' });
         }
-        // Check if the status is 'รอคัดเลือก' and update it to 'รอยืนยัน'
-        if (status === 'รอรีวิว') {
-            employee.ownermentStatusRe = 'รีวิวแล้ว';
-        }
+
+        employee.ownermentStatusRe = 'รีวิวแล้ว';
+
         // Save the changes to the database
         await work.save();
         await review.save();

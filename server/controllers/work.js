@@ -83,7 +83,7 @@ exports.applyWork = async (req, res) => {
         }
 
         // Check if the maximum number of employees has been reached
-        if (work.employees.length >= req.body.company.numOfEmployee) {
+        if (work.numOfReady >= req.body.company.numOfEmployee) {
             return res.status(200).send("พนักงานเต็มแล้ว");
         }
 
@@ -149,7 +149,7 @@ exports.ChangeEmploymentStatus = async (req, res) => {
         const companyId = req.body.companyId;
         const employeeId = req.body.employeeId;
         const status = req.body.status;
-        //const action = req.body.action;
+        const action = req.body.action;
 
         // Find the work record based on companyId and workDay
         const work = await Work.findOne({ companyId: companyId, workDay: workDay });
@@ -164,7 +164,7 @@ exports.ChangeEmploymentStatus = async (req, res) => {
             return res.status(404).json({ msg: 'Employee not found' });
         }
 
-        if (status === '') {
+        if (action === 1 && status === 'รอคัดเลือก') {
             employee.employmentStatus = 'ตำแหน่งเต็ม';
         } else if (status === 'รอคัดเลือก' || status === 'ตำแหน่งเต็ม') {
             employee.employmentStatus = 'รอยืนยัน';

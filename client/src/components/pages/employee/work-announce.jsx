@@ -44,6 +44,21 @@ export default function WorkAnnounce() {
   const [image, setImage] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const grayCardClass = {
+    //backgroundColor: "gray", // Change this to the desired gray color
+    // Add any other styles you want for the disabled state
+  };
+
+  const grayCardMediaClass = {
+    filter: "grayscale(70%)", // Apply grayscale to make the image appear in gray
+    // Add any other styles you want for the disabled state of the image
+  };
+
+  const disabledChipStyle = {
+    opacity: 0.5, // or any other styles to indicate the disabled state
+    pointerEvents: "none", // Prevent interactions when disabled
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     loadData(token);
@@ -128,7 +143,7 @@ export default function WorkAnnounce() {
     .filter((date) =>
       dayjs(date).isAfter(currentDate.subtract(1, "day"), "day")
     );
-    
+
   const uniqueDates = Array.from(new Set(datesWithData));
 
   // Sort uniqueDates in ascending order
@@ -190,7 +205,31 @@ export default function WorkAnnounce() {
                         image[item.companyId]
                       }`}
                       alt="Company Image"
+                      sx={
+                        item.numOfReady === item.numOfEmployee
+                          ? grayCardMediaClass
+                          : {}
+                      }
                     />
+                    {item.numOfReady === item.numOfEmployee && (
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "100%",
+                          height: "100%",
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          backgroundColor: "rgba(0, 0, 0, 0.2)",
+                        }}
+                      >
+                        <Typography variant="h5" color="red">
+                          ตำแหน่งเต็ม
+                        </Typography>
+                      </div>
+                    )}
                     <CardContent>
                       <Stack direction={"column"} spacing={1}>
                         <Stack
@@ -206,6 +245,11 @@ export default function WorkAnnounce() {
                             label={item.workPosition}
                             color="info"
                             variant="outlined"
+                            sx={
+                              item.numOfReady === item.numOfEmployee
+                                ? disabledChipStyle
+                                : {}
+                            }
                           />
                         </Stack>
                         <Stack direction={"row"}>
@@ -236,6 +280,7 @@ export default function WorkAnnounce() {
                             variant="contained"
                             color="success"
                             startIcon={<HowToRegIcon />}
+                            disabled={item.numOfReady === item.numOfEmployee}
                           >
                             สมัครงาน
                           </Button>

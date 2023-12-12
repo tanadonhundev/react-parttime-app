@@ -83,13 +83,14 @@ export default function ManageEmployee() {
     setSelectedTab(newValue);
   };
 
-  const handleConfirm = (item, employeeId, companyId, workDay) => {
+  const handleConfirm = (item, employeeId, companyId, workDay, action) => {
     const token = localStorage.getItem("token");
     const values = {
       workDay: workDay,
       companyId: companyId,
       employeeId: employeeId,
       status: item,
+      action: action,
     };
     console.log(values);
     ChangeEmploymentStatus(token, values)
@@ -276,7 +277,8 @@ export default function ManageEmployee() {
                                                 employee.employmentStatus,
                                                 employee.employeeId,
                                                 item.companyId,
-                                                item.workDay
+                                                item.workDay,
+                                                1
                                               )
                                             }
                                             disabled={
