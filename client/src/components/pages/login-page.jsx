@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import CameraIcon from "@mui/icons-material/PhotoCamera";
@@ -11,6 +11,7 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -21,6 +22,7 @@ import { loginUser } from "../../services/auth";
 import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const schema = yup.object().shape({
@@ -44,8 +46,10 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data) => {
+    setLoading(true)
     loginUser(data)
       .then((res) => {
+        setLoading(false);
         if (res.data === "อีเมลไม่ถูกต้อง") {
           toast.error(res.data);
         }
@@ -57,7 +61,10 @@ export default function LoginPage() {
           toast.success("เข้าสู่ระบบสำเร็จ");
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        setLoading(false);
+        console.log(error);
+      });
   };
 
   const roleUser = (role) => {
@@ -138,6 +145,11 @@ export default function LoginPage() {
               </Grid>
             </Grid>
           </Box>
+          {
+            loading && (
+              <CircularProgress />
+            ) /* Show loading indicator while isLoading is true */
+          }
         </Box>
       </Container>
     </>

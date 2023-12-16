@@ -44,19 +44,13 @@ export default function WorkAnnounce() {
   const [image, setImage] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const grayCardClass = {
-    //backgroundColor: "gray", // Change this to the desired gray color
-    // Add any other styles you want for the disabled state
-  };
-
   const grayCardMediaClass = {
-    filter: "grayscale(70%)", // Apply grayscale to make the image appear in gray
-    // Add any other styles you want for the disabled state of the image
+    filter: "grayscale(70%)",
   };
 
   const disabledChipStyle = {
-    opacity: 0.5, // or any other styles to indicate the disabled state
-    pointerEvents: "none", // Prevent interactions when disabled
+    opacity: 0.5,
+    pointerEvents: "none",
   };
 
   useEffect(() => {
@@ -157,6 +151,7 @@ export default function WorkAnnounce() {
         </Typography>
         {uniqueDates.length === 0 ? null : (
           <FormGroup>
+            กรองข้อมูล:
             <Stack direction={"row"} spacing={1}>
               {Object.keys(workPositionChecked).map((position) => (
                 <FormControlLabel
