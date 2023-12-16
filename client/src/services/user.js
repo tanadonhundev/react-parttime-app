@@ -1,7 +1,8 @@
 import axios from "axios";
+const baseURL = import.meta.env.VITE_API;
 
 export const userList = async (authtoken) => {
-    return await axios.get('http://localhost:5000/user', {
+    return await axios.get(`${baseURL}/api/user`, {
         headers: {
             authtoken
         }
@@ -9,7 +10,7 @@ export const userList = async (authtoken) => {
 }
 
 export const removeUser = async (authtoken, id) => {
-    return await axios.delete('http://localhost:5000/user/' + id, {
+    return await axios.delete(`${baseURL}/api/user/` + id, {
         headers: {
             authtoken
         }
@@ -17,7 +18,7 @@ export const removeUser = async (authtoken, id) => {
 }
 
 export const statusBlacklisUser = async (authtoken, value) => {
-    return await axios.post('http://localhost:5000/change-status', value, {
+    return await axios.post(`${baseURL}/api/change-status`, value, {
         headers: {
             authtoken
         }
@@ -25,7 +26,7 @@ export const statusBlacklisUser = async (authtoken, value) => {
 }
 
 export const statusVerify = async (authtoken, id, value) => {
-    return await axios.post('http://localhost:5000/verify-user/' + id, value, {
+    return await axios.post(`${baseURL}/api/verify-user/` + id, value, {
         headers: {
             authtoken
         }
@@ -33,7 +34,7 @@ export const statusVerify = async (authtoken, id, value) => {
 }
 
 export const profileUser = async (authtoken, id) => {
-    return await axios.get("http://localhost:5000/profile-user/" + id, {
+    return await axios.get(`${baseURL}/api/profile-user/` + id, {
         headers: {
             authtoken
         }
@@ -41,7 +42,7 @@ export const profileUser = async (authtoken, id) => {
 }
 
 export const loadPhoto = async (authtoken, id) => {
-    return await axios.get("http://localhost:5000/profile-photo/" + id, {
+    return await axios.get(`${baseURL}/api/profile-photo/` + id, {
         headers: {
             authtoken,
         },
@@ -49,5 +50,5 @@ export const loadPhoto = async (authtoken, id) => {
 };
 
 export const profileEdit = async (id, data) => {
-    return await axios.put("http://localhost:5000/profile-edit/" + id, data);
+    return await axios.put(`${baseURL}/api/profile-edit/` + id, data);
 };

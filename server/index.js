@@ -19,11 +19,11 @@ app.use(bodyParser.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 //route
-app.use("/", auth);
-app.use("/", user);
-app.use("/", company);
-app.use("/", work);
-app.use("/", review);
+app.use("/api", auth);
+app.use("/api", user);
+app.use("/api", company);
+app.use("/api", work);
+app.use("/api", review);
 
 // connection
 const port = process.env.PORT || 5000;
