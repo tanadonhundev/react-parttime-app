@@ -116,7 +116,9 @@ export default function CompanyAnnounce() {
           <CircularProgress />
         </Stack>
       ) : data.length === 0 ? (
-        <p>ยังไม่มีประกาศจ้างงาน</p>
+        <Typography variant="h6" align="center">
+          ยังไม่มีประกาศจ้างงาน
+        </Typography>
       ) : (
         <>
           <Stack

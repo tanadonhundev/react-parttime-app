@@ -124,7 +124,9 @@ export default function ManageEmployee() {
           <CircularProgress />
         </Stack>
       ) : data.length === 0 ? (
-        <p>ยังไม่มีประกาศจ้างงาน</p>
+        <Typography variant="h6" align="center">
+          ยังไม่มีประกาศจ้างงาน
+        </Typography>
       ) : uniqueDates.length === 0 ? (
         <Typography variant="h5">ไม่มีข้อมูล</Typography>
       ) : (

@@ -6,6 +6,7 @@ import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
 import EditIcon from "@mui/icons-material/Edit";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { Link } from "react-router-dom";
 
@@ -49,7 +50,9 @@ export default function ProfilePage() {
         }}
       >
         {loading ? (
-          <p>Loading...</p>
+          <Stack alignItems={"center"}>
+            <CircularProgress />
+          </Stack>
         ) : data ? (
           <Box
             sx={{

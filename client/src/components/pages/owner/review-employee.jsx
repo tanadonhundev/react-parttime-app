@@ -140,9 +140,13 @@ export default function ReviewEmployee() {
           <CircularProgress />
         </Stack>
       ) : data.length === 0 ? (
-        <p>ยังไม่มีประกาศจ้างงาน</p>
+        <Typography variant="h6" align="center">
+          ยังไม่มีพนักงานให้รีวิว
+        </Typography>
       ) : uniqueDates.length === 0 ? (
-        <Typography variant="h5">ไม่มีข้อมูล</Typography>
+        <Typography variant="h6" align="center">
+          ยังไม่มีพนักงานให้รีวิว
+        </Typography>
       ) : (
         <>
           <Tabs

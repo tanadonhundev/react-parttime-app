@@ -114,10 +114,8 @@ export default function WorkApply() {
   }, [filteredData]);
 
   const loadData = async (token, id) => {
-
     applyList(token, id)
       .then((res) => {
- 
         setData(res.data);
         setLoading(false);
       })
@@ -231,7 +229,6 @@ export default function WorkApply() {
         <Typography variant="h6" gutterBottom>
           งานที่สมัคร
         </Typography>
-        {filteredData.length === 0 && <p>ยังไม่มีงานที่สมัคร</p>}
         <Tabs
           value={selectedTab}
           variant="scrollable"
@@ -252,160 +249,181 @@ export default function WorkApply() {
             <CircularProgress />
           </Stack>
         ) : (
-          <Grid container spacing={2}>
-            {filteredData.map((item) => (
-              <Grid key={item._id} item lg={3} sm={6} xs={12}>
-                <div key={item._id}>
-                  {/* Display the countdown for each item */}
-                  <Typography variant="body1">
-                    Countdown: {countdowns[item._id]?.hours || 0} hours,
-                    {countdowns[item._id]?.minutes || 0} minutes,
-                    {countdowns[item._id]?.seconds || 0} seconds
-                  </Typography>
-                </div>
-                <Card sx={{ maxWidth: 350 }}>
-                  <CardActionArea>
-                    <CardMedia
-                      component="img"
-                      height="140"
-                      src={`http://localhost:5000/uploads/company/${
-                        image[item.companyId]
-                      }`}
-                      alt="Company Image"
-                    />
-                    <CardContent>
-                      <Stack direction={"column"} spacing={1}>
-                        <Stack
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems="flex-start"
-                        >
-                          <Typography gutterBottom variant="h5" component="div">
-                            {item.companyName}
-                          </Typography>
-                          <Button
-                            component={Link}
-                            to={`/dashboard-employee/work-descrip/${item._id}`}
-                            variant="contained"
-                            color="success"
-                          >
-                            ดูข้อมูล
-                          </Button>
-                        </Stack>
-                        <Stack direction={"column"} spacing={1}>
-                          <Stack direction={"row"}>
-                            <AccessTimeIcon />
-                            <Typography variant="body1">
-                              {dayjs(item.workStartTime)
-                                .locale("th")
-                                .format("HH:mm")}
-                            </Typography>
-                            <Typography variant="body1">-</Typography>
-                            <Typography variant="body1">
-                              {dayjs(item.workEndTime)
-                                .locale("th")
-                                .format("HH:mm")}
-                              น.
-                            </Typography>
-                          </Stack>
-                          <Stack direction={"row"}>
-                            <LocalAtmIcon />
-                            <Typography variant="body1">
-                              {item.dailyWage}บาท/ชั่วโมง
-                            </Typography>
-                          </Stack>
-                          <Stack direction={"row"}>
-                            <Chip
-                              icon={<BadgeIcon />}
-                              label={item.workPosition}
-                              color="info"
-                              variant="outlined"
-                            />
-                          </Stack>
-                        </Stack>
-                        <Stack
-                          direction={"row"}
-                          justifyContent={"space-between"}
-                        >
-                          {item.employees.map((employee) => {
-                            if (employee.employeeId === employeeId) {
-                              return (
-                                <React.Fragment key={employee.employeeId}>
-                                  {employee.employmentStatus ===
-                                  "รอคัดเลือก" ? (
-                                    <Button variant="outlined" color="warning">
-                                      {employee.employmentStatus}
-                                    </Button>
-                                  ) : employee.employmentStatus ===
-                                    "ตำแหน่งเต็ม" ? (
-                                    <Button variant="outlined" color="error">
-                                      {employee.employmentStatus}
-                                    </Button>
-                                  ) : employee.employmentStatus ===
-                                    "พร้อมเริ่มงาน" ? (
-                                    <Button variant="outlined" color="success">
-                                      {employee.employmentStatus}
-                                    </Button>
-                                  ) : null}
+          <>
+            {filteredData.length === 0 ? (
+              <Stack alignItems={"center"}>
+                <Typography variant="h6">ยังไม่มีงานที่สมัคร</Typography>
+              </Stack>
+            ) : (
+              <Grid container spacing={2}>
+                {filteredData.map((item) => (
+                  <Grid key={item._id} item lg={3} sm={6} xs={12}>
+                    <div key={item._id}>
+                      {/* Display the countdown for each item */}
+                      <Typography variant="body1">
+                        Countdown: {countdowns[item._id]?.hours || 0} hours,
+                        {countdowns[item._id]?.minutes || 0} minutes,
+                        {countdowns[item._id]?.seconds || 0} seconds
+                      </Typography>
+                    </div>
+                    <Card sx={{ maxWidth: 350 }}>
+                      <CardActionArea>
+                        <CardMedia
+                          component="img"
+                          height="140"
+                          src={`http://localhost:5000/uploads/company/${
+                            image[item.companyId]
+                          }`}
+                          alt="Company Image"
+                        />
+                        <CardContent>
+                          <Stack direction={"column"} spacing={1}>
+                            <Stack
+                              direction="row"
+                              justifyContent="space-between"
+                              alignItems="flex-start"
+                            >
+                              <Typography
+                                gutterBottom
+                                variant="h5"
+                                component="div"
+                              >
+                                {item.companyName}
+                              </Typography>
+                              <Button
+                                component={Link}
+                                to={`/dashboard-employee/work-descrip/${item._id}`}
+                                variant="contained"
+                                color="success"
+                              >
+                                ดูข้อมูล
+                              </Button>
+                            </Stack>
+                            <Stack direction={"column"} spacing={1}>
+                              <Stack direction={"row"}>
+                                <AccessTimeIcon />
+                                <Typography variant="body1">
+                                  {dayjs(item.workStartTime)
+                                    .locale("th")
+                                    .format("HH:mm")}
+                                </Typography>
+                                <Typography variant="body1">-</Typography>
+                                <Typography variant="body1">
+                                  {dayjs(item.workEndTime)
+                                    .locale("th")
+                                    .format("HH:mm")}{" "}
+                                  น.
+                                </Typography>
+                              </Stack>
+                              <Stack direction={"row"}>
+                                <LocalAtmIcon />
+                                <Typography variant="body1">
+                                  {item.dailyWage} บาท/ชั่วโมง
+                                </Typography>
+                              </Stack>
+                              <Stack direction={"row"}>
+                                <Chip
+                                  icon={<BadgeIcon />}
+                                  label={item.workPosition}
+                                  color="info"
+                                  variant="outlined"
+                                />
+                              </Stack>
+                            </Stack>
+                            <Stack
+                              direction={"row"}
+                              justifyContent={"space-between"}
+                            >
+                              {item.employees.map((employee) => {
+                                if (employee.employeeId === employeeId) {
+                                  return (
+                                    <React.Fragment key={employee.employeeId}>
+                                      {employee.employmentStatus ===
+                                      "รอคัดเลือก" ? (
+                                        <Button
+                                          variant="outlined"
+                                          color="warning"
+                                        >
+                                          {employee.employmentStatus}
+                                        </Button>
+                                      ) : employee.employmentStatus ===
+                                        "ตำแหน่งเต็ม" ? (
+                                        <Button
+                                          variant="outlined"
+                                          color="error"
+                                        >
+                                          {employee.employmentStatus}
+                                        </Button>
+                                      ) : employee.employmentStatus ===
+                                        "พร้อมเริ่มงาน" ? (
+                                        <Button
+                                          variant="outlined"
+                                          color="success"
+                                        >
+                                          {employee.employmentStatus}
+                                        </Button>
+                                      ) : null}
 
-                                  {employee.employmentStatus ===
-                                  "รอคัดเลือก" ? (
-                                    <Button
-                                      variant="contained"
-                                      color="error"
-                                      onClick={() => handleClickOpen(item)}
-                                    >
-                                      ยกเลิก
-                                    </Button>
-                                  ) : employee.employmentStatus ===
-                                    "ตำแหน่งเต็ม" ? (
-                                    <Button
-                                      component={Link}
-                                      to={`/dashboard-employee/work-announce`}
-                                      variant="contained"
-                                      color="warning"
-                                    >
-                                      หางานใหม่
-                                    </Button>
-                                  ) : employee.employmentStatus ===
-                                    "พร้อมเริ่มงาน" ? (
-                                    <Button
-                                      variant="contained"
-                                      color="error"
-                                      onClick={() => handleClickOpen(item)}
-                                    >
-                                      ยกเลิก
-                                    </Button>
-                                  ) : (
-                                    <Button
-                                      variant="contained"
-                                      onClick={() =>
-                                        handleConfirm(
-                                          employee.employmentStatus,
-                                          employee.employeeId,
-                                          item.companyId,
-                                          item.workDay
-                                        )
-                                      }
-                                      color="success"
-                                    >
-                                      ยืนยัน
-                                    </Button>
-                                  )}
-                                </React.Fragment>
-                              );
-                            } else {
-                              return null;
-                            }
-                          })}
-                        </Stack>
-                      </Stack>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
+                                      {employee.employmentStatus ===
+                                      "รอคัดเลือก" ? (
+                                        <Button
+                                          variant="contained"
+                                          color="error"
+                                          onClick={() => handleClickOpen(item)}
+                                        >
+                                          ยกเลิก
+                                        </Button>
+                                      ) : employee.employmentStatus ===
+                                        "ตำแหน่งเต็ม" ? (
+                                        <Button
+                                          component={Link}
+                                          to={`/dashboard-employee/work-announce`}
+                                          variant="contained"
+                                          color="warning"
+                                        >
+                                          หางานใหม่
+                                        </Button>
+                                      ) : employee.employmentStatus ===
+                                        "พร้อมเริ่มงาน" ? (
+                                        <Button
+                                          variant="contained"
+                                          color="error"
+                                          onClick={() => handleClickOpen(item)}
+                                        >
+                                          ยกเลิก
+                                        </Button>
+                                      ) : (
+                                        <Button
+                                          variant="contained"
+                                          onClick={() =>
+                                            handleConfirm(
+                                              employee.employmentStatus,
+                                              employee.employeeId,
+                                              item.companyId,
+                                              item.workDay
+                                            )
+                                          }
+                                          color="success"
+                                        >
+                                          ยืนยัน
+                                        </Button>
+                                      )}
+                                    </React.Fragment>
+                                  );
+                                } else {
+                                  return null;
+                                }
+                              })}
+                            </Stack>
+                          </Stack>
+                        </CardContent>
+                      </CardActionArea>
+                    </Card>
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
+            )}
+          </>
         )}
       </Stack>
       <div>

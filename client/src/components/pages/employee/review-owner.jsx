@@ -195,7 +195,6 @@ export default function ReviewOwner() {
         <Typography variant="h6" gutterBottom>
           รีวิวนายจ้าง
         </Typography>
-        {uniqueDates.length === 0 && <p>ยังไม่มีงานให้รีวิว</p>}
         <Tabs
           value={selectedTab}
           variant="scrollable"
@@ -216,130 +215,140 @@ export default function ReviewOwner() {
             <CircularProgress />
           </Stack>
         ) : (
-          <Grid container spacing={2}>
-            {datesWithData
-              .filter((item) =>
-                dayjs(item.workDay).isSame(uniqueDates[selectedTab], "day")
-              )
-              .map((item) => (
-                <Grid key={item._id} item lg={3} sm={6} xs={12}>
-                  <Card sx={{ maxWidth: 350 }}>
-                    <CardActionArea>
-                      <CardMedia
-                        component="img"
-                        height="140"
-                        src={`http://localhost:5000/uploads/company/${
-                          image[item.companyId]
-                        }`}
-                        alt="Company Image"
-                      />
-                      <CardContent>
-                        <Stack direction={"column"} spacing={1}>
-                          <Stack
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="flex-start"
-                          >
-                            <Typography
-                              gutterBottom
-                              variant="h5"
-                              component="div"
-                            >
-                              {item.companyName}
-                            </Typography>
-                            <Chip
-                              icon={<BadgeIcon />}
-                              label={item.workPosition}
-                              color="info"
-                              variant="outlined"
-                            />
-                          </Stack>
-                          <Stack direction={"column"} spacing={1}>
-                            <Stack direction={"row"}>
-                              <AccessTimeIcon />
-                              <Typography variant="body1">
-                                {dayjs(item.workStartTime)
-                                  .locale("th")
-                                  .format("HH:mm")}
-                              </Typography>
-                              <Typography variant="body1">-</Typography>
-                              <Typography variant="body1">
-                                {dayjs(item.workEndTime)
-                                  .locale("th")
-                                  .format("HH:mm")}
-                                น.
-                              </Typography>
+          <>
+            {datesWithData.length === 0 ? (
+              <Typography variant="h6" align="center">
+                ยังไม่มีงานให้รีวิว
+              </Typography>
+            ) : (
+              <Grid container spacing={2}>
+                {datesWithData
+                  .filter((item) =>
+                    dayjs(item.workDay).isSame(uniqueDates[selectedTab], "day")
+                  )
+                  .map((item) => (
+                    <Grid key={item._id} item lg={3} sm={6} xs={12}>
+                      <Card sx={{ maxWidth: 350 }}>
+                        <CardActionArea>
+                          <CardMedia
+                            component="img"
+                            height="140"
+                            src={`http://localhost:5000/uploads/company/${
+                              image[item.companyId]
+                            }`}
+                            alt="Company Image"
+                          />
+                          <CardContent>
+                            <Stack direction={"column"} spacing={1}>
+                              <Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="flex-start"
+                              >
+                                <Typography
+                                  gutterBottom
+                                  variant="h5"
+                                  component="div"
+                                >
+                                  {item.companyName}
+                                </Typography>
+                                <Chip
+                                  icon={<BadgeIcon />}
+                                  label={item.workPosition}
+                                  color="info"
+                                  variant="outlined"
+                                />
+                              </Stack>
+                              <Stack direction={"column"} spacing={1}>
+                                <Stack direction={"row"}>
+                                  <AccessTimeIcon />
+                                  <Typography variant="body1">
+                                    {dayjs(item.workStartTime)
+                                      .locale("th")
+                                      .format("HH:mm")}
+                                  </Typography>
+                                  <Typography variant="body1">-</Typography>
+                                  <Typography variant="body1">
+                                    {dayjs(item.workEndTime)
+                                      .locale("th")
+                                      .format("HH:mm")}
+                                    น.
+                                  </Typography>
+                                </Stack>
+                                <Stack direction={"row"}>
+                                  <LocalAtmIcon />
+                                  <Typography variant="body1">
+                                    {item.dailyWage}บาท/ชั่วโมง
+                                  </Typography>
+                                </Stack>
+                              </Stack>
+                              <Stack
+                                direction={"row"}
+                                justifyContent={"flex-end"}
+                                spacing={1}
+                              >
+                                {item.employees.map((employee) => {
+                                  if (employee.employeeId === employeeId) {
+                                    return (
+                                      <React.Fragment key={employee.employeeId}>
+                                        {employee.employmentStatus ===
+                                        "พร้อมเริ่มงาน" ? (
+                                          <>
+                                            <Button
+                                              variant="contained"
+                                              color="info"
+                                              onClick={() =>
+                                                handleClickOpen(item)
+                                              }
+                                              disabled={
+                                                employee.ownermentStatusRe ===
+                                                "รีวิวแล้ว"
+                                              }
+                                            >
+                                              รีวิว
+                                            </Button>
+                                            <Button
+                                              variant="contained"
+                                              color="error"
+                                              disabled={
+                                                employee.ownermentStatusRe ===
+                                                "รีวิวแล้ว"
+                                              }
+                                            >
+                                              รายงาน
+                                            </Button>
+                                          </>
+                                        ) : (
+                                          <>
+                                            <Button
+                                              variant="outlined"
+                                              color="error"
+                                            >
+                                              {employee.employmentStatus}
+                                            </Button>
+                                          </>
+                                        )}
+                                        <Stack
+                                          direction={"row"}
+                                          spacing={1}
+                                          justifyContent={"center"}
+                                        ></Stack>
+                                      </React.Fragment>
+                                    );
+                                  } else {
+                                    return null;
+                                  }
+                                })}
+                              </Stack>
                             </Stack>
-                            <Stack direction={"row"}>
-                              <LocalAtmIcon />
-                              <Typography variant="body1">
-                                {item.dailyWage}บาท/ชั่วโมง
-                              </Typography>
-                            </Stack>
-                          </Stack>
-                          <Stack
-                            direction={"row"}
-                            justifyContent={"flex-end"}
-                            spacing={1}
-                          >
-                            {item.employees.map((employee) => {
-                              if (employee.employeeId === employeeId) {
-                                return (
-                                  <React.Fragment key={employee.employeeId}>
-                                    {employee.employmentStatus ===
-                                    "พร้อมเริ่มงาน" ? (
-                                      <>
-                                        <Button
-                                          variant="contained"
-                                          color="info"
-                                          onClick={() => handleClickOpen(item)}
-                                          disabled={
-                                            employee.ownermentStatusRe ===
-                                            "รีวิวแล้ว"
-                                          }
-                                        >
-                                          รีวิว
-                                        </Button>
-                                        <Button
-                                          variant="contained"
-                                          color="error"
-                                          disabled={
-                                            employee.ownermentStatusRe ===
-                                            "รีวิวแล้ว"
-                                          }
-                                        >
-                                          รายงาน
-                                        </Button>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Button
-                                          variant="outlined"
-                                          color="error"
-                                        >
-                                          {employee.employmentStatus}
-                                        </Button>
-                                      </>
-                                    )}
-                                    <Stack
-                                      direction={"row"}
-                                      spacing={1}
-                                      justifyContent={"center"}
-                                    ></Stack>
-                                  </React.Fragment>
-                                );
-                              } else {
-                                return null;
-                              }
-                            })}
-                          </Stack>
-                        </Stack>
-                      </CardContent>
-                    </CardActionArea>
-                  </Card>
-                </Grid>
-              ))}
-          </Grid>
+                          </CardContent>
+                        </CardActionArea>
+                      </Card>
+                    </Grid>
+                  ))}
+              </Grid>
+            )}
+          </>
         )}
       </Stack>
       <div>

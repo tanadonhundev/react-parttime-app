@@ -155,22 +155,24 @@ export default function WorkAnnounce() {
         <Typography variant="h6" gutterBottom>
           ประกาศจ้างงาน
         </Typography>
-        <FormGroup>
-          <Stack direction={"row"} spacing={1}>
-            {Object.keys(workPositionChecked).map((position) => (
-              <FormControlLabel
-                key={position}
-                control={
-                  <Checkbox
-                    checked={workPositionChecked[position]}
-                    onChange={() => handleCheckboxChange(position)}
-                  />
-                }
-                label={position}
-              />
-            ))}
-          </Stack>
-        </FormGroup>
+        {uniqueDates.length === 0 ? null : (
+          <FormGroup>
+            <Stack direction={"row"} spacing={1}>
+              {Object.keys(workPositionChecked).map((position) => (
+                <FormControlLabel
+                  key={position}
+                  control={
+                    <Checkbox
+                      checked={workPositionChecked[position]}
+                      onChange={() => handleCheckboxChange(position)}
+                    />
+                  }
+                  label={position}
+                />
+              ))}
+            </Stack>
+          </FormGroup>
+        )}
         <Tabs
           value={selectedTab}
           variant="scrollable"
@@ -193,105 +195,122 @@ export default function WorkAnnounce() {
             <CircularProgress />
           </Stack>
         ) : (
-          <Grid container spacing={2}>
-            {work.map((item) => (
-              <Grid key={item._id} item lg={3} sm={6} xs={12}>
-                <Card sx={{ maxWidth: 350 }}>
-                  <CardActionArea>
-                    <CardMedia
-                      component="img"
-                      height="140"
-                      src={`http://localhost:5000/uploads/company/${
-                        image[item.companyId]
-                      }`}
-                      alt="Company Image"
-                      sx={
-                        item.numOfReady === item.numOfEmployee
-                          ? grayCardMediaClass
-                          : {}
-                      }
-                    />
-                    {item.numOfReady === item.numOfEmployee && (
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          width: "100%",
-                          height: "100%",
-                          display: "flex",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          backgroundColor: "rgba(0, 0, 0, 0.2)",
-                        }}
-                      >
-                        <Typography variant="h5" color="red">
-                          ตำแหน่งเต็ม
-                        </Typography>
-                      </div>
-                    )}
-                    <CardContent>
-                      <Stack direction={"column"} spacing={1}>
-                        <Stack
-                          direction="row"
-                          justifyContent="space-between"
-                          alignItems="flex-start"
-                        >
-                          <Typography gutterBottom variant="h5" component="div">
-                            {item.companyName}
-                          </Typography>
-                          <Chip
-                            icon={<BadgeIcon />}
-                            label={item.workPosition}
-                            color="info"
-                            variant="outlined"
-                            sx={
-                              item.numOfReady === item.numOfEmployee
-                                ? disabledChipStyle
-                                : {}
-                            }
-                          />
-                        </Stack>
-                        <Stack direction={"row"}>
-                          <AccessTimeIcon />
-                          <Typography variant="body1">
-                            {dayjs(item.workStartTime)
-                              .locale("th")
-                              .format("HH:mm")}
-                          </Typography>
-                          <Typography variant="body1">-</Typography>
-                          <Typography variant="body1">
-                            {dayjs(item.workEndTime)
-                              .locale("th")
-                              .format("HH:mm")}
-                            น.
-                          </Typography>
-                        </Stack>
-                        <Stack direction={"row"}>
-                          <LocalAtmIcon />
-                          <Typography variant="body1">
-                            {item.dailyWage}บาท/ชั่วโมง
-                          </Typography>
-                        </Stack>
-                        <Stack direction={"row"} justifyContent={"flex-end"}>
-                          <Button
-                            component={Link}
-                            to={`/dashboard-employee/work-descrip/${item._id}`}
-                            variant="contained"
-                            color="success"
-                            startIcon={<HowToRegIcon />}
-                            disabled={item.numOfReady === item.numOfEmployee}
+          <>
+            {uniqueDates.length === 0 ? (
+              <Typography variant="h6" align="center">
+                ยังไม่มีประกาศจ้างงาน
+              </Typography>
+            ) : (
+              <Grid container spacing={2}>
+                {work.map((item) => (
+                  <Grid key={item._id} item lg={3} sm={6} xs={12}>
+                    <Card sx={{ maxWidth: 350 }}>
+                      <CardActionArea>
+                        <CardMedia
+                          component="img"
+                          height="140"
+                          src={`http://localhost:5000/uploads/company/${
+                            image[item.companyId]
+                          }`}
+                          alt="Company Image"
+                          sx={
+                            item.numOfReady === item.numOfEmployee
+                              ? grayCardMediaClass
+                              : {}
+                          }
+                        />
+                        {item.numOfReady === item.numOfEmployee && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: 0,
+                              left: 0,
+                              width: "100%",
+                              height: "100%",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              backgroundColor: "rgba(0, 0, 0, 0.2)",
+                            }}
                           >
-                            สมัครงาน
-                          </Button>
-                        </Stack>
-                      </Stack>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
+                            <Typography variant="h5" color="red">
+                              ตำแหน่งเต็ม
+                            </Typography>
+                          </div>
+                        )}
+                        <CardContent>
+                          <Stack direction={"column"} spacing={1}>
+                            <Stack
+                              direction="row"
+                              justifyContent="space-between"
+                              alignItems="flex-start"
+                            >
+                              <Typography
+                                gutterBottom
+                                variant="h5"
+                                component="div"
+                              >
+                                {item.companyName}
+                              </Typography>
+                              <Chip
+                                icon={<BadgeIcon />}
+                                label={item.workPosition}
+                                color="info"
+                                variant="outlined"
+                                sx={
+                                  item.numOfReady === item.numOfEmployee
+                                    ? disabledChipStyle
+                                    : {}
+                                }
+                              />
+                            </Stack>
+                            <Stack direction={"row"}>
+                              <AccessTimeIcon />
+                              <Typography variant="body1">
+                                {dayjs(item.workStartTime)
+                                  .locale("th")
+                                  .format("HH:mm")}
+                              </Typography>
+                              <Typography variant="body1">-</Typography>
+                              <Typography variant="body1">
+                                {dayjs(item.workEndTime)
+                                  .locale("th")
+                                  .format("HH:mm")}
+                                น.
+                              </Typography>
+                            </Stack>
+                            <Stack direction={"row"}>
+                              <LocalAtmIcon />
+                              <Typography variant="body1">
+                                {item.dailyWage}บาท/ชั่วโมง
+                              </Typography>
+                            </Stack>
+                            <Stack
+                              direction={"row"}
+                              justifyContent={"flex-end"}
+                            >
+                              <Button
+                                component={Link}
+                                to={`/dashboard-employee/work-descrip/${item._id}`}
+                                variant="contained"
+                                color="success"
+                                startIcon={<HowToRegIcon />}
+                                disabled={
+                                  item.numOfReady === item.numOfEmployee
+                                }
+                              >
+                                สมัครงาน
+                              </Button>
+                            </Stack>
+                          </Stack>
+                        </CardContent>
+                      </CardActionArea>
+                    </Card>
+                  </Grid>
+                ))}
               </Grid>
-            ))}
-          </Grid>
+            )}
+          </>
         )}
       </Stack>
     </>

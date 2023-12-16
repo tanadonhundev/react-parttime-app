@@ -32,6 +32,7 @@ export default function CompanyCrate() {
   const [companyName, setcompanyName] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedWorkPosition, setSelectedWorkPosition] = useState(null);
+  const [role, setRole] = useState();
 
   const navigate = useNavigate();
 
@@ -40,6 +41,7 @@ export default function CompanyCrate() {
     currentUser(token)
       .then((res) => {
         const id = res.data._id;
+        setRole(res.data.role);
         loadData(token, id);
       })
       .catch((error) => console.log(error));
