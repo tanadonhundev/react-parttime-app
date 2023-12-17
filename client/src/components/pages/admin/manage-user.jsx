@@ -112,7 +112,10 @@ export default function ManageUser() {
               justifyContent: "center",
             }}
           >
-            <CircularProgress />
+            <Stack alignItems={"center"}>
+              <CircularProgress />
+              <Typography>กำลังโหลดข้อมูลข้อมูล</Typography>
+            </Stack>
           </Box>
         ) : (
           <TableContainer component={Paper}>
@@ -144,8 +147,7 @@ export default function ManageUser() {
                               sx={{ width: 35, height: 35 }}
                               alt="Remy Sharp"
                               src={
-                                `${baseURL}/uploads/avatar/` +
-                                item.avatarphoto
+                                `${baseURL}/uploads/avatar/` + item.avatarphoto
                               }
                             />
                           </TableCell>

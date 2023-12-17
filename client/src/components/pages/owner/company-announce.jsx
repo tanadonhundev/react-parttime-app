@@ -116,6 +116,7 @@ export default function CompanyAnnounce() {
       {loading ? (
         <Stack alignItems={"center"}>
           <CircularProgress />
+          <Typography>กำลังโหลดข้อมูลข้อมูล</Typography>
         </Stack>
       ) : data.length === 0 ? (
         <Typography variant="h6" align="center">

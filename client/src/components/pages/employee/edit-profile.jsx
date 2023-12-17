@@ -7,6 +7,9 @@ import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import { InputLabel } from "@mui/material";
 import InputAdornment from "@mui/material/InputAdornment";
+import CircularProgress from "@mui/material/CircularProgress";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 import { LocalizationProvider } from "@mui/x-date-pickers-pro";
 import { AdapterDayjs } from "@mui/x-date-pickers-pro/AdapterDayjs";
@@ -167,7 +170,10 @@ export default function EditProfile() {
   return (
     <>
       {loading ? (
-        <p>Loading...</p>
+        <Stack alignItems={"center"}>
+          <CircularProgress />
+          <Typography>กำลังโหลดข้อมูลข้อมูล</Typography>
+        </Stack>
       ) : (
         <Container component="main" maxWidth="xs">
           <Box

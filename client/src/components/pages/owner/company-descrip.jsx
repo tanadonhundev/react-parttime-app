@@ -9,7 +9,8 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import FormControl from "@mui/material/FormControl";
 import Badge from "@mui/material/Badge";
 import Paper from "@mui/material/Paper";
-import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
+import AddCircleTwoToneIcon from "@mui/icons-material/AddCircleTwoTone";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
@@ -183,7 +184,10 @@ export default function CompanyDescrip() {
         }}
       >
         {loading ? (
-          <p>Loading...</p>
+          <Stack alignItems={"center"}>
+            <CircularProgress />
+            <Typography>กำลังโหลดข้อมูลข้อมูล</Typography>
+          </Stack>
         ) : company ? (
           <Box
             sx={{

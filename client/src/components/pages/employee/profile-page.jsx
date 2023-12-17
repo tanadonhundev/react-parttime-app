@@ -68,6 +68,7 @@ export default function ProfilePage() {
         {loading ? (
           <Stack alignItems={"center"}>
             <CircularProgress />
+            <Typography>กำลังโหลดข้อมูลข้อมูล</Typography>
           </Stack>
         ) : data ? (
           <Box
