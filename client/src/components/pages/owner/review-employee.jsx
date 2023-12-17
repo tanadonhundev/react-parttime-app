@@ -63,6 +63,8 @@ export default function ReviewEmployee() {
   const [hover, setHover] = React.useState(-1);
   const [reviewText, setReviewText] = useState("");
 
+  const baseURL = import.meta.env.VITE_API;
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     currentUser(token)
@@ -197,7 +199,7 @@ export default function ReviewEmployee() {
                                           sx={{ width: 35, height: 35 }}
                                           alt="Remy Sharp"
                                           src={
-                                            "http://localhost:5000/uploads/avatar/" +
+                                            `${baseURL}/uploads/avatar/` +
                                             employee.employeeAvatar
                                           }
                                         />

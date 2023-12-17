@@ -21,6 +21,8 @@ export default function ProfilePage() {
   const [avatarImage, setAvatarImage] = useState();
   const [loading, setLoading] = useState(true);
 
+  const baseURL = import.meta.env.VITE_API;
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     currentUser(token)
@@ -78,7 +80,7 @@ export default function ProfilePage() {
                 <Avatar
                   sx={{ width: 150, height: 150 }}
                   alt="Remy Sharp"
-                  src={"http://localhost:5000/uploads/avatar/" + avatarImage}
+                  src={`${baseURL}/uploads/avatar/` + avatarImage}
                 />
               </Stack>
               <Typography variant="h6" gutterBottom>

@@ -56,6 +56,8 @@ export default function WorkApply() {
   const [countdowns, setCountdowns] = useState({});
   const [employeeId, setEmployeeId] = useState();
 
+  const baseURL = import.meta.env.VITE_API;
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     currentUser(token)
@@ -271,7 +273,7 @@ export default function WorkApply() {
                         <CardMedia
                           component="img"
                           height="140"
-                          src={`http://localhost:5000/uploads/company/${
+                          src={`${baseURL}/uploads/company/${
                             image[item.companyId]
                           }`}
                           alt="Company Image"

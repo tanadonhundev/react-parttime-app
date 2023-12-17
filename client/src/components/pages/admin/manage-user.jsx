@@ -44,6 +44,8 @@ export default function ManageUser() {
   const [open, setOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState([]);
 
+  const baseURL = import.meta.env.VITE_API;
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -142,7 +144,7 @@ export default function ManageUser() {
                               sx={{ width: 35, height: 35 }}
                               alt="Remy Sharp"
                               src={
-                                "http://localhost:5000/uploads/avatar/" +
+                                `${baseURL}/uploads/avatar/` +
                                 item.avatarphoto
                               }
                             />

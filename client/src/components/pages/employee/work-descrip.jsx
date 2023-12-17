@@ -35,6 +35,8 @@ export default function WorkDescrip() {
   const [loading, setLoading] = useState(true);
   const [markers, setMarkers] = useState([]);
 
+  const baseURL = import.meta.env.VITE_API;
+
   const { isLoaded, loadError } = useLoadScript({
     googleMapsApiKey: "AIzaSyBk7hWPDP_TF3J_FsnRaDC8JHOSElW9Ayk", // Replace with your Google Maps API key
     libraries,
@@ -184,9 +186,7 @@ export default function WorkDescrip() {
                   <CardMedia
                     component="img"
                     height="140"
-                    src={
-                      "http://localhost:5000/uploads/company/" + companyImage
-                    }
+                    src={`${baseURL}/uploads/company/` + companyImage}
                     alt="Company Image"
                   />
                 </CardActionArea>

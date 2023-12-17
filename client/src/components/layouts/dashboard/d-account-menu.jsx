@@ -20,9 +20,11 @@ export default function AccountMenu() {
   const [data, setData] = useState([]);
   const [image, setImage] = useState();
   const navigate = useNavigate();
-
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+
+  const baseURL = import.meta.env.VITE_API;
+
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -74,7 +76,7 @@ export default function AccountMenu() {
           >
             <Avatar
               sx={{ width: 32, height: 32 }}
-              src={"http://localhost:5000/uploads/avatar/" + image}
+              src={`${baseURL}/uploads/avatar/` + image}
             />
           </IconButton>
         </Tooltip>

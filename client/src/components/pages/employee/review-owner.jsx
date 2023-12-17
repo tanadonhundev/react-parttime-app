@@ -73,6 +73,8 @@ export default function ReviewOwner() {
   const [hover, setHover] = React.useState(-1);
   const [reviewText, setReviewText] = useState("");
 
+  const baseURL = import.meta.env.VITE_API;
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     currentUser(token)
@@ -233,7 +235,7 @@ export default function ReviewOwner() {
                           <CardMedia
                             component="img"
                             height="140"
-                            src={`http://localhost:5000/uploads/company/${
+                            src={`${baseURL}/uploads/company/${
                               image[item.companyId]
                             }`}
                             alt="Company Image"

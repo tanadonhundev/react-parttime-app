@@ -43,6 +43,8 @@ export default function CompanyAnnounce() {
   const [open, setOpen] = useState(false);
   const [workToDelete, setWorkToDelete] = useState([]);
 
+  const baseURL = import.meta.env.VITE_API;
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     currentUser(token)
@@ -134,7 +136,7 @@ export default function CompanyAnnounce() {
                       <CardMedia
                         component="img"
                         height="140"
-                        src={"http://localhost:5000/uploads/company/" + image}
+                        src={`${baseURL}/uploads/company/` + image}
                         alt="Company Image"
                       />
                       <CardContent>

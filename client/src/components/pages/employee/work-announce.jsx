@@ -44,6 +44,8 @@ export default function WorkAnnounce() {
   const [image, setImage] = useState("");
   const [loading, setLoading] = useState(true);
 
+  const baseURL = import.meta.env.VITE_API;
+
   const grayCardMediaClass = {
     filter: "grayscale(70%)",
   };
@@ -204,7 +206,7 @@ export default function WorkAnnounce() {
                         <CardMedia
                           component="img"
                           height="140"
-                          src={`http://localhost:5000/uploads/company/${
+                          src={`${baseURL}/uploads/company/${
                             image[item.companyId]
                           }`}
                           alt="Company Image"

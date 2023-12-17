@@ -42,10 +42,11 @@ export default function EditProfile() {
     lat: parseFloat(data.lat) || 0,
     lng: parseFloat(data.lng) || 0,
   });
-
   const [avatarImage, setAvatarImage] = useState();
   const [idcardImage, setIdcardImage] = useState();
   const [companyImage, setCompanyImage] = useState();
+
+  const baseURL = import.meta.env.VITE_API;
 
   const params = useParams();
   const navigate = useNavigate();
@@ -177,7 +178,7 @@ export default function EditProfile() {
             <Avatar
               sx={{ width: 150, height: 150 }}
               alt="Remy Sharp"
-              src={"http://localhost:5000/uploads/avatar/" + avatarImage}
+              src={`${baseURL}/uploads/avatar/` + avatarImage}
             />
 
             <Box

@@ -35,6 +35,8 @@ export default function ManageEmployee() {
     seconds: 0,
   });
 
+  const baseURL = import.meta.env.VITE_API;
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -230,7 +232,7 @@ export default function ManageEmployee() {
                                           sx={{ width: 35, height: 35 }}
                                           alt="Remy Sharp"
                                           src={
-                                            "http://localhost:5000/uploads/avatar/" +
+                                            `${baseURL}/uploads/avatar/` +
                                             employee.employeeAvatar
                                           }
                                         />
