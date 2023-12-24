@@ -7,6 +7,7 @@ import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
 import EditIcon from "@mui/icons-material/Edit";
 import CircularProgress from "@mui/material/CircularProgress";
+import Divider from "@mui/material/Divider";
 
 import { Link } from "react-router-dom";
 
@@ -15,9 +16,11 @@ import "dayjs/locale/th";
 
 import { currentUser } from "../../../services/auth";
 import { profileUser } from "../../../services/user";
+import { getReviewOwner } from "../../../services/review";
 
 export default function ProfilePage() {
   const [data, setData] = useState([]);
+  const [review, setReview] = useState([]);
   const [avatarImage, setAvatarImage] = useState();
   const [loading, setLoading] = useState(true);
 
@@ -29,6 +32,7 @@ export default function ProfilePage() {
       .then((res) => {
         const id = res.data._id;
         loadData(token, id);
+        loadReview(token, id);
       })
       .catch((error) => console.log(error));
   }, []);
@@ -39,6 +43,15 @@ export default function ProfilePage() {
         setData(res.data);
         setAvatarImage(res.data.avatarphoto);
         setLoading(false);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const loadReview = async (token, id) => {
+    getReviewOwner(token, id)
+      .then((res) => {
+        console.log(res.data);
+        setReview(res.data);
       })
       .catch((error) => console.log(error));
   };
@@ -114,6 +127,54 @@ export default function ProfilePage() {
                   แก้ไขข้อมูลส่วนตัว
                 </Button>
               </Stack>
+            </Paper>
+            <Paper
+              style={{
+                padding: 16,
+                marginBottom: 16,
+                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+                borderRadius: 8,
+                background: "#fff",
+              }}
+            >
+              <Typography variant="h6" gutterBottom>
+                รีวิว
+              </Typography>
+              {review.length === 0 ? (
+                <Typography variant="body1">ไม่มีรีวิว</Typography>
+              ) : (
+                review.map((reviewItem, index) => (
+                  <div key={index}>
+                    <Divider sx={{ margin: "8px 0" }} />
+                    <Stack>
+                      <Typography variant="subtitle1">
+                        ชื่อ:{"*".repeat(2)}
+                        {reviewItem.employeeFirstName.substring(2)}{" "}
+                        นามสกุล:{"*".repeat(4)}
+                        {reviewItem.employeeLastName.substring(2)}
+                      </Typography>
+                      <Typography variant="subtitle1">
+                        {dayjs(reviewItem.workDay)
+                          .locale("th")
+                          .format("ddd DD MMM")}
+                      </Typography>
+                      <Typography variant="subtitle1">
+                        วัน-เวลาที่รีวิว:{" "}
+                        {dayjs(reviewItem.createdAt)
+                          .locale("th")
+                          .format("ddd DD MMM HH:mm:ss")}
+                      </Typography>
+                      <Typography variant="body1">
+                        คะแนน: {reviewItem.employeeRating}
+                      </Typography>
+                      <Typography variant="body1">
+                        ข้อความ: {reviewItem.employeeReviewText}
+                      </Typography>
+                      <Divider sx={{ margin: "8px 0" }} />
+                    </Stack>
+                  </div>
+                ))
+              )}
             </Paper>
           </Box>
         ) : (

@@ -6,6 +6,8 @@ exports.reviewEmployee = async (req, res) => {
     try {
         const { companyId, companyName, workDay, employeeId, employeeRating, employeeReviewText } = req.body;
 
+        console.log(req.body)
+
         const review = new ReviewEmployee({
             employeeId,
             companyName,
@@ -45,7 +47,7 @@ exports.reviewOwner = async (req, res) => {
         const { companyId, workDay, employeeId, employeeFirstName, employeeLastName, employeeRating, employeeReviewText } = req.body;
 
         const review = new ReviewOwner({
-            employeeId,
+            companyId,
             employeeFirstName,
             employeeLastName,
             workDay,
@@ -90,10 +92,14 @@ exports.getReviewEmployee = async (req, res) => {
         throw error;
     }
 };
-exports.getReviewEmployee = async (req, res) => {
+
+exports.getReviewOwner = async (req, res) => {
     try {
         const id = req.params.id;
-        const review = await ReviewEmployee.find({ employeeId: id })
+        const review = await ReviewOwner.find({
+            companyId
+                : id
+        })
         res.status(200).send(review);
     } catch (error) {
         console.log(error);

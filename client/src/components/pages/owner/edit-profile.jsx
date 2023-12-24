@@ -18,6 +18,8 @@ import dayjs from "dayjs";
 import "dayjs/locale/th";
 
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import { useNavigate, useParams } from "react-router-dom";
 
 import toast from "react-hot-toast";
@@ -54,9 +56,26 @@ export default function EditProfile() {
   const params = useParams();
   const navigate = useNavigate();
 
-  //console.log(params.id);
+  const schema = yup.object().shape({
+    idCard: yup
+      .string()
+      .min(13, "เลขบัตรประชาชนต้องมี 13 หลัก")
+      .max(13, "เลขบัตรประชาชนต้องมี 13 หลัก"),
+    phoneNumber: yup
+      .string()
+      .min(10, "เบอร์โทรศัพท์ต้องมี 10 หลัก")
+      .max(10, "เบอร์โทรศัพท์ต้องมี 10 หลัก"),
+  });
 
-  const { register, handleSubmit, setValue } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+    mode: "all",
+  });
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -256,6 +275,8 @@ export default function EditProfile() {
                 <Grid item xs={12}>
                   <TextField
                     {...register("idCard")}
+                    error={errors.idCard ? true : false}
+                    helperText={errors.idCard && errors.idCard.message}
                     fullWidth
                     label="เลขบัตรประชาชน"
                     defaultValue={data.idCard}
@@ -264,6 +285,10 @@ export default function EditProfile() {
                 <Grid item xs={12}>
                   <TextField
                     {...register("phoneNumber")}
+                    error={errors.phoneNumber ? true : false}
+                    helperText={
+                      errors.phoneNumber && errors.phoneNumber.message
+                    }
                     fullWidth
                     label="เบอร์โทรศัพท์"
                     defaultValue={data.phoneNumber}

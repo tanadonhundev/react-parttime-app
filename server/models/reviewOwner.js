@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const reviewOwnerScheme = mongoose.Schema({
-    employeeId: String,
+    companyId: String,
     employeeFirstName: String,
     employeeLastName: String,
     workDay: Date,

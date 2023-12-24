@@ -7,6 +7,7 @@ import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
 import EditIcon from "@mui/icons-material/Edit";
 import CircularProgress from "@mui/material/CircularProgress";
+import Divider from "@mui/material/Divider";
 
 import { Link } from "react-router-dom";
 
@@ -16,7 +17,6 @@ import "dayjs/locale/th";
 import { currentUser } from "../../../services/auth";
 import { profileUser } from "../../../services/user";
 import { getReviewEmployee } from "../../../services/review";
-import { Divider } from "@mui/material";
 
 export default function ProfilePage() {
   const [data, setData] = useState([]);

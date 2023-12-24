@@ -24,3 +24,11 @@ export const getReviewEmployee = async (authtoken, id) => {
         },
     });
 };
+
+export const getReviewOwner = async (authtoken, id) => {
+    return await axios.get(`${baseURL}/api/reviewowner/` + id, {
+        headers: {
+            authtoken,
+        },
+    });
+};

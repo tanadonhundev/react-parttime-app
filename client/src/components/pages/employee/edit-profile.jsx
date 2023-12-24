@@ -56,7 +56,6 @@ export default function EditProfile() {
   const params = useParams();
   const navigate = useNavigate();
 
-  //console.log(params.id);
   const schema = yup.object().shape({
     idCard: yup
       .string()
@@ -77,6 +76,7 @@ export default function EditProfile() {
     resolver: yupResolver(schema),
     mode: "all",
   });
+  
   useEffect(() => {
     const token = localStorage.getItem("token");
     loadData(token, params.id);

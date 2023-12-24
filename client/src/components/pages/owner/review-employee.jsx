@@ -102,8 +102,8 @@ export default function ReviewEmployee() {
 
   uniqueDates.sort((a, b) => (dayjs(a).isBefore(dayjs(b)) ? -1 : 1));
 
-  const handleClickOpen = (employee, companyId, workDay) => {
-    setEmployeeToReview({ ...employee, companyId, workDay });
+  const handleClickOpen = (employee, companyId, companyName, workDay) => {
+    setEmployeeToReview({ ...employee, companyId, companyName, workDay });
     setOpen(true);
   };
 
@@ -116,12 +116,14 @@ export default function ReviewEmployee() {
     if (employeeToReview) {
       const values = {
         companyId: employeeToReview.companyId,
+        companyName: employeeToReview.companyName,
         workDay: employeeToReview.workDay,
         employeeId: employeeToReview.employeeId,
         status: employeeToReview.employmentStatusRe,
         employeeRating: value,
         employeeReviewText: reviewText,
       };
+      console.log(values);
       reviewEmployee(token, values)
         .then((res) => {
           toast.success(res.data);
@@ -235,6 +237,7 @@ export default function ReviewEmployee() {
                                                   handleClickOpen(
                                                     employee,
                                                     item.companyId,
+                                                    item.companyName,
                                                     item.workDay
                                                   )
                                                 }

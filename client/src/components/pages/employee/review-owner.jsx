@@ -161,8 +161,8 @@ export default function ReviewOwner() {
     setSelectedTab(newValue);
   };
 
-  const handleClickOpen = (user) => {
-    setOwnerToReview(user);
+  const handleClickOpen = (user, employeeFirstName, employeeLastName) => {
+    setOwnerToReview({ ...user, employeeFirstName, employeeLastName });
     setOpen(true);
   };
 
@@ -175,12 +175,13 @@ export default function ReviewOwner() {
     if (ownerToReview) {
       const values = {
         companyId: ownerToReview.companyId,
+        employeeFirstName: ownerToReview.employeeFirstName,
+        employeeLastName: ownerToReview.employeeLastName,
         workDay: ownerToReview.workDay,
         employeeId: employeeId,
         employeeRating: value,
         employeeReviewText: reviewText,
       };
-      console.log(values);
       reviewOwner(token, values)
         .then((res) => {
           toast.success(res.data);
@@ -301,7 +302,11 @@ export default function ReviewOwner() {
                                               variant="contained"
                                               color="info"
                                               onClick={() =>
-                                                handleClickOpen(item)
+                                                handleClickOpen(
+                                                  item,
+                                                  employee.employeeFirstName,
+                                                  employee.employeeLastName
+                                                )
                                               }
                                               disabled={
                                                 employee.ownermentStatusRe ===
@@ -378,7 +383,6 @@ export default function ReviewOwner() {
                     </span>
                     <Stack direction={"row"} spacing={2}>
                       <span>ชื่อ: {ownerToReview.companyName}</span>
-                      <span>ชื่อ: {ownerToReview.ownermentStatusRe}</span>
                     </Stack>
                     <br />
                     <Box
