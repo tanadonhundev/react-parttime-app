@@ -93,10 +93,10 @@ exports.applyWork = async (req, res) => {
             return res.status(200).send("สมัครงานนี้ไปแล้ว");
         }
 
-        // Check for other jobs with employmentStatus==="พร้อมเริ่มงาน" on the same day
         const otherJobsOnSameDay = await Work.find({
-            _id: { $ne: req.body.company._id }, // Exclude the current job
-            workDay: work.workDay, // Assuming workDay is the field representing the day
+            companyId: { $ne: req.body.company._id }, // Exclude the current job 
+            "employees.employeeId": req.body.employee._id, // Check if the employee is already assigned to another job
+            workDay: work.workDay,
             "employees.employmentStatus": "พร้อมเริ่มงาน"
         }).exec();
 
