@@ -208,7 +208,6 @@ exports.CancelWork = async (req, res) => {
 
         // Save the changes to the database
         await work.save();
-
         res.status(200).send('ยกเลิกสมัครงานสำเร็จ');
     } catch (error) {
         console.error(error);

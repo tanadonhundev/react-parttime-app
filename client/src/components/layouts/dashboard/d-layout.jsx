@@ -90,7 +90,12 @@ function DashboardContent() {
           navigate("/");
         }
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+        if (error.response.data === "Token invald!!!") {
+          navigate("/");
+        }
+      });
   }, []);
 
   return (

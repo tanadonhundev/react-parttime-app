@@ -185,7 +185,7 @@ export default function WorkApply() {
       const values = {
         workDay: userToCancel.workDay,
         companyId: userToCancel.companyId,
-        employeeId: userToCancel.employees[0].employeeId,
+        employeeId: employeeId,
         employmentStatus: userToCancel.employees[0].employmentStatus,
       };
       CancelWork(token, values)
@@ -402,6 +402,7 @@ export default function WorkApply() {
                                             handleConfirm(
                                               employee.employmentStatus,
                                               employee.employeeId,
+                                              employee.employeeFirstName,
                                               item.companyId,
                                               item.workDay
                                             )
@@ -444,6 +445,7 @@ export default function WorkApply() {
               {userToCancel && (
                 <Stack>
                   <span>{userToCancel.companyName}</span>
+                  <span>{userToCancel.employee}</span>
                   <span>
                     วันที่:
                     {dayjs(userToCancel.workDay)

@@ -101,7 +101,6 @@ export default function WorkDescrip() {
           toast.error(res.data);
           navigate("/dashboard-employee/work-announce");
         }
-        console.log(res.data);
       })
       .catch((error) => console.log(error));
   };

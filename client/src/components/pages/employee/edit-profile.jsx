@@ -76,7 +76,6 @@ export default function EditProfile() {
     resolver: yupResolver(schema),
     mode: "all",
   });
-  
   useEffect(() => {
     const token = localStorage.getItem("token");
     loadData(token, params.id);

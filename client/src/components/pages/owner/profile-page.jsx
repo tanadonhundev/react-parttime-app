@@ -98,7 +98,7 @@ export default function ProfilePage() {
                 />
               </Stack>
               <Typography variant="h6" gutterBottom>
-                ชื่่อ: {data.firstName}
+                ชื่อ: {data.firstName}
               </Typography>
               <Typography variant="h6" gutterBottom>
                 นามสกุล: {data.lastName}
