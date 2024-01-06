@@ -110,7 +110,6 @@ export default function WorkApply() {
 
   useEffect(() => {
     const intervalId = setInterval(updateCountdowns, 1000);
-
     // Cleanup the interval when the component unmounts
     return () => clearInterval(intervalId);
   }, [filteredData]);
@@ -164,14 +163,15 @@ export default function WorkApply() {
       .catch((error) => console.log(error));
   };
 
-  const handleConfirm = (item, employeeId, companyId, workDay) => {
+  const handleConfirm = (employeeId, companyId, workDay) => {
     const token = localStorage.getItem("token");
     const values = {
-      workDay: workDay,
-      companyId: companyId,
       employeeId: employeeId,
+      companyId: companyId,
+      workDay: workDay,
       status: "พร้อมเริ่มงาน",
     };
+    console.log(values);
     ChangeEmploymentStatus(token, values)
       .then((res) => {
         loadData(token, employeeId);
@@ -400,9 +400,7 @@ export default function WorkApply() {
                                           variant="contained"
                                           onClick={() =>
                                             handleConfirm(
-                                              employee.employmentStatus,
                                               employee.employeeId,
-                                              employee.employeeFirstName,
                                               item.companyId,
                                               item.workDay
                                             )
