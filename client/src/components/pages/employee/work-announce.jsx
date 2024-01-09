@@ -31,7 +31,7 @@ import { loadPhoto } from "../../../services/user";
 export default function WorkAnnounce() {
   const [data, setData] = useState([]);
   const [work, setWork] = useState([]);
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState();
   const [workPositionChecked, setWorkPositionChecked] = useState({
     เสิร์ฟ: false,
     ล้างจาน: false,

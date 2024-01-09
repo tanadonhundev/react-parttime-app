@@ -12,16 +12,12 @@ const routeDashboardAdmin = [
     element: <DLayout />,
     children: [
       {
-        path: "", // localhost:4000/dashboard-admin
-        element: <HomeAdmin />,
-      },
-      {
         path: "manage-user", // localhost:4000/dashboard-admin/manage-user
         element: <ManageUser />,
       },
       {
         path: "verify-user/:id", // localhost:4000/dashboard-admin/verify-user
-        element: <VerifyUser/>,
+        element: <VerifyUser />,
       },
     ],
   },

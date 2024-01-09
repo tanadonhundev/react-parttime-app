@@ -9,16 +9,11 @@ import ReviewOwner from "../components/pages/employee/review-owner";
 //layout
 import { DLayout } from "../components/layouts/dashboard/d-layout";
 
-
 const routeDashboardEmployee = [
   {
     path: "/dashboard-employee",
     element: <DLayout />,
     children: [
-      {
-        path: "", // localhost:4000/dashboard-employee
-        element: <HomeEmployee />,
-      },
       {
         path: "profile", // localhost:4000/dashboard-employee/profile
         element: <ProfilePage />,

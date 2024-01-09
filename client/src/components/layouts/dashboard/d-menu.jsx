@@ -27,7 +27,6 @@ export const DMenu = () => {
 
   const location = useLocation();
   const adminMenu = [
-    { label: "หน้าหลัก", icon: <DashboardIcon />, href: "/dashboard-admin" },
     {
       label: "จัดการผู้ใช้งาน",
       icon: <PeopleIcon />,
@@ -36,7 +35,6 @@ export const DMenu = () => {
   ];
 
   const ownerMenu = [
-    { label: "หน้าหลัก", icon: <DashboardIcon />, href: "/dashboard-owner" },
     {
       label: "โปรไฟล์",
       icon: <AccountBoxIcon />,
@@ -60,7 +58,6 @@ export const DMenu = () => {
   ];
 
   const employeeMenu = [
-    { label: "หน้าหลัก", icon: <DashboardIcon />, href: "/dashboard-employee" },
     {
       label: "โปรไฟล์",
       icon: <AccountBoxIcon />,

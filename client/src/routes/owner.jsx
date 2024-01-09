@@ -17,10 +17,6 @@ const routeDashboardOwner = [
     element: <DLayout />,
     children: [
       {
-        path: "", // localhost:4000/dashboard-owner
-        element: <HomeOwner />,
-      },
-      {
         path: "profile", // localhost:4000/dashboard-owner/profile
         element: <ProfilePage />,
       },
