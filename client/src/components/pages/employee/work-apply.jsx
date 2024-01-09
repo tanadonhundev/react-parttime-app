@@ -171,7 +171,6 @@ export default function WorkApply() {
       workDay: workDay,
       status: "พร้อมเริ่มงาน",
     };
-    console.log(values);
     ChangeEmploymentStatus(token, values)
       .then((res) => {
         loadData(token, employeeId);
@@ -182,19 +181,24 @@ export default function WorkApply() {
 
   const handleCancel = async (token) => {
     if (userToCancel) {
-      const values = {
-        workDay: userToCancel.workDay,
-        companyId: userToCancel.companyId,
-        employeeId: employeeId,
-        employmentStatus: userToCancel.employees[0].employmentStatus,
-      };
-      CancelWork(token, values)
-        .then((res) => {
-          toast.success(res.data);
-          handleClose();
-          loadData(token, userToCancel.employees[0].employeeId);
-        })
-        .catch((error) => console.log(error));
+      const filteredEmploymentStatus = userToCancel.employees.find(
+        (employee) => employee.employeeId === employeeId
+      );
+      if (filteredEmploymentStatus) {
+        const values = {
+          workDay: userToCancel.workDay,
+          companyId: userToCancel.companyId,
+          employeeId: employeeId,
+          employmentStatus: filteredEmploymentStatus.employmentStatus,
+        };
+        CancelWork(token, values)
+          .then((res) => {
+            toast.success(res.data);
+            handleClose();
+            loadData(token, employeeId);
+          })
+          .catch((error) => console.log(error));
+      }
     }
   };
 
