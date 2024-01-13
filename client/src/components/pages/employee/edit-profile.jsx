@@ -268,6 +268,51 @@ export default function EditProfile() {
                   />
                 </Grid>
                 <Grid item xs={12}>
+                  <InputLabel>ที่อยู่ตามบัตรประชาชน</InputLabel>
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    {...register("houseNumber")}
+                    label="บ้านเลขที่"
+                    defaultValue={data.houseNumber}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    {...register("groupNumber")}
+                    label="หมู่ที่"
+                    defaultValue={data.groupNumber}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    {...register("subDistrict")}
+                    label="ตำบล"
+                    defaultValue={data.subDistrict}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    {...register("district")}
+                    label="อำเภอ"
+                    defaultValue={data.district}
+                  />
+                </Grid>
+                <Grid item xs={7}>
+                  <TextField
+                    {...register("proVince")}
+                    label="จังหวัด"
+                    defaultValue={data.proVince}
+                  />
+                </Grid>
+                <Grid item xs={5}>
+                  <TextField
+                    {...register("postCode")}
+                    label="รหัสไปรษณีย์"
+                    defaultValue={data.postCode}
+                  />
+                </Grid>
+                <Grid item xs={12}>
                   <InputLabel>ที่อยู่ปัจจุบัน</InputLabel>
                   <Card>
                     <CardContent>

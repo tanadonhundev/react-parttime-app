@@ -11,6 +11,18 @@ const userScheme = mongoose.Schema({
     age: Number,
     idCard: Number,
     phoneNumber: String,
+    houseNumber: String,
+    groupNumber: Number,
+    subDistrict: String,
+    district: String,
+    proVince: String,
+    postCode: Number,
+    companyHouseNumber: String,
+    companyGroupNumber: Number,
+    CompanySubDistrict: String,
+    CompanyDistrict: String,
+    CompanyProVince: String,
+    CompanyPostCode: Number,
     statusVerify: {
         type: String,
         default: 'รอตรวจสอบ'

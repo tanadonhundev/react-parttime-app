@@ -6,8 +6,6 @@ exports.reviewEmployee = async (req, res) => {
     try {
         const { companyId, companyName, workDay, employeeId, employeeRating, employeeReviewText } = req.body;
 
-        console.log(req.body)
-
         const review = new ReviewEmployee({
             employeeId,
             companyName,
@@ -61,8 +59,6 @@ exports.reviewOwner = async (req, res) => {
         }
         // Find the employee within the work record based on employeeId
         const employee = work.employees.find(emp => emp.employeeId === employeeId);
-
-        console.log(employee)
 
         if (!employee) {
             return res.status(404).json({ msg: 'Employee not found' });

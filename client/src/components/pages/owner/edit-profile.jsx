@@ -295,7 +295,64 @@ export default function EditProfile() {
                   />
                 </Grid>
                 <Grid item xs={12}>
-                  <InputLabel>ที่อยู่ปัจจุบัน</InputLabel>
+                  <InputLabel>ที่อยู่ตามบัตรประชาชน</InputLabel>
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    {...register("houseNumber")}
+                    label="บ้านเลขที่"
+                    defaultValue={data.houseNumber}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    {...register("groupNumber")}
+                    label="หมู่ที่"
+                    defaultValue={data.groupNumber}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    {...register("subDistrict")}
+                    label="ตำบล"
+                    defaultValue={data.subDistrict}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    {...register("district")}
+                    label="อำเภอ"
+                    defaultValue={data.district}
+                  />
+                </Grid>
+                <Grid item xs={7}>
+                  <TextField
+                    {...register("proVince")}
+                    label="จังหวัด"
+                    defaultValue={data.proVince}
+                  />
+                </Grid>
+                <Grid item xs={5}>
+                  <TextField
+                    {...register("postCode")}
+                    label="รหัสไปรษณีย์"
+                    defaultValue={data.postCode}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <InputLabel>ข้อมูลบริษัท</InputLabel>
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    {...register("idCard")}
+                    label="เลขที่นิติบุคคล"
+                    defaultValue={data.idCard}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <InputLabel>ที่อยู่บริษัท</InputLabel>
+                </Grid>
+                <Grid item xs={12}>
                   <Card>
                     <CardContent>
                       <GoogleMap
@@ -315,6 +372,48 @@ export default function EditProfile() {
                       </GoogleMap>
                     </CardContent>
                   </Card>
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    {...register("companyHouseNumber")}
+                    label="บ้านเลขที่"
+                    defaultValue={data.companyHouseNumber}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    {...register("companyGroupNumber")}
+                    label="หมู่ที่"
+                    defaultValue={data.companyGroupNumber}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    {...register("CompanySubDistrict")}
+                    label="ตำบล"
+                    defaultValue={data.CompanySubDistrict}
+                  />
+                </Grid>
+                <Grid item xs={6}>
+                  <TextField
+                    {...register("CompanyDistrict")}
+                    label="อำเภอ"
+                    defaultValue={data.CompanyDistrict}
+                  />
+                </Grid>
+                <Grid item xs={7}>
+                  <TextField
+                    {...register("CompanyProVince")}
+                    label="จังหวัด"
+                    defaultValue={data.CompanyProVince}
+                  />
+                </Grid>
+                <Grid item xs={5}>
+                  <TextField
+                    {...register("CompanyPostCode")}
+                    label="รหัสไปรษณีย์"
+                    defaultValue={data.CompanyPostCode}
+                  />
                 </Grid>
                 <Grid item xs={12}>
                   <InputLabel>รูปประจำตัว</InputLabel>
