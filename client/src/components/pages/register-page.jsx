@@ -54,13 +54,13 @@ export default function RegisterPage() {
   const onSubmit = async (data) => {
     registerUser(data)
       .then((res) => {
-        console.log(res);
-        if (res.data === "สมัครสมาชิกสำเร็จแล้ว") {
-          toast.success(res.data);
-          navigate("/");
-        } else toast.error(res.data);
+        toast.success(res.data);
+        navigate("/");
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.error(error);
+        toast.error(error.response.data);
+      });
   };
 
   return (

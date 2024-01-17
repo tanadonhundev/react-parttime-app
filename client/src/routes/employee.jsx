@@ -1,5 +1,4 @@
 //page
-import HomeEmployee from "../components/pages/employee/home-employee";
 import ProfilePage from "../components/pages/employee/profile-page";
 import EditProfile from "../components/pages/employee/edit-profile";
 import WorkAnnounce from "../components/pages/employee/work-announce";

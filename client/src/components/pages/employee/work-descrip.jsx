@@ -94,15 +94,14 @@ export default function WorkDescrip() {
     };
     applyWork(token, value)
       .then((res) => {
-        if (res.data === "สมัครงานสำเร็จ") {
-          toast.success(res.data);
-          navigate("/dashboard-employee/work-announce");
-        } else {
-          toast.error(res.data);
-          navigate("/dashboard-employee/work-announce");
-        }
+        toast.success(res.data);
+        navigate("/dashboard-employee/work-announce");
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.error(error);
+        toast.error(error.response.data);
+        navigate("/dashboard-employee/work-announce");
+      });
   };
 
   const startTime = dayjs(company.workStartTime);

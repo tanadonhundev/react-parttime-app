@@ -1,5 +1,4 @@
 //page
-import HomeAdmin from "../components/pages/admin/home-admin";
 import ManageUser from "../components/pages/admin/manage-user";
 import VerifyUser from "../components/pages/admin/verify-user";
 

@@ -46,24 +46,18 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (data) => {
-    setLoading(true)
+    setLoading(true);
     loginUser(data)
       .then((res) => {
         setLoading(false);
-        if (res.data === "อีเมลไม่ถูกต้อง") {
-          toast.error(res.data);
-        }
-        if (res.data === "รหัสผ่านไม่ถูกต้อง") {
-          toast.error(res.data);
-        } else {
-          localStorage.setItem("token", res.data.token);
-          roleUser(res.data.payload.user.role);
-          toast.success("เข้าสู่ระบบสำเร็จ");
-        }
+        localStorage.setItem("token", res.data.token);
+        roleUser(res.data.payload.user.role);
+        toast.success("เข้าสู่ระบบสำเร็จ");
       })
       .catch((error) => {
         setLoading(false);
         console.log(error);
+        toast.error(error.response.data);
       });
   };
 

@@ -18,10 +18,10 @@ exports.createCompany = async (req, res) => {
             workDress
         });
         await company.save();
-        res.send("สร้างประกาศจ้างงานสำเร็จ");
+        res.status(200).send("สร้างประกาศจ้างงานสำเร็จ");
     } catch (error) {
         console.log(error);
-        res.send("Server Error");
+        res.status(500).send("Server Error");
         throw error;
     }
 };
@@ -30,10 +30,10 @@ exports.deleteCompany = async (req, res) => {
     try {
         id = req.body.id
         await Company.findOneAndDelete({ _id: id });
-        res.send("ลบประกาศจ้างงานสำเร็จ");
+        res.status(200).send("ลบประกาศจ้างงานสำเร็จ");
     } catch (error) {
         console.log(error);
-        res.send("Server Error");
+        res.status(500).send("Server Error");
         throw error;
     }
 };
@@ -43,10 +43,10 @@ exports.companyList = async (req, res) => {
         const id = req.params.id;
         //console.log(id)
         const company = await Company.find({ companyId: id });
-        res.send(company)
+        res.status(200).send(company)
     } catch (error) {
         console.log(error);
-        res.send('Server Error');
+        res.status(500).send('Server Error');
     }
 }
 
@@ -54,9 +54,9 @@ exports.companyDescrip = async (req, res) => {
     try {
         const id = req.params.id;
         const workDetails = await Company.findOne({ _id: id });
-        res.send(workDetails)
+        res.status(200).send(workDetails)
     } catch (error) {
         console.log(error);
-        res.send('Server Error');
+        res.status(500).send('Server Error');
     }
 }

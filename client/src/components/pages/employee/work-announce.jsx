@@ -27,6 +27,7 @@ import "dayjs/locale/th";
 
 import { workList } from "../../../services/work";
 import { loadPhoto } from "../../../services/user";
+import { currentUser } from "../../../services/auth";
 
 export default function WorkAnnounce() {
   const [data, setData] = useState([]);
@@ -67,15 +68,23 @@ export default function WorkAnnounce() {
     }
   }, [companyId]);
 
-  const loadData = async (token) => {
-    workList(token)
-      .then((res) => {
-        const filteredData = res.data.filter((item) =>
+  const loadData = (token) => {
+    currentUser(token)
+      .then((currentUserResponse) => {
+        if (currentUserResponse.data.statusBlacklist === true) {
+          setLoading(false);
+        }
+        return workList(token);
+      })
+      .then((workListResponse) => {
+        const filteredData = workListResponse.data.filter((item) =>
           dayjs(item.workDay).isAfter(dayjs().subtract(1, "day"))
         );
+
         const uniqueCompanyIdArray = Array.from(
           new Set(filteredData.map((item) => item.companyId))
         );
+
         setCompanyId(uniqueCompanyIdArray);
         setData(filteredData);
         setWork(filteredData);

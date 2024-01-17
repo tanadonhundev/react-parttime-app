@@ -4,7 +4,9 @@ import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
+import TableFooter from "@mui/material/TableFooter";
 import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Button from "@mui/material/Button";
@@ -43,6 +45,17 @@ export default function ManageUser() {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState([]);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   const baseURL = import.meta.env.VITE_API;
 
@@ -102,7 +115,9 @@ export default function ManageUser() {
 
   return (
     <>
-      <Typography>d-manage-user</Typography>
+      <Typography variant="h6" gutterBottom>
+        จัดการผู้ใช้งาน
+      </Typography>
       <Container>
         {loading ? (
           <Box
@@ -119,7 +134,7 @@ export default function ManageUser() {
           </Box>
         ) : (
           <TableContainer component={Paper}>
-            <Table aria-label="simple table">
+            <Table>
               <TableHead style={{ backgroundColor: "lightblue" }}>
                 <TableRow>
                   <TableCell>รูปโปรไฟล์</TableCell>
@@ -139,6 +154,10 @@ export default function ManageUser() {
                       .filter(
                         (item) =>
                           item.role === "employee" || item.role === "owner"
+                      )
+                      .slice(
+                        page * rowsPerPage,
+                        page * rowsPerPage + rowsPerPage
                       )
                       .map((item, index) => (
                         <TableRow key={index}>
@@ -207,6 +226,30 @@ export default function ManageUser() {
                       ))
                   : null}
               </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[
+                      10,
+                      20,
+                      30,
+                      { label: "All", value: -1 },
+                    ]}
+                    colSpan={7}
+                    count={data.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    SelectProps={{
+                      inputProps: {
+                        "aria-label": "rows per page",
+                      },
+                      native: true,
+                    }}
+                    onPageChange={handleChangePage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                  />
+                </TableRow>
+              </TableFooter>
             </Table>
           </TableContainer>
         )}

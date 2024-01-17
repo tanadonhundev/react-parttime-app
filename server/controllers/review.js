@@ -30,10 +30,10 @@ exports.reviewEmployee = async (req, res) => {
         // Save the changes to the database
         await work.save();
         await review.save();
-        res.send("รีวิวพนักงานสำเร็จ");
+        res.status(200).send("รีวิวพนักงานสำเร็จ");
     } catch (error) {
         console.log(error);
-        res.send("Server Error");
+        res.status(500).send('Server Error');
         throw error;
     }
 };
@@ -69,10 +69,10 @@ exports.reviewOwner = async (req, res) => {
         // Save the changes to the database
         await work.save();
         await review.save();
-        res.send("รีวิวนายจ้างสำเร็จ");
+        res.status(200).send("รีวิวนายจ้างสำเร็จ");
     } catch (error) {
         console.log(error);
-        res.send("Server Error");
+        res.status(500).send('Server Error');
         throw error;
     }
 };
@@ -84,7 +84,7 @@ exports.getReviewEmployee = async (req, res) => {
         res.status(200).send(review);
     } catch (error) {
         console.log(error);
-        res.send("Server Error");
+        res.status(500).send('Server Error');
         throw error;
     }
 };
@@ -99,7 +99,7 @@ exports.getReviewOwner = async (req, res) => {
         res.status(200).send(review);
     } catch (error) {
         console.log(error);
-        res.send("Server Error");
+        res.status(500).send('Server Error');
         throw error;
     }
 };

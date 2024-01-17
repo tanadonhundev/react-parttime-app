@@ -1,5 +1,4 @@
 //page
-import HomeOwner from "../components/pages/owner/home-owner";
 import ProfilePage from "../components/pages/owner/profile-page";
 import EditProfile from "../components/pages/owner/edit-profile";
 import CompanyAnnounce from "../components/pages/owner/company-announce";

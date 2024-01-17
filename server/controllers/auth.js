@@ -10,7 +10,7 @@ exports.registerUser = async (req, res) => {
         var user = await User.findOne({ email });
 
         if (user) {
-            return res.status(200).send("มีผู้ใช้งานในระบบแล้ว");
+            return res.status(400).send("มีผู้ใช้งานในระบบแล้ว");
         }
 
         //Encrypt
@@ -44,7 +44,7 @@ exports.loginUser = async (req, res) => {
         if (user) {
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
-                return res.status(200).send("รหัสผ่านไม่ถูกต้อง");
+                return res.status(400).send("รหัสผ่านไม่ถูกต้อง");
             } else {
                 //Payload
                 var payload = {
@@ -52,6 +52,7 @@ exports.loginUser = async (req, res) => {
                         id: user._id,
                         email: user.email,
                         role: user.role,
+                        statusBlacklist: user.statusBlacklist
                     }
                 }
                 //Generate token
@@ -60,7 +61,7 @@ exports.loginUser = async (req, res) => {
                     res.json({ token, payload })
                 });
             }
-        } else return res.status(200).send("อีเมลไม่ถูกต้อง");
+        } else return res.status(400).send("อีเมลไม่ถูกต้อง");
 
     } catch (error) {
         console.log(error);

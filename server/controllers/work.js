@@ -84,13 +84,13 @@ exports.applyWork = async (req, res) => {
 
         // Check if the maximum number of employees has been reached
         if (work.numOfReady >= req.body.company.numOfEmployee) {
-            return res.status(200).send("พนักงานเต็มแล้ว");
+            return res.status(400).send("พนักงานเต็มแล้ว");
         }
 
         // Check if the employee has already applied for this job
         const employee = work.employees.find(e => e.employeeId === req.body.employee._id);
         if (employee) {
-            return res.status(200).send("สมัครงานนี้ไปแล้ว");
+            return res.status(400).send("สมัครงานนี้ไปแล้ว");
         }
 
         const otherJobsOnSameDay = await Work.find({
@@ -101,7 +101,7 @@ exports.applyWork = async (req, res) => {
         }).exec();
 
         if (otherJobsOnSameDay.length > 0) {
-            return res.status(200).send("มีงานในวันนี้แล้ว");
+            return res.status(400).send("มีงานในวันนี้แล้ว");
         }
 
         // Add the employee to the current job
