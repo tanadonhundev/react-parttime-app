@@ -17,6 +17,7 @@ const userScheme = mongoose.Schema({
     district: String,
     proVince: String,
     postCode: Number,
+    LegalNumber:Number,
     companyHouseNumber: String,
     companyGroupNumber: Number,
     CompanySubDistrict: String,

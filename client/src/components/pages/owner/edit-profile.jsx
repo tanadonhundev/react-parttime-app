@@ -344,9 +344,9 @@ export default function EditProfile() {
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
-                    {...register("idCard")}
+                    {...register("LegalNumber")}
                     label="เลขที่นิติบุคคล"
-                    defaultValue={data.idCard}
+                    defaultValue={data.LegalNumber}
                   />
                 </Grid>
                 <Grid item xs={12}>

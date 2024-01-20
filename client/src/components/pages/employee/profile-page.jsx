@@ -8,6 +8,9 @@ import Avatar from "@mui/material/Avatar";
 import EditIcon from "@mui/icons-material/Edit";
 import CircularProgress from "@mui/material/CircularProgress";
 import Divider from "@mui/material/Divider";
+import Card from "@mui/material/Card";
+import CardMedia from "@mui/material/CardMedia";
+import Grid from "@mui/material/Grid";
 
 import { Link } from "react-router-dom";
 
@@ -58,127 +61,198 @@ export default function ProfilePage() {
   };
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        {loading ? (
-          <Stack alignItems={"center"}>
-            <CircularProgress />
-            <Typography>กำลังโหลดข้อมูลข้อมูล</Typography>
-          </Stack>
-        ) : data ? (
-          <Box
-            sx={{
-              width: "100%",
-              maxWidth: 500,
-              textAlign: "start",
-              padding: 2,
+      {loading ? (
+        <Stack alignItems={"center"}>
+          <CircularProgress />
+          <Typography>กำลังโหลดข้อมูลข้อมูล</Typography>
+        </Stack>
+      ) : data ? (
+        <>
+          <Paper
+            style={{
+              padding: 16,
+              marginBottom: 16,
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              borderRadius: 8,
+              background: "#fff",
             }}
           >
-            <Paper
-              style={{
-                padding: 16,
-                marginBottom: 16,
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                borderRadius: 8,
-                background: "#fff",
-              }}
-            >
-              <Stack alignItems={"center"}>
-                <Typography variant="h6" gutterBottom>
-                  ข้อมูลส่วนตัว
-                </Typography>
-                <Avatar
-                  sx={{ width: 150, height: 150 }}
-                  alt="Remy Sharp"
-                  src={`${baseURL}/uploads/avatar/` + avatarImage}
-                />
-              </Stack>
-              <Typography variant="h6" gutterBottom>
-                ชื่อ: {data.firstName}
-              </Typography>
-              <Typography variant="h6" gutterBottom>
-                นามสกุล: {data.lastName}
-              </Typography>
-              <Typography variant="h6" gutterBottom>
-                วันเดือนปีเกิด:
-                {dayjs(data.birthDay).locale("th").format("DD/MM/YYYY")}
-              </Typography>
-              <Typography variant="h6" gutterBottom>
-                อายุ: {data.age} ปี
-              </Typography>
-              <Typography variant="h6" gutterBottom>
-                อีเมล: {data.email}
-              </Typography>
-              <Typography variant="h6" gutterBottom>
-                เบอร์โทรศัพท์: {data.phoneNumber}
-              </Typography>
-              <Stack alignItems={"flex-end"}>
-                <Button
-                  component={Link}
-                  to={`/dashboard-employee/edit-profile/${data._id}`}
-                  variant="contained"
-                  color="primary"
-                  startIcon={<EditIcon />}
-                >
-                  แก้ไขข้อมูลส่วนตัว
+            <Stack direction="row" justifyContent="flex-end">
+              {data.statusVerify === "รอตรวจสอบ" && (
+                <Button variant="outlined" color="warning">
+                  {data.statusVerify}
                 </Button>
-              </Stack>
-            </Paper>
-            <Paper
-              style={{
-                padding: 16,
-                marginBottom: 16,
-                boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
-                borderRadius: 8,
-                background: "#fff",
-              }}
-            >
-              <Typography variant="h6" gutterBottom>
-                รีวิว
-              </Typography>
-              {review.length === 0 ? (
-                <Typography variant="body1">ไม่มีรีวิว</Typography>
-              ) : (
-                review.map((reviewItem, index) => (
-                  <div key={index}>
-                    <Divider sx={{ margin: "8px 0" }} />
-                    <Stack>
-                      <Typography variant="subtitle1">
-                        {reviewItem.companyName}
-                      </Typography>
-                      <Typography variant="subtitle1">
-                        {dayjs(reviewItem.workDay)
-                          .locale("th")
-                          .format("ddd DD MMM")}
-                      </Typography>
-                      <Typography variant="subtitle1">
-                        วัน-เวลาที่รีวิว:{" "}
-                        {dayjs(reviewItem.createdAt)
-                          .locale("th")
-                          .format("ddd DD MMM HH:mm:ss")}
-                      </Typography>
-                      <Typography variant="body1">
-                        คะแนน: {reviewItem.employeeRating}
-                      </Typography>
-                      <Typography variant="body1">
-                        ข้อความ: {reviewItem.employeeReviewText}
-                      </Typography>
-                      <Divider sx={{ margin: "8px 0" }} />
-                    </Stack>
-                  </div>
-                ))
               )}
-            </Paper>
-          </Box>
-        ) : (
-          <p>No data available</p>
-        )}
-      </Box>
+              {data.statusVerify === "ตรวจสอบแล้ว" && (
+                <Button variant="outlined" color="success">
+                  {data.statusVerify}
+                </Button>
+              )}
+            </Stack>
+            <Stack alignItems={"center"}>
+              <Typography variant="h6" gutterBottom>
+                ข้อมูลส่วนตัว
+              </Typography>
+              <Avatar
+                sx={{ width: 150, height: 150 }}
+                alt="Remy Sharp"
+                src={`${baseURL}/uploads/avatar/` + avatarImage}
+              />
+            </Stack>
+
+            <Grid
+              container
+              direction="row"
+              justifyContent="space-around"
+              alignItems="flex-start"
+            >
+              <Grid item xs={6}>
+                <Typography variant="h6" gutterBottom>
+                  ชื่อ: {data.firstName}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6" gutterBottom>
+                  นามสกุล: {data.lastName}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6" gutterBottom>
+                  วันเดือนปีเกิด:
+                  {dayjs(data.birthDay).locale("th").format("DD/MM/YYYY")}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6" gutterBottom>
+                  อายุ: {data.age} ปี
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6" gutterBottom>
+                  อีเมล: {data.email}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6" gutterBottom>
+                  เบอร์โทรศัพท์: {data.phoneNumber}
+                </Typography>
+              </Grid>
+            </Grid>
+            <Stack direction={"column"} alignItems={"center"}>
+              <Typography variant="h6" gutterBottom>
+                รูปบัตรประชาชน
+              </Typography>
+              <Card sx={{ maxWidth: 500 }}>
+                <CardMedia
+                  component="img"
+                  width="200"
+                  height="250"
+                  src={`${baseURL}/uploads/idcard/` + idcardImage}
+                  alt="Company Image"
+                />
+              </Card>
+              <Typography variant="h6" gutterBottom>
+                ที่อยู่ตามบัตรประชาชน
+              </Typography>
+            </Stack>
+            <Grid
+              container
+              direction="row"
+              justifyContent="space-around"
+              alignItems="flex-start"
+            >
+              <Grid item xs={6}>
+                <Typography variant="h6" gutterBottom>
+                  บ้านเลขที่: {data.houseNumber}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6" gutterBottom>
+                  หมู่ที่: {data.groupNumber}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6" gutterBottom>
+                  ตำบล: {data.subDistrict}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6" gutterBottom>
+                  อำเภอ: {data.district}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6" gutterBottom>
+                  จังหวัด: {data.proVince}
+                </Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="h6" gutterBottom>
+                  รหัสไปรษณีย์: {data.postCode}
+                </Typography>
+              </Grid>
+            </Grid>
+            <Stack alignItems={"flex-end"}>
+              <Button
+                component={Link}
+                to={`/dashboard-owner/edit-profile/${data._id}`}
+                variant="contained"
+                color="primary"
+                startIcon={<EditIcon />}
+              >
+                แก้ไขข้อมูลส่วนตัว
+              </Button>
+            </Stack>
+          </Paper>
+          <Paper
+            style={{
+              padding: 16,
+              marginBottom: 16,
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+              borderRadius: 8,
+              background: "#fff",
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              ข้อมูลการรีวิว
+            </Typography>
+            {review.length === 0 ? (
+              <Typography variant="body1">ไม่มีรีวิว</Typography>
+            ) : (
+              review.map((reviewItem, index) => (
+                <div key={index}>
+                  <Divider sx={{ margin: "8px 0" }} />
+                  <Stack>
+                    <Typography variant="subtitle1">
+                      {reviewItem.companyName}
+                    </Typography>
+                    <Typography variant="subtitle1">
+                      {dayjs(reviewItem.workDay)
+                        .locale("th")
+                        .format("ddd DD MMM")}
+                    </Typography>
+                    <Typography variant="subtitle1">
+                      วัน-เวลาที่รีวิว:{" "}
+                      {dayjs(reviewItem.createdAt)
+                        .locale("th")
+                        .format("ddd DD MMM HH:mm:ss")}
+                    </Typography>
+                    <Typography variant="body1">
+                      คะแนน: {reviewItem.employeeRating}
+                    </Typography>
+                    <Typography variant="body1">
+                      ข้อความ: {reviewItem.employeeReviewText}
+                    </Typography>
+                    <Divider sx={{ margin: "8px 0" }} />
+                  </Stack>
+                </div>
+              ))
+            )}
+          </Paper>
+        </>
+      ) : (
+        <p>No data available</p>
+      )}
     </>
   );
 }

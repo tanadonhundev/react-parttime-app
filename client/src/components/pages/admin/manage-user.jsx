@@ -142,9 +142,9 @@ export default function ManageUser() {
                   <TableCell>นามสกุล</TableCell>
                   <TableCell>ตำแหน่ง</TableCell>
                   <TableCell style={{ textAlign: "center" }}>
-                    การตรวจสอบ
+                    สถานะการตรวจสอบ
                   </TableCell>
-                  <TableCell>การแบน</TableCell>
+                  <TableCell>สถานะการแบน</TableCell>
                   <TableCell style={{ textAlign: "center" }}>จัดการ</TableCell>
                 </TableRow>
               </TableHead>
@@ -178,9 +178,11 @@ export default function ManageUser() {
                               variant="outlined"
                               style={{
                                 color:
-                                  item.statusVerify === "รอตรวจสอบ"
-                                    ? "orange"
-                                    : "green",
+                                  item.statusVerify === "ตรวจสอบแล้ว"
+                                    ? "green"
+                                    : item.statusVerify === "รอตรวจสอบ"
+                                    ? "red"
+                                    : "orange",
                               }}
                             >
                               {item.statusVerify}
@@ -217,8 +219,9 @@ export default function ManageUser() {
                                 component={Link}
                                 to={`/dashboard-admin/verify-user/${item._id}`}
                                 style={{ textAlign: "center" }}
+                                //disabled={item.statusVerify === "ตรวจสอบแล้ว"}
                               >
-                                ดูข้อมูล
+                                ตรวจสอบ
                               </Button>
                             </Stack>
                           </TableCell>

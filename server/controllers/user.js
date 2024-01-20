@@ -83,7 +83,7 @@ exports.profileEdit = async (req, res) => {
                 data.companyphoto = req.files['companyphoto'][0].filename;
             }
         }
-
+        //data.statusVerify = 'รอตรวจสอบ';
         const updated = await User
             .findOneAndUpdate({ _id: id }, data, { new: true })
             .exec();
