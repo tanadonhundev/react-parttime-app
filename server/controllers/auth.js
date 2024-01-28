@@ -47,6 +47,11 @@ exports.loginUser = async (req, res) => {
                 return res.status(400).send("รหัสผ่านไม่ถูกต้อง");
             } else {
                 //Payload
+                if (user.statusBlacklist === false) {
+
+                    return res.status(400).send("บัญชีนี้ถูกระงับการใช้งาน");
+                }
+
                 var payload = {
                     user: {
                         id: user._id,

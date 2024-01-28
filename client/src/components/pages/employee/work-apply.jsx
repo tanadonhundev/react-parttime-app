@@ -23,6 +23,7 @@ import BadgeIcon from "@mui/icons-material/Badge";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import NotInterestedIcon from "@mui/icons-material/NotInterested";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 import { Link } from "react-router-dom";
 
@@ -264,7 +265,7 @@ export default function WorkApply() {
             ) : (
               <Grid container spacing={2}>
                 {filteredData.map((item) => (
-                  <Grid key={item._id} item lg={3} sm={6} xs={12}>
+                  <Grid key={item._id} item lg={3} md={6} sm={12}>
                     <div key={item._id}>
                       {/* Display the countdown for each item */}
                       <Typography variant="body1">
@@ -376,6 +377,7 @@ export default function WorkApply() {
                                         <Button
                                           variant="contained"
                                           color="error"
+                                          startIcon={<CancelIcon />}
                                           onClick={() => handleClickOpen(item)}
                                         >
                                           ยกเลิก
@@ -395,6 +397,7 @@ export default function WorkApply() {
                                         <Button
                                           variant="contained"
                                           color="error"
+                                          startIcon={<CancelIcon />}
                                           onClick={() => handleClickOpen(item)}
                                         >
                                           ยกเลิก

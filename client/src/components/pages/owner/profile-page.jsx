@@ -80,12 +80,17 @@ export default function ProfilePage() {
           >
             <Stack direction="row" justifyContent="flex-end">
               {data.statusVerify === "รอตรวจสอบ" && (
-                <Button variant="outlined" color="warning">
+                <Button variant="outlined" color="error">
                   {data.statusVerify}
                 </Button>
               )}
               {data.statusVerify === "ตรวจสอบแล้ว" && (
                 <Button variant="outlined" color="success">
+                  {data.statusVerify}
+                </Button>
+              )}
+              {data.statusVerify === "รอแก้ไขข้อมูล" && (
+                <Button variant="outlined" color="warning">
                   {data.statusVerify}
                 </Button>
               )}
@@ -242,10 +247,10 @@ export default function ProfilePage() {
                         .format("ddd DD MMM HH:mm:ss")}
                     </Typography>
                     <Typography variant="body1">
-                      คะแนน: {reviewItem.employeeRating}
+                      คะแนน: {reviewItem.rating}
                     </Typography>
                     <Typography variant="body1">
-                      ข้อความ: {reviewItem.employeeReviewText}
+                      ข้อความ: {reviewItem.reviewText}
                     </Typography>
                     <Divider sx={{ margin: "8px 0" }} />
                   </Stack>

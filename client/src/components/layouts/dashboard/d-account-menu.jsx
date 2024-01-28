@@ -25,7 +25,6 @@ export default function AccountMenu() {
 
   const baseURL = import.meta.env.VITE_API;
 
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -116,10 +115,6 @@ export default function AccountMenu() {
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={handleClose}>
-          <Avatar /> Profile
-        </MenuItem>
-        <Divider />
         <MenuItem onClick={(handleClose, handleLogout)}>
           <ListItemIcon>
             <Logout fontSize="small" />

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
@@ -13,6 +12,7 @@ import Select from "@mui/material/Select";
 import Card from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
 import Grid from "@mui/material/Grid";
+import Divider from "@mui/material/Divider";
 
 import { styled } from "@mui/material/styles";
 
@@ -114,44 +114,35 @@ export default function VerifyUser() {
               src={`${baseURL}/uploads/avatar/` + avatarImage}
             />
           </Stack>
-          <Grid
-            container
-            direction="row"
-            justifyContent="space-around"
-            alignItems="flex-start"
-          >
-            <Grid item xs={6}>
-              <Typography variant="h6" gutterBottom>
-                ชื่อ: {data.firstName}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6" gutterBottom>
-                นามสกุล: {data.lastName}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6" gutterBottom>
-                วันเดือนปีเกิด:
-                {dayjs(data.birthDay).locale("th").format("DD/MM/YYYY")}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6" gutterBottom>
-                อายุ: {data.age} ปี
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6" gutterBottom>
-                อีเมล: {data.email}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6" gutterBottom>
-                เบอร์โทรศัพท์: {data.phoneNumber}
-              </Typography>
-            </Grid>
-          </Grid>
+          <Stack direction={"row"} justifyContent={"space-around"}>
+            <Typography variant="h6" gutterBottom>
+              ชื่อ: {data.firstName}
+            </Typography>
+
+            <Typography variant="h6" gutterBottom>
+              นามสกุล: {data.lastName}
+            </Typography>
+            <Typography variant="h6" gutterBottom>
+              วันเดือนปีเกิด:
+              {dayjs(data.birthDay).locale("th").format("DD/MM/YYYY")}
+            </Typography>
+
+            <Typography variant="h6" gutterBottom>
+              อายุ: {data.age} ปี
+            </Typography>
+          </Stack>
+          <Stack direction={"row"} justifyContent={"space-around"}>
+            <Typography variant="h6" gutterBottom>
+              อีเมล: {data.email}
+            </Typography>
+            <Typography variant="h6" gutterBottom>
+              เบอร์โทรศัพท์: {data.phoneNumber}
+            </Typography>
+            <Typography variant="h6" gutterBottom>
+              เลขบัตรประชาชน: {data.idCard}
+            </Typography>
+          </Stack>
+          <Divider />
           <Stack direction={"column"} alignItems={"center"}>
             <Typography variant="h6" gutterBottom>
               รูปบัตรประชาชน
@@ -165,47 +156,37 @@ export default function VerifyUser() {
                 alt="Company Image"
               />
             </Card>
+          </Stack>
+          <br />
+          <Divider />
+          <Stack direction={"row"} justifyContent={"center"}>
             <Typography variant="h6" gutterBottom>
               ที่อยู่ตามบัตรประชาชน
             </Typography>
           </Stack>
-          <Grid
-            container
-            direction="row"
-            justifyContent="space-around"
-            alignItems="flex-start"
-          >
-            <Grid item xs={6}>
-              <Typography variant="h6" gutterBottom>
-                บ้านเลขที่: {data.houseNumber}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6" gutterBottom>
-                หมู่ที่: {data.groupNumber}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6" gutterBottom>
-                ตำบล: {data.subDistrict}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6" gutterBottom>
-                อำเภอ: {data.district}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6" gutterBottom>
-                จังหวัด: {data.proVince}
-              </Typography>
-            </Grid>
-            <Grid item xs={6}>
-              <Typography variant="h6" gutterBottom>
-                รหัสไปรษณีย์: {data.postCode}
-              </Typography>
-            </Grid>
-          </Grid>
+          <Stack direction={"row"} justifyContent={"space-around"}>
+            <Typography variant="h6" gutterBottom>
+              บ้านเลขที่: {data.houseNumber}
+            </Typography>
+            <Typography variant="h6" gutterBottom>
+              หมู่ที่: {data.groupNumber}
+            </Typography>
+            <Typography variant="h6" gutterBottom>
+              ตำบล: {data.subDistrict}
+            </Typography>
+          </Stack>
+          <Stack direction={"row"} justifyContent={"space-around"}>
+            <Typography variant="h6" gutterBottom>
+              อำเภอ: {data.district}
+            </Typography>
+            <Typography variant="h6" gutterBottom>
+              จังหวัด: {data.proVince}
+            </Typography>
+            <Typography variant="h6" gutterBottom>
+              รหัสไปรษณีย์: {data.postCode}
+            </Typography>
+          </Stack>
+          <Divider />
           {data.role === "owner" && (
             <>
               <Stack direction={"column"} alignItems={"center"}>
@@ -213,43 +194,29 @@ export default function VerifyUser() {
                   ที่อยู่บริษัท
                 </Typography>
               </Stack>
-              <Grid
-                container
-                direction="row"
-                justifyContent="space-around"
-                alignItems="flex-start"
-              >
-                <Grid item xs={6}>
-                  <Typography variant="h6" gutterBottom>
-                    บ้านเลขที่: {data.companyHouseNumber}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6" gutterBottom>
-                    หมู่ที่: {data.companyGroupNumber}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6" gutterBottom>
-                    ตำบล: {data.CompanySubDistrict}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6" gutterBottom>
-                    อำเภอ: {data.CompanyDistrict}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6" gutterBottom>
-                    จังหวัด: {data.CompanyProVince}
-                  </Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography variant="h6" gutterBottom>
-                    รหัสไปรษณีย์: {data.CompanyPostCode}
-                  </Typography>
-                </Grid>
-              </Grid>
+              <Stack direction={"row"} justifyContent={"space-around"}>
+                <Typography variant="h6" gutterBottom>
+                  บ้านเลขที่: {data.companyHouseNumber}
+                </Typography>
+                <Typography variant="h6" gutterBottom>
+                  หมู่ที่: {data.companyGroupNumber}
+                </Typography>
+                <Typography variant="h6" gutterBottom>
+                  ตำบล: {data.CompanySubDistrict}
+                </Typography>
+              </Stack>
+              <Stack direction={"row"} justifyContent={"space-around"}>
+                <Typography variant="h6" gutterBottom>
+                  อำเภอ: {data.CompanyDistrict}
+                </Typography>
+                <Typography variant="h6" gutterBottom>
+                  จังหวัด: {data.CompanyProVince}
+                </Typography>
+                <Typography variant="h6" gutterBottom>
+                  รหัสไปรษณีย์: {data.CompanyPostCode}
+                </Typography>
+              </Stack>
+              <Divider />
             </>
           )}
           <Stack direction={"row"} spacing={2}>

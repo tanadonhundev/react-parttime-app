@@ -88,6 +88,11 @@ export default function ProfilePage() {
                   {data.statusVerify}
                 </Button>
               )}
+              {data.statusVerify === "รอแก้ไขข้อมูล" && (
+                <Button variant="outlined" color="success">
+                  {data.statusVerify}
+                </Button>
+              )}
             </Stack>
             <Stack alignItems={"center"}>
               <Typography variant="h6" gutterBottom>
@@ -195,7 +200,7 @@ export default function ProfilePage() {
             <Stack alignItems={"flex-end"}>
               <Button
                 component={Link}
-                to={`/dashboard-owner/edit-profile/${data._id}`}
+                to={`/dashboard-employee/edit-profile/${data._id}`}
                 variant="contained"
                 color="primary"
                 startIcon={<EditIcon />}
@@ -238,10 +243,10 @@ export default function ProfilePage() {
                         .format("ddd DD MMM HH:mm:ss")}
                     </Typography>
                     <Typography variant="body1">
-                      คะแนน: {reviewItem.employeeRating}
+                      คะแนน: {reviewItem.rating}
                     </Typography>
                     <Typography variant="body1">
-                      ข้อความ: {reviewItem.employeeReviewText}
+                      ข้อความ: {reviewItem.reviewText}
                     </Typography>
                     <Divider sx={{ margin: "8px 0" }} />
                   </Stack>

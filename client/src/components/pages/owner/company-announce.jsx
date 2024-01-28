@@ -131,8 +131,8 @@ export default function CompanyAnnounce() {
           >
             <Grid container spacing={2}>
               {data.map((item) => (
-                <Grid key={item._id} item lg={3} sm={5} xs={12}>
-                  <Card sx={{ maxWidth: 350 }}>
+                <Grid key={item._id} item lg={3} md={6} sm={12}>
+                  <Card>
                     <CardActionArea>
                       <CardMedia
                         component="img"

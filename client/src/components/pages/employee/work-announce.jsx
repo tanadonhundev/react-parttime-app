@@ -15,10 +15,19 @@ import FormGroup from "@mui/material/FormGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Slide from "@mui/material/Slide";
+import Divider from "@mui/material/Divider";
+
 import BadgeIcon from "@mui/icons-material/Badge";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
+import NotInterestedIcon from "@mui/icons-material/NotInterested";
 
 import { Link } from "react-router-dom";
 
@@ -28,6 +37,11 @@ import "dayjs/locale/th";
 import { workList } from "../../../services/work";
 import { loadPhoto } from "../../../services/user";
 import { currentUser } from "../../../services/auth";
+import { getReviewOwner } from "../../../services/review";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="down" ref={ref} {...props} />;
+});
 
 export default function WorkAnnounce() {
   const [data, setData] = useState([]);
@@ -44,8 +58,26 @@ export default function WorkAnnounce() {
   const [companyId, setCompanyId] = useState([]);
   const [image, setImage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [review, setReview] = useState([]);
 
   const baseURL = import.meta.env.VITE_API;
+
+  const handleClickOpen = (ownerID) => {
+    const token = localStorage.getItem("token");
+    setOpen(true);
+
+    getReviewOwner(token, ownerID)
+      .then((res) => {
+        setReview(res.data);
+        console.log(res.data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const grayCardMediaClass = {
     filter: "grayscale(70%)",
@@ -208,10 +240,10 @@ export default function WorkAnnounce() {
                 ยังไม่มีประกาศจ้างงาน
               </Typography>
             ) : (
-              <Grid container spacing={2}>
+              <Grid container spacing={1}>
                 {work.map((item) => (
-                  <Grid key={item._id} item lg={3} sm={6} xs={12}>
-                    <Card sx={{ maxWidth: 350 }}>
+                  <Grid key={item._id} item lg={3} md={6} sm={12}>
+                    <Card>
                       <CardActionArea>
                         <CardMedia
                           component="img"
@@ -294,8 +326,11 @@ export default function WorkAnnounce() {
                             </Stack>
                             <Stack
                               direction={"row"}
+                              spacing={1}
                               justifyContent={"flex-end"}
+                              onClick={() => handleClickOpen(item.companyId)}
                             >
+                              <Button variant="contained">ดูรีวิว</Button>
                               <Button
                                 component={Link}
                                 to={`/dashboard-employee/work-descrip/${item._id}`}
@@ -320,6 +355,47 @@ export default function WorkAnnounce() {
           </>
         )}
       </Stack>
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        PaperProps={{ style: { width: "1000px" } }}
+      >
+        <DialogTitle>{"ข้อมูลการรีวิว"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {review.map((employee, index) => (
+              <div key={index}>
+                <Stack direction={"row"} spacing={2}>
+                  <Typography>{employee.employeeFirstName}</Typography>
+                  <Typography>{employee.employeeLastName}</Typography>
+                </Stack>
+                <Typography>
+                  วันที่รีิวิว:
+                  {dayjs(employee.createdAt).format("DD/MMM/YYYY HH:mm:ss")}
+                </Typography>
+                <Typography>คะแนนรีวิว:{employee.rating}</Typography>
+                <Typography>ข้อความรีวิว:{employee.reviewText}</Typography>
+                <br />
+                <Divider />
+                <br />
+              </div>
+            ))}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="error"
+            startIcon={<NotInterestedIcon />}
+            onClick={handleClose}
+          >
+            ปิด
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

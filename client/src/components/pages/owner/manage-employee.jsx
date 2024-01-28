@@ -14,6 +14,15 @@ import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import CircularProgress from "@mui/material/CircularProgress";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
+import DialogTitle from "@mui/material/DialogTitle";
+import Slide from "@mui/material/Slide";
+import Divider from "@mui/material/Divider";
+
+import NotInterestedIcon from "@mui/icons-material/NotInterested";
 
 import dayjs from "dayjs";
 import "dayjs/locale/th";
@@ -21,14 +30,23 @@ import "dayjs/locale/th";
 import { workDescripList } from "../../../services/work";
 import { currentUser } from "../../../services/auth";
 import { ChangeEmploymentStatus } from "../../../services/work";
+import { profileUser } from "../../../services/user";
+import { getReviewEmployee } from "../../../services/review";
 
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="down" ref={ref} {...props} />;
+});
 
 export default function ManageEmployee() {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState(0);
+  const [open, setOpen] = useState(false);
+  const [dataEmployee, setDataEmployee] = useState([]);
+  const [reviewEmployee, setReviewEmployee] = useState([]);
   const [countdown, setCountdown] = useState({
     hours: 0,
     minutes: 0,
@@ -38,6 +56,27 @@ export default function ManageEmployee() {
   const baseURL = import.meta.env.VITE_API;
 
   const navigate = useNavigate();
+
+  const handleClickOpen = (employeeID) => {
+    const token = localStorage.getItem("token");
+    setOpen(true);
+    profileUser(token, employeeID)
+      .then((res) => {
+        setDataEmployee(res.data);
+      })
+      .catch((error) => console.log(error));
+
+    getReviewEmployee(token, employeeID)
+      .then((res) => {
+        setReviewEmployee(res.data);
+        console.log(res.data);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -244,7 +283,21 @@ export default function ManageEmployee() {
                                       <TableCell>
                                         {employee.employeeLastName}
                                       </TableCell>
-                                      <TableCell>
+                                      <TableCell
+                                        style={{
+                                          color:
+                                            employee.employmentStatus ===
+                                            "พร้อมเริ่มงาน"
+                                              ? "green"
+                                              : employee.employmentStatus ===
+                                                "ตำแหน่งเต็ม"
+                                              ? "red"
+                                              : employee.employmentStatus ===
+                                                "รอยืนยัน"
+                                              ? "orange"
+                                              : "inherit",
+                                        }}
+                                      >
                                         {employee.employmentStatus}
                                       </TableCell>
                                       <TableCell
@@ -298,6 +351,11 @@ export default function ManageEmployee() {
                                           <Button
                                             variant="contained"
                                             color="success"
+                                            onClick={() =>
+                                              handleClickOpen(
+                                                employee.employeeId
+                                              )
+                                            }
                                           >
                                             ดูข้อมูล
                                           </Button>
@@ -334,6 +392,126 @@ export default function ManageEmployee() {
           ))}
         </>
       )}
+      <Dialog
+        open={open}
+        TransitionComponent={Transition}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        PaperProps={{ style: { width: "1000px" } }}
+      >
+        <DialogTitle>{"ข้อมูลพนักงาน"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {dataEmployee && (
+              <div>
+                <Stack direction="row" justifyContent="flex-end">
+                  {dataEmployee.statusVerify === "รอตรวจสอบ" && (
+                    <Button variant="outlined" color="error">
+                      {dataEmployee.statusVerify}
+                    </Button>
+                  )}
+                  {dataEmployee.statusVerify === "ตรวจสอบแล้ว" && (
+                    <Button variant="outlined" color="success">
+                      {dataEmployee.statusVerify}
+                    </Button>
+                  )}
+                  {dataEmployee.statusVerify === "รอแก้ไขข้อมูล" && (
+                    <Button variant="outlined" color="warning">
+                      {dataEmployee.statusVerify}
+                    </Button>
+                  )}
+                </Stack>
+                <Stack direction={"row"} justifyContent={"center"}>
+                  <Avatar
+                    sx={{ width: 100, height: 100 }}
+                    alt="Remy Sharp"
+                    src={
+                      `${baseURL}/uploads/avatar/` + dataEmployee.avatarphoto
+                    }
+                  />
+                </Stack>
+                <Stack
+                  direction={"row"}
+                  justifyContent={"space-around"}
+                  spacing={2}
+                >
+                  <Typography>ชื่อ:{dataEmployee.firstName}</Typography>
+                  <Typography>นามสกุล:{dataEmployee.lastName}</Typography>
+                  <Typography>อายุ:{dataEmployee.age} ปี</Typography>
+                </Stack>
+                <br />
+                <Divider />
+                <br />
+                <Stack direction={"row"} justifyContent={"center"}>
+                  <Typography>ที่อยู่ตามบัตรประชาชน</Typography>
+                </Stack>
+                <Stack
+                  direction={"row"}
+                  justifyContent={"space-around"}
+                  spacing={2}
+                >
+                  <Typography>บ้านเลขที่:{dataEmployee.houseNumber}</Typography>
+                  <Typography>หมู่ที่:{dataEmployee.groupNumber}</Typography>
+                  <Typography>ตำบล:{dataEmployee.subDistrict}</Typography>
+                </Stack>
+                <Stack
+                  direction={"row"}
+                  justifyContent={"space-around"}
+                  spacing={2}
+                >
+                  <Typography>อำเภอ:{dataEmployee.district}</Typography>
+                  <Typography>จังหวัด:{dataEmployee.proVince}</Typography>
+                  <Typography>รหัสไปรษณีย์:{dataEmployee.postCode}</Typography>
+                </Stack>
+                <br />
+                <Divider />
+                <br />
+                {reviewEmployee.map((employee, index) => (
+                  <div key={index}>
+                    <Typography>
+                      วันที่รีิวิว:
+                      {dayjs(employee.createdAt).format("ddd DD MMM HH:mm:ss")}
+                    </Typography>
+                    <Stack direction={"row"} spacing={2}>
+                      <Typography>
+                        สถานที่ทำงาน:
+                        {employee.companyName}
+                      </Typography>
+                      <Typography>
+                        วันที่ทำงาน:
+                        {dayjs(employee.workDay).format("ddd DD MMM")}
+                      </Typography>
+                      <Typography>
+                        คะแนน:
+                        {employee.rating}
+                      </Typography>
+                    </Stack>
+                    <Stack direction={"row"}>
+                      <Typography>
+                        ข้อความรีวิว: {employee.reviewText}
+                      </Typography>
+                    </Stack>
+                    <br />
+                    <Divider />
+                    <br />
+                  </div>
+                ))}
+              </div>
+            )}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="contained"
+            color="error"
+            startIcon={<NotInterestedIcon />}
+            onClick={handleClose}
+          >
+            ปิด
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

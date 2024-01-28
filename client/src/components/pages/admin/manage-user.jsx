@@ -269,7 +269,15 @@ export default function ManageUser() {
           <DialogTitle>{"ยืนยันการลบข้อมูลผู้ใช้งาน"}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
-              {userToDelete && <span>{userToDelete.email}</span>}
+              {userToDelete && (
+                <>
+                  <Stack direction={"row"} spacing={2}>
+                    <Typography>ชื่อ:{userToDelete.firstName}</Typography>
+                    <Typography>นามสกุล:{userToDelete.lastName}</Typography>
+                    <Typography>ตำแหน่ง:{userToDelete.role}</Typography>
+                  </Stack>
+                </>
+              )}
             </DialogContentText>
           </DialogContent>
           <DialogActions>
