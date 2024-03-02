@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
@@ -11,6 +10,7 @@ import Divider from "@mui/material/Divider";
 import Card from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
 import Grid from "@mui/material/Grid";
+import Rating from "@mui/material/Rating";
 
 import { Link } from "react-router-dom";
 
@@ -229,22 +229,26 @@ export default function ProfilePage() {
                   <Divider sx={{ margin: "8px 0" }} />
                   <Stack>
                     <Typography variant="subtitle1">
-                      {reviewItem.companyName}
-                    </Typography>
-                    <Typography variant="subtitle1">
-                      {dayjs(reviewItem.workDay)
-                        .locale("th")
-                        .format("ddd DD MMM")}
-                    </Typography>
-                    <Typography variant="subtitle1">
-                      วัน-เวลาที่รีวิว:{" "}
+                      {reviewItem.companyName} |{" "}
                       {dayjs(reviewItem.createdAt)
                         .locale("th")
-                        .format("ddd DD MMM HH:mm:ss")}
+                        .format("DD-MM-YYYY HH:mm:ss")}
                     </Typography>
-                    <Typography variant="body1">
-                      คะแนน: {reviewItem.rating}
+                    <Typography variant="subtitle1">
+                      วันที่ทำงาน:
+                      {dayjs(reviewItem.workDay)
+                        .locale("th")
+                        .format("DD-MM-YYYY")}
                     </Typography>
+
+                    <Stack direction={"row"}>
+                      <Typography variant="body1">คะแนน:</Typography>
+                      <Rating
+                        name="half-rating-read"
+                        defaultValue={reviewItem.rating}
+                        readOnly
+                      />
+                    </Stack>
                     <Typography variant="body1">
                       ข้อความ: {reviewItem.reviewText}
                     </Typography>

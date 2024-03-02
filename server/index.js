@@ -8,7 +8,8 @@ const auth = require("./routes/auth");
 const user = require("./routes/user");
 const company = require("./routes/company");
 const work = require("./routes/work");
-const review = require("./routes/review")
+const review = require("./routes/review");
+const report = require("./routes/report");
 
 connectDB();
 
@@ -24,6 +25,7 @@ app.use("/api", user);
 app.use("/api", company);
 app.use("/api", work);
 app.use("/api", review);
+app.use("/api", report);
 
 // connection
 const port = process.env.PORT || 5000;

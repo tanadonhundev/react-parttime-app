@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Container from "@mui/material/Container";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -21,6 +20,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import Divider from "@mui/material/Divider";
+import Rating from "@mui/material/Rating";
 
 import NotInterestedIcon from "@mui/icons-material/NotInterested";
 
@@ -76,6 +76,7 @@ export default function ManageEmployee() {
 
   const handleClose = () => {
     setOpen(false);
+    setReviewEmployee([]);
   };
 
   useEffect(() => {
@@ -266,7 +267,7 @@ export default function ManageEmployee() {
                               <TableBody>
                                 {item.employees.map(
                                   (employee, employeeIndex) => (
-                                    <TableRow key={employeeIndex}>
+                                    <TableRow key={employeeIndex} hover>
                                       <TableCell>
                                         <Avatar
                                           sx={{ width: 35, height: 35 }}
@@ -469,29 +470,28 @@ export default function ManageEmployee() {
                 <br />
                 {reviewEmployee.map((employee, index) => (
                   <div key={index}>
+                    <Stack direction={"row"} spacing={1}>
+                      <Typography>{employee.companyName}</Typography>
+                      <Typography>
+                        |{" "}
+                        {dayjs(employee.createdAt).format(
+                          "DD-MM-YYYY HH:mm:ss"
+                        )}
+                      </Typography>
+                    </Stack>
                     <Typography>
-                      วันที่รีิวิว:
-                      {dayjs(employee.createdAt).format("ddd DD MMM HH:mm:ss")}
+                      วันที่ทำงาน:
+                      {dayjs(employee.workDay).format("DD-MM-YYYY")}
                     </Typography>
-                    <Stack direction={"row"} spacing={2}>
-                      <Typography>
-                        สถานที่ทำงาน:
-                        {employee.companyName}
-                      </Typography>
-                      <Typography>
-                        วันที่ทำงาน:
-                        {dayjs(employee.workDay).format("ddd DD MMM")}
-                      </Typography>
-                      <Typography>
-                        คะแนน:
-                        {employee.rating}
-                      </Typography>
-                    </Stack>
                     <Stack direction={"row"}>
-                      <Typography>
-                        ข้อความรีวิว: {employee.reviewText}
-                      </Typography>
+                      <Typography>คะแนน:</Typography>
+                      <Rating
+                        name="half-rating-read"
+                        defaultValue={employee.rating}
+                        readOnly
+                      />
                     </Stack>
+                    <Typography>ข้อความ: {employee.reviewText}</Typography>
                     <br />
                     <Divider />
                     <br />

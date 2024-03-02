@@ -38,14 +38,12 @@ exports.reviewEmployee = async (req, res) => {
     }
 };
 
-
-
 exports.reviewOwner = async (req, res) => {
     try {
-        const { companyId, workDay, employeeId, employeeFirstName, employeeLastName, employeeRating, employeeReviewText } = req.body;
+        const { companyId, workDay, companyName, employeeId, employeeFirstName, employeeLastName, employeeRating, employeeReviewText } = req.body;
 
         const review = new ReviewOwner({
-            companyId,
+            companyName,
             employeeFirstName,
             employeeLastName,
             workDay,

@@ -22,6 +22,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import Divider from "@mui/material/Divider";
+import Rating from "@mui/material/Rating";
 
 import BadgeIcon from "@mui/icons-material/Badge";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
@@ -70,13 +71,14 @@ export default function WorkAnnounce() {
     getReviewOwner(token, ownerID)
       .then((res) => {
         setReview(res.data);
-        console.log(res.data);
+        //console.log(res.data);
       })
       .catch((error) => console.log(error));
   };
 
   const handleClose = () => {
     setOpen(false);
+    setReview([]);
   };
 
   const grayCardMediaClass = {
@@ -330,7 +332,14 @@ export default function WorkAnnounce() {
                               justifyContent={"flex-end"}
                               onClick={() => handleClickOpen(item.companyId)}
                             >
-                              <Button variant="contained">ดูรีวิว</Button>
+                              <Button
+                                variant="contained"
+                                disabled={
+                                  item.numOfReady === item.numOfEmployee
+                                }
+                              >
+                                ดูรีวิว
+                              </Button>
                               <Button
                                 component={Link}
                                 to={`/dashboard-employee/work-descrip/${item._id}`}
@@ -368,16 +377,29 @@ export default function WorkAnnounce() {
           <DialogContentText id="alert-dialog-description">
             {review.map((employee, index) => (
               <div key={index}>
-                <Stack direction={"row"} spacing={2}>
-                  <Typography>{employee.employeeFirstName}</Typography>
-                  <Typography>{employee.employeeLastName}</Typography>
+                <Stack direction={"row"} spacing={1}>
+                  <Stack direction={"row"} spacing={2}>
+                    <Typography>
+                      {employee.employeeFirstName} {employee.employeeLastName}
+                    </Typography>
+                  </Stack>
+                  <Typography>
+                    | {dayjs(employee.createdAt).format("DD-MM-YYYY HH:mm:ss")}
+                  </Typography>
                 </Stack>
-                <Typography>
-                  วันที่รีิวิว:
-                  {dayjs(employee.createdAt).format("DD/MMM/YYYY HH:mm:ss")}
+                <Typography variant="subtitle1">
+                  วันที่ทำงาน:
+                  {dayjs(employee.workDay).locale("th").format("DD-MM-YYYY")}
                 </Typography>
-                <Typography>คะแนนรีวิว:{employee.rating}</Typography>
-                <Typography>ข้อความรีวิว:{employee.reviewText}</Typography>
+                <Stack direction={"row"}>
+                  <Typography>คะแนน:</Typography>
+                  <Rating
+                    name="half-rating-read"
+                    defaultValue={employee.rating}
+                    readOnly
+                  />
+                </Stack>
+                <Typography>ข้อความ:{employee.reviewText}</Typography>
                 <br />
                 <Divider />
                 <br />

@@ -43,6 +43,7 @@ import {
 import { currentUser } from "../../../services/auth";
 import { loadPhoto, profileUser } from "../../../services/user";
 import { reviewOwner } from "../../../services/review";
+import { reportOwner } from "../../../services/report";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -65,13 +66,17 @@ export default function ReviewOwner() {
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState(0);
   const [companyId, setCompanyId] = useState([]);
-  const [open, setOpen] = useState(false);
+  const [openReview, setOpenReview] = useState(false);
+  const [openReport, setOpenReport] = useState(false);
   const [image, setImage] = useState("");
   const [ownerToReview, setOwnerToReview] = useState([]);
+  const [ownerToReport, setOwnerToReport] = useState([]);
   const [employeeId, setEmployeeId] = useState();
   const [value, setValue] = React.useState(5);
   const [hover, setHover] = React.useState(-1);
   const [reviewText, setReviewText] = useState("");
+  const [secReportText, setSecReportText] = useState("");
+  const [reportText, setReportText] = useState("");
 
   const baseURL = import.meta.env.VITE_API;
 
@@ -161,14 +166,27 @@ export default function ReviewOwner() {
     setSelectedTab(newValue);
   };
 
-  const handleClickOpen = (user, employeeFirstName, employeeLastName) => {
+  const handleClickOpenReview = (user, employeeFirstName, employeeLastName) => {
     setOwnerToReview({ ...user, employeeFirstName, employeeLastName });
-    setOpen(true);
+    setOpenReview(true);
   };
 
-  const handleClose = () => {
-    setOpen(false);
+  const handleCloseReview = () => {
+    setOpenReview(false);
     setOwnerToReview(null);
+    setReviewText("");
+    setValue(5);
+  };
+
+  const handleClickOpenReport = (user, employeeFirstName, employeeLastName) => {
+    setOwnerToReport({ ...user, employeeFirstName, employeeLastName });
+    setOpenReport(true);
+  };
+
+  const handleCloseReport = () => {
+    setOpenReport(false);
+    setOwnerToReport(null);
+    setReportText("");
   };
 
   const handleReviewOwner = async (token) => {
@@ -185,8 +203,30 @@ export default function ReviewOwner() {
       reviewOwner(token, values)
         .then((res) => {
           toast.success(res.data);
-          handleClose();
+          handleCloseReview();
           loadData(token, ownerToReview.employees[0].employeeId);
+        })
+        .catch((error) => console.log(error));
+    }
+  };
+
+  const handleReportOwner = async (token) => {
+    if (ownerToReport) {
+      const values = {
+        companyId: ownerToReport.companyId,
+        workDay: ownerToReport.workDay,
+        companyName: ownerToReport.companyName,
+        secReportText: secReportText,
+        reportText: reportText,
+        employeeId: employeeId,
+        employeeFirstName: ownerToReport.employeeFirstName,
+        employeeLastName: ownerToReport.employeeLastName,
+      };
+      reportOwner(token, values)
+        .then((res) => {
+          toast.success(res.data);
+          handleCloseReport();
+          loadData(token, ownerToReport.employees[0].employeeId);
         })
         .catch((error) => console.log(error));
     }
@@ -302,7 +342,7 @@ export default function ReviewOwner() {
                                               variant="contained"
                                               color="info"
                                               onClick={() =>
-                                                handleClickOpen(
+                                                handleClickOpenReview(
                                                   item,
                                                   employee.employeeFirstName,
                                                   employee.employeeLastName
@@ -318,6 +358,13 @@ export default function ReviewOwner() {
                                             <Button
                                               variant="contained"
                                               color="error"
+                                              onClick={() =>
+                                                handleClickOpenReport(
+                                                  item,
+                                                  employee.employeeFirstName,
+                                                  employee.employeeLastName
+                                                )
+                                              }
                                               disabled={
                                                 employee.ownermentStatusRe ===
                                                 "รีวิวแล้ว"
@@ -361,9 +408,9 @@ export default function ReviewOwner() {
       </Stack>
       <div>
         <Dialog
-          open={open}
+          open={openReview}
           TransitionComponent={Transition}
-          onClose={handleClose}
+          onClose={handleCloseReview}
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
           PaperProps={{ style: { width: "1000px" } }}
@@ -437,7 +484,7 @@ export default function ReviewOwner() {
               variant="outlined"
               color="warning"
               //startIcon={<NotInterestedIcon />}
-              onClick={handleClose}
+              onClick={handleCloseReview}
             >
               ยกเลิก
             </Button>
@@ -446,6 +493,69 @@ export default function ReviewOwner() {
               //startIcon={<DeleteForeverIcon />}
               color="error"
               onClick={() => handleReviewOwner(localStorage.getItem("token"))}
+            >
+              ยืนยัน
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={openReport}
+          TransitionComponent={Transition}
+          onClose={handleCloseReport}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          PaperProps={{ style: { width: "1000px" } }}
+        >
+          <DialogTitle>{"รายงานนายจ้าง"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {ownerToReport &&
+                ownerToReport.employees &&
+                ownerToReport.employees.length > 0 && (
+                  <Stack>
+                    <span>
+                      วันที่:
+                      {dayjs(ownerToReport.workDay)
+                        .locale("th")
+                        .format("ddd DD MMM")}
+                    </span>
+                    <Stack direction={"row"} spacing={2}>
+                      <span>ชื่อ: {ownerToReport.companyName}</span>
+                    </Stack>
+                  </Stack>
+                )}
+              <br />
+              <Stack>
+                <TextField
+                  label="หัวข้อร้องเรียน"
+                  onChange={(e) => setSecReportText(e.target.value)}
+                />
+                <br />
+                <TextField
+                  label="รายละเอียด"
+                  fullWidth
+                  multiline
+                  rows={4}
+                  value={reportText}
+                  onChange={(e) => setReportText(e.target.value)}
+                />
+              </Stack>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="outlined"
+              color="warning"
+              //startIcon={<NotInterestedIcon />}
+              onClick={handleCloseReport}
+            >
+              ยกเลิก
+            </Button>
+            <Button
+              variant="contained"
+              //startIcon={<DeleteForeverIcon />}
+              color="error"
+              onClick={() => handleReportOwner(localStorage.getItem("token"))}
             >
               ยืนยัน
             </Button>

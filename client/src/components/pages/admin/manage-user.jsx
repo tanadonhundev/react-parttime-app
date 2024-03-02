@@ -160,7 +160,7 @@ export default function ManageUser() {
                         page * rowsPerPage + rowsPerPage
                       )
                       .map((item, index) => (
-                        <TableRow key={index}>
+                        <TableRow key={index} hover>
                           <TableCell>
                             <Avatar
                               sx={{ width: 35, height: 35 }}
