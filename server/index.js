@@ -10,6 +10,8 @@ const company = require("./routes/company");
 const work = require("./routes/work");
 const review = require("./routes/review");
 const report = require("./routes/report");
+const chat = require("./routes/chat");
+const message = require("./routes/message");
 
 connectDB();
 
@@ -26,6 +28,8 @@ app.use("/api", company);
 app.use("/api", work);
 app.use("/api", review);
 app.use("/api", report);
+app.use("/api", chat);
+app.use("/api", message);
 
 // connection
 const port = process.env.PORT || 5000;

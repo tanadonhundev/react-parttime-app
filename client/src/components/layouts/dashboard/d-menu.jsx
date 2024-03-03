@@ -32,6 +32,11 @@ export const DMenu = () => {
       icon: <PeopleIcon />,
       href: "/dashboard-admin/manage-user",
     },
+    {
+      label: "แชท",
+      icon: <ReviewsIcon />,
+      href: "/dashboard-admin/chat",
+    },
   ];
 
   const ownerMenu = [
@@ -77,6 +82,11 @@ export const DMenu = () => {
       label: "รีวิวนายจ้าง",
       icon: <ReviewsIcon />,
       href: "/dashboard-employee/review-owner",
+    },
+    {
+      label: "แชท",
+      icon: <ReviewsIcon />,
+      href: "/dashboard-employee/chat",
     },
   ];
 

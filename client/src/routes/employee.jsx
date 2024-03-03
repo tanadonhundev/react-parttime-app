@@ -5,6 +5,7 @@ import WorkAnnounce from "../components/pages/employee/work-announce";
 import WorkDescrip from "../components/pages/employee/work-descrip";
 import WorkApply from "../components/pages/employee/work-apply";
 import ReviewOwner from "../components/pages/employee/review-owner";
+import ChatPage from "../components/pages/chat-page";
 //layout
 import { DLayout } from "../components/layouts/dashboard/d-layout";
 
@@ -36,6 +37,10 @@ const routeDashboardEmployee = [
       {
         path: "review-owner", // localhost:4000/dashboard-employee/review-owner
         element: <ReviewOwner />,
+      },
+      {
+        path: "chat", // localhost:4000/dashboard-employee/chat
+        element: <ChatPage />,
       },
     ],
   },
