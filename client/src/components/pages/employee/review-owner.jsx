@@ -43,7 +43,7 @@ import {
 import { currentUser } from "../../../services/auth";
 import { loadPhoto, profileUser } from "../../../services/user";
 import { reviewOwner } from "../../../services/review";
-import { reportOwner } from "../../../services/report";
+import { report } from "../../../services/report";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -75,7 +75,6 @@ export default function ReviewOwner() {
   const [value, setValue] = React.useState(5);
   const [hover, setHover] = React.useState(-1);
   const [reviewText, setReviewText] = useState("");
-  const [secReportText, setSecReportText] = useState("");
   const [reportText, setReportText] = useState("");
 
   const baseURL = import.meta.env.VITE_API;
@@ -213,16 +212,14 @@ export default function ReviewOwner() {
   const handleReportOwner = async (token) => {
     if (ownerToReport) {
       const values = {
-        companyId: ownerToReport.companyId,
+        reporter: employeeId,
         workDay: ownerToReport.workDay,
-        companyName: ownerToReport.companyName,
-        secReportText: secReportText,
         reportText: reportText,
+        peopleReporter: ownerToReport.companyId,
+        companyId: ownerToReport.companyId,
         employeeId: employeeId,
-        employeeFirstName: ownerToReport.employeeFirstName,
-        employeeLastName: ownerToReport.employeeLastName,
       };
-      reportOwner(token, values)
+      report(token, values)
         .then((res) => {
           toast.success(res.data);
           handleCloseReport();
@@ -526,11 +523,6 @@ export default function ReviewOwner() {
                 )}
               <br />
               <Stack>
-                <TextField
-                  label="หัวข้อร้องเรียน"
-                  onChange={(e) => setSecReportText(e.target.value)}
-                />
-                <br />
                 <TextField
                   label="รายละเอียด"
                   fullWidth

@@ -34,6 +34,7 @@ import "dayjs/locale/th";
 import { workDescripList } from "../../../services/work";
 import { currentUser } from "../../../services/auth";
 import { reviewEmployee } from "../../../services/review.js";
+import { report } from "../../../services/report";
 
 import { useNavigate } from "react-router-dom";
 
@@ -58,10 +59,13 @@ export default function ReviewEmployee() {
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState(0);
   const [open, setOpen] = useState(false);
-  const [employeeToReview, setEmployeeToReview] = useState({});
+  const [openReport, setOpenReport] = useState(false);
+  const [employeeToReview, setEmployeeToReview] = useState([]);
+  const [employeeToReport, setEmployeeToReport] = useState([]);
   const [value, setValue] = React.useState(5);
   const [hover, setHover] = React.useState(-1);
   const [reviewText, setReviewText] = useState("");
+  const [reportText, setReportText] = useState("");
 
   const baseURL = import.meta.env.VITE_API;
 
@@ -112,6 +116,27 @@ export default function ReviewEmployee() {
     setEmployeeToReview(null);
   };
 
+  const handleClickOpenReport = (
+    user,
+    employeeFirstName,
+    employeeLastName,
+    employeeId
+  ) => {
+    setEmployeeToReport({
+      ...user,
+      employeeFirstName,
+      employeeLastName,
+      employeeId,
+    });
+    setOpenReport(true);
+  };
+
+  const handleCloseReport = () => {
+    setOpenReport(false);
+    setEmployeeToReport(null);
+    setReportText("");
+  };
+
   const handleReviewEmployee = async (token) => {
     if (employeeToReview) {
       const values = {
@@ -129,6 +154,26 @@ export default function ReviewEmployee() {
           toast.success(res.data);
           handleClose();
           loadData(token, employeeToReview.companyId);
+        })
+        .catch((error) => console.log(error));
+    }
+  };
+
+  const handleReportEmployee = async (token) => {
+    if (employeeToReport) {
+      const values = {
+        reporter: employeeToReport.companyId,
+        workDay: employeeToReport.workDay,
+        reportText: reportText,
+        peopleReporter: employeeToReport.employeeId,
+        companyId: employeeToReport.companyId,
+        employeeId: employeeToReport.employeeId,
+      };
+      report(token, values)
+        .then((res) => {
+          toast.success(res.data);
+          handleCloseReport();
+          loadData(token, employeeToReport.companyId);
         })
         .catch((error) => console.log(error));
     }
@@ -251,6 +296,14 @@ export default function ReviewEmployee() {
                                               <Button
                                                 variant="contained"
                                                 color="error"
+                                                onClick={() =>
+                                                  handleClickOpenReport(
+                                                    item,
+                                                    employee.employeeFirstName,
+                                                    employee.employeeLastName,
+                                                    employee.employeeId
+                                                  )
+                                                }
                                                 disabled={
                                                   employee.employmentStatusRe ===
                                                   "รีวิวแล้ว"
@@ -382,6 +435,68 @@ export default function ReviewEmployee() {
               color="error"
               onClick={() =>
                 handleReviewEmployee(localStorage.getItem("token"))
+              }
+            >
+              ยืนยัน
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={openReport}
+          TransitionComponent={Transition}
+          onClose={handleCloseReport}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          PaperProps={{ style: { width: "1000px" } }}
+        >
+          <DialogTitle>{"รายงานนายจ้าง"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              {employeeToReport &&
+                employeeToReport.employees &&
+                employeeToReport.employees.length > 0 && (
+                  <Stack>
+                    <span>
+                      วันที่:
+                      {dayjs(employeeToReport.workDay)
+                        .locale("th")
+                        .format("ddd DD MMM")}
+                    </span>
+                    <Stack direction={"row"} spacing={2}>
+                      <span>ชื่อ: {employeeToReport.employeeFirstName}</span>
+                      <span>นามสกุล: {employeeToReport.employeeLastName}</span>
+                      <span>นามสกุล: {employeeToReport._Id}</span>
+                    </Stack>
+                  </Stack>
+                )}
+              <br />
+              <Stack>
+                <TextField
+                  label="รายละเอียด"
+                  fullWidth
+                  multiline
+                  rows={4}
+                  value={reportText}
+                  onChange={(e) => setReportText(e.target.value)}
+                />
+              </Stack>
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              variant="outlined"
+              color="warning"
+              //startIcon={<NotInterestedIcon />}
+              onClick={handleCloseReport}
+            >
+              ยกเลิก
+            </Button>
+            <Button
+              variant="contained"
+              //startIcon={<DeleteForeverIcon />}
+              color="error"
+              onClick={() =>
+                handleReportEmployee(localStorage.getItem("token"))
               }
             >
               ยืนยัน

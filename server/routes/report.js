@@ -1,13 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
-const { reportOwner } = require("../controllers/report");
+const { report, getReport } = require("../controllers/report");
 
 //router.post("/reviewemployee", reviewEmployee);
 
-router.post("/reportowner", reportOwner);
+router.post("/report", report);
 
-//router.get('/reviewemployee/:id', auth, getReviewEmployee);
+router.get('/report', getReport);
 
 //router.get('/reviewowner/:id', auth, getReviewOwner);
 

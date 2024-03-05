@@ -1,19 +1,17 @@
-const ReportOwner = require("../models/reportOwner");
-
+const Report = require("../models/report");
 const Work = require("../models/work");
+const User = require("../models/user");
 
-exports.reportOwner = async (req, res) => {
+exports.report = async (req, res) => {
     try {
-        const { companyId, workDay, companyName, secReportText, reportText, employeeId, employeeFirstName, employeeLastName } = req.body;
+        const { reporter, workDay, reportText, peopleReporter, companyId, employeeId } = req.body;
 
-        const report = new ReportOwner({
-            companyName,
-            secReportText,
+        const report = new Report({
+            reporter,
+            workDay,
+            peopleReporter,
             reportText,
-            employeeFirstName,
-            employeeLastName
         })
-        //console.log(req.body)
 
         const work = await Work.findOne({ companyId: companyId, workDay: workDay });
         if (!work) {
@@ -26,7 +24,7 @@ exports.reportOwner = async (req, res) => {
             return res.status(404).json({ msg: 'Employee not found' });
         }
 
-        employee.ownermentStatusRe = 'รีวิวแล้ว';
+        //employee.ownermentStatusRe = 'รีวิวแล้ว';
 
         // Save the changes to the database
         await work.save();
@@ -38,3 +36,34 @@ exports.reportOwner = async (req, res) => {
         throw error;
     }
 };
+
+exports.getReport = async (req, res) => {
+    try {
+        const report = await Report.find({}).exec();
+        const reporterIds = report.map(entry => entry.reporter);
+        const peopleReporterIds = report.map(entry => entry.peopleReporter);
+
+        const usersByReporterId = await Promise.all(reporterIds.map(id => User.findById(id, { firstName: 1, lastName: 1 }).exec()));
+        const usersBypeopleReporterId = await Promise.all(peopleReporterIds.map(id => User.findById(id, { firstName: 1, lastName: 1 }).exec()));
+
+        // สร้างอ็อบเจ็กต์ที่ใช้ในการจับคู่ข้อมูลของผู้ใช้กับบริษัทและพนักงานในรายงาน
+        const usersMap = new Map();
+        usersByReporterId.forEach(user => usersMap.set(user._id.toString(), user));
+        usersBypeopleReporterId.forEach(user => usersMap.set(user._id.toString(), user));
+
+        // รวมข้อมูลระหว่างผู้ใช้กับบริษัทและพนักงานในรายงาน
+        const mergedReport = report.map(entry => ({
+            ...entry.toObject(),
+            reporterInfo: usersMap.get(entry.reporter.toString()),
+            peopleReporterInfo: usersMap.get(entry.peopleReporter.toString())
+        }));
+
+        return res.send(mergedReport);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send('Server Error');
+        throw error;
+    }
+};
+
+
