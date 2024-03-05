@@ -24,8 +24,10 @@ exports.report = async (req, res) => {
             return res.status(404).json({ msg: 'Employee not found' });
         }
 
-        //employee.ownermentStatusRe = 'รีวิวแล้ว';
-
+        if (reporter === employeeId) {
+            employee.ownermentStatusRe = 'รีวิวแล้ว';
+        }
+        employee.employmentStatusRe = 'รีวิวแล้ว';
         // Save the changes to the database
         await work.save();
         await report.save();
