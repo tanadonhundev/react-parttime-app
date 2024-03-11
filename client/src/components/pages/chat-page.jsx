@@ -189,36 +189,40 @@ export default function ChatPage() {
         )}
         <Paper sx={{ padding: 2 }}>
           <Typography variant="h6">Chat Room</Typography>
-          {currentChatId &&
-            messages.map((message, index) => (
-              <Stack
-                key={index}
-                className={`message-container ${
-                  message.senderId === userId ? "message-right" : ""
-                }`}
-                direction="row"
-                justifyContent={
-                  message.senderId === userId ? "flex-end" : "flex-start"
-                }
-                sx={{ marginBottom: 1 }}
-              >
-                <Stack justifyContent={"flex-end"}>
-                  <Typography variant="body1">{message.text}</Typography>
-                  <Typography variant="caption">
-                    {dayjs(message.createdAt).format("DD/MM/YYYY") ===
-                    dayjs().format("DD/MM/YYYY")
-                      ? `Today at ${dayjs(message.createdAt).format("HH:mm")}`
-                      : dayjs(message.createdAt).format("DD/MM/YYYY HH:mm")}
-                  </Typography>
+          {currentChatId ? (
+            <Paper sx={{ padding: 2, backgroundColor: "#f0f0f0" }}>
+              {messages.map((message, index) => (
+                <Stack
+                  key={index}
+                  className={`message-container ${
+                    message.senderId === userId ? "message-right" : ""
+                  }`}
+                  direction="row"
+                  justifyContent={
+                    message.senderId === userId ? "flex-end" : "flex-start"
+                  }
+                  sx={{ marginBottom: 1 }}
+                >
+                  <Stack justifyContent={"flex-end"}>
+                    <Typography variant="body1">{message.text}</Typography>
+                    <Typography variant="caption">
+                      {dayjs(message.createdAt).format("DD/MM/YYYY") ===
+                      dayjs().format("DD/MM/YYYY")
+                        ? `Today at ${dayjs(message.createdAt).format("HH:mm")}`
+                        : dayjs(message.createdAt).format("DD/MM/YYYY HH:mm")}
+                    </Typography>
+                  </Stack>
                 </Stack>
-              </Stack>
-            ))}
+              ))}
+            </Paper>
+          ) : null}
           <TextField
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}
             label="Type your message"
             variant="outlined"
             fullWidth
+            disabled={!currentChatId}
             onKeyPress={(e) => {
               if (e.key === "Enter") {
                 handleSendMessage();
@@ -231,6 +235,7 @@ export default function ChatPage() {
               onClick={handleSendMessage}
               variant="contained"
               color="primary"
+              disabled={!currentChatId}
             >
               Send
             </Button>
