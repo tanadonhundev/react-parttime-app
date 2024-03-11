@@ -4,6 +4,8 @@ import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import Paper from "@mui/material/Paper";
+import Avatar from "@mui/material/Avatar";
 
 import dayjs from "dayjs";
 
@@ -25,7 +27,7 @@ export default function ChatPage() {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [newMessage, setNewMessage] = useState(null);
 
-  const [avatarImage, setAvatarImage] = useState("");
+  const baseURL = import.meta.env.VITE_API;
 
   //console.log("onlineUsers", onlineUsers);
 
@@ -87,6 +89,7 @@ export default function ChatPage() {
     if (socket === null) return;
     socket.emit("addNewUser", userId);
     socket.on("getOnlineUsers", (res) => {
+      console.log(res[0].userId);
       setOnlineUsers(res);
     });
 
@@ -154,22 +157,37 @@ export default function ChatPage() {
   };
 
   return (
-    <Stack direction="row" spacing={4}>
+    <Stack direction="row" spacing={4} sx={{ marginTop: 4 }}>
       <div className="chat-box" style={{ flex: 1 }}>
         {loading ? (
           <CircularProgress />
         ) : (
           <>
             {chats.map((chat, index) => (
-              <Button key={chat._id} onClick={() => handleClick(chat._id)}>
-                <Typography className="chat-message">
-                  {data[index]?.data.firstName}
+              <Button
+                variant="contained"
+                color={"success"}
+                key={chat._id}
+                onClick={() => handleClick(chat._id)}
+                sx={{ marginBottom: 1 }}
+              >
+                <Typography variant="body1">
+                  <Avatar
+                    sx={{
+                      width: 35,
+                      height: 35,
+                      margin: "auto",
+                    }}
+                    alt="Remy Sharp"
+                    src={`${baseURL}/uploads/avatar/${data[index]?.data.avatarphoto}`}
+                  />
+                  {data[index]?.data.firstName} {data[index]?.data.lastName}
                 </Typography>
               </Button>
             ))}
           </>
         )}
-        <div>
+        <Paper sx={{ padding: 2 }}>
           <Typography variant="h6">Chat Room</Typography>
           {currentChatId &&
             messages.map((message, index) => (
@@ -182,10 +200,11 @@ export default function ChatPage() {
                 justifyContent={
                   message.senderId === userId ? "flex-end" : "flex-start"
                 }
+                sx={{ marginBottom: 1 }}
               >
                 <Stack justifyContent={"flex-end"}>
-                  <Typography>{message.text}</Typography>
-                  <Typography>
+                  <Typography variant="body1">{message.text}</Typography>
+                  <Typography variant="caption">
                     {dayjs(message.createdAt).format("DD/MM/YYYY") ===
                     dayjs().format("DD/MM/YYYY")
                       ? `Today at ${dayjs(message.createdAt).format("HH:mm")}`
@@ -205,6 +224,7 @@ export default function ChatPage() {
                 handleSendMessage();
               }
             }}
+            sx={{ marginBottom: 1 }}
           />
           <Button
             onClick={handleSendMessage}
@@ -213,7 +233,7 @@ export default function ChatPage() {
           >
             Send
           </Button>
-        </div>
+        </Paper>
       </div>
     </Stack>
   );
