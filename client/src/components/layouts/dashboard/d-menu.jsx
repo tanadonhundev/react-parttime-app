@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import ReportIcon from '@mui/icons-material/Report';
+import ReportIcon from "@mui/icons-material/Report";
 import PeopleIcon from "@mui/icons-material/People";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import WorkIcon from "@mui/icons-material/Work";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import ReviewsIcon from "@mui/icons-material/Reviews";
+import MessageIcon from "@mui/icons-material/Message";
 
 import { NavLink, useLocation } from "react-router-dom";
 import { currentUser } from "../../../services/auth";
@@ -39,7 +40,7 @@ export const DMenu = () => {
     },
     {
       label: "แชท",
-      icon: <ReviewsIcon />,
+      icon: <MessageIcon />,
       href: "/dashboard-admin/chat",
     },
   ];
@@ -64,6 +65,11 @@ export const DMenu = () => {
       label: "รีวิวพนักงาน",
       icon: <ReviewsIcon />,
       href: "/dashboard-owner/review-employee",
+    },
+    {
+      label: "แชท",
+      icon: <MessageIcon />,
+      href: "/dashboard-employee/chat",
     },
   ];
 
@@ -90,7 +96,7 @@ export const DMenu = () => {
     },
     {
       label: "แชท",
-      icon: <ReviewsIcon />,
+      icon: <MessageIcon />,
       href: "/dashboard-employee/chat",
     },
   ];

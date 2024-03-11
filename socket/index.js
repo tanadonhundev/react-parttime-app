@@ -22,7 +22,7 @@ io.on("connection", (socket) => {
         const user = onlineUsers.find(user => user.userId === message.receiverId)
         //console.log(message.receiverId)
         if (user) {
-            console.log(user)
+            //console.log(user)
             io.to(user.socketId).emit("getMessage", message
             )
         }

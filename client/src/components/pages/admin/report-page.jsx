@@ -40,7 +40,7 @@ export default function ReportPage() {
     const token = localStorage.getItem("token");
     getReport(token)
       .then((res) => {
-        console.log(res.data);
+        //console.log(res.data);
         setData(res.data);
         setLoading(false);
       })

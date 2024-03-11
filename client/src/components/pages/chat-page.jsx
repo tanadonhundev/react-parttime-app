@@ -89,7 +89,7 @@ export default function ChatPage() {
     if (socket === null) return;
     socket.emit("addNewUser", userId);
     socket.on("getOnlineUsers", (res) => {
-      console.log(res[0].userId);
+      //console.log(res[0].userId);
       setOnlineUsers(res);
     });
 
@@ -226,13 +226,15 @@ export default function ChatPage() {
             }}
             sx={{ marginBottom: 1 }}
           />
-          <Button
-            onClick={handleSendMessage}
-            variant="contained"
-            color="primary"
-          >
-            Send
-          </Button>
+          <Stack direction={"row"} justifyContent={"flex-end"}>
+            <Button
+              onClick={handleSendMessage}
+              variant="contained"
+              color="primary"
+            >
+              Send
+            </Button>
+          </Stack>
         </Paper>
       </div>
     </Stack>
