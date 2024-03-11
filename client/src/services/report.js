@@ -8,3 +8,12 @@ export const report = async (authtoken, data) => {
         }
     });
 }
+
+export const getReport = async (authtoken) => {
+    return await axios.get(`${baseURL}/api/report`, {
+        headers: {
+            authtoken
+        }
+    });
+}
+

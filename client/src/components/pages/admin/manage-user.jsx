@@ -22,6 +22,9 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import Avatar from "@mui/material/Avatar";
+import FormGroup from "@mui/material/FormGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Checkbox from "@mui/material/Checkbox";
 
 import { useNavigate, Link } from "react-router-dom";
 
@@ -47,6 +50,9 @@ export default function ManageUser() {
   const [userToDelete, setUserToDelete] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [isCheckedChecked, setIsCheckedChecked] = useState(false);
+  const [isCheckedPending, setIsCheckedPending] = useState(false);
+  const [isCheckedEditing, setIsCheckedEditing] = useState(false);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -89,6 +95,65 @@ export default function ManageUser() {
     }
   };
 
+  const handleCheckboxChange = (event) => {
+    const { name, checked } = event.target;
+
+    if (checked) {
+      // ถ้ามี Checkbox อื่นถูกเลือกอยู่แล้วให้ยกเลิกการเลือก Checkbox นี้
+      if (
+        name === "isCheckedChecked" &&
+        (isCheckedPending || isCheckedEditing)
+      ) {
+        setIsCheckedPending(false);
+        setIsCheckedEditing(false);
+      } else if (
+        name === "isCheckedPending" &&
+        (isCheckedChecked || isCheckedEditing)
+      ) {
+        setIsCheckedChecked(false);
+        setIsCheckedEditing(false);
+      } else if (
+        name === "isCheckedEditing" &&
+        (isCheckedChecked || isCheckedPending)
+      ) {
+        setIsCheckedChecked(false);
+        setIsCheckedPending(false);
+      }
+    }
+
+    // ตั้งค่าสถานะของ Checkbox ที่ถูกเลือก
+    switch (name) {
+      case "isCheckedChecked":
+        setIsCheckedChecked(checked);
+        break;
+      case "isCheckedPending":
+        setIsCheckedPending(checked);
+        break;
+      case "isCheckedEditing":
+        setIsCheckedEditing(checked);
+        break;
+      default:
+        break;
+    }
+  };
+
+  useEffect(() => {
+    if (!isCheckedChecked && !isCheckedPending && !isCheckedEditing) {
+      loadData(localStorage.getItem("token"));
+      return;
+    }
+
+    // ทำการ filter ข้อมูลโดยใช้เงื่อนไขของ Checkbox ที่ถูกเลือก
+    const filteredData = data.filter((item) => {
+      if (isCheckedChecked && item.statusVerify !== "ตรวจสอบแล้ว") return false;
+      if (isCheckedPending && item.statusVerify !== "รอตรวจสอบ") return false;
+      if (isCheckedEditing && item.statusVerify !== "รอแก้ไขข้อมูล")
+        return false;
+      return true;
+    });
+    setData(filteredData);
+  }, [isCheckedChecked, isCheckedPending, isCheckedEditing]);
+
   const handleOnChangeStatus = async (token, e, id) => {
     const value = {
       id: id,
@@ -118,6 +183,41 @@ export default function ManageUser() {
       <Typography variant="h6" gutterBottom>
         จัดการผู้ใช้งาน
       </Typography>
+      <FormGroup>
+        <Stack direction={"row"} spacing={2}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                name="isCheckedChecked"
+                checked={isCheckedChecked}
+                onChange={handleCheckboxChange}
+              />
+            }
+            label="ตรวจสอบแล้ว"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                name="isCheckedPending"
+                checked={isCheckedPending}
+                onChange={handleCheckboxChange}
+              />
+            }
+            label="รอตรวจสอบ"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                name="isCheckedEditing"
+                checked={isCheckedEditing}
+                onChange={handleCheckboxChange}
+              />
+            }
+            label="รอแก้ไขข้อมูล"
+          />
+        </Stack>
+      </FormGroup>
+
       <Container>
         {loading ? (
           <Box

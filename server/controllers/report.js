@@ -45,8 +45,16 @@ exports.getReport = async (req, res) => {
         const reporterIds = report.map(entry => entry.reporter);
         const peopleReporterIds = report.map(entry => entry.peopleReporter);
 
-        const usersByReporterId = await Promise.all(reporterIds.map(id => User.findById(id, { firstName: 1, lastName: 1 }).exec()));
-        const usersBypeopleReporterId = await Promise.all(peopleReporterIds.map(id => User.findById(id, { firstName: 1, lastName: 1 }).exec()));
+        const usersByReporterId = await Promise.all(reporterIds.map(id => User.findById(id, {
+            firstName: 1, lastName: 1,
+            avatarphoto: 1,
+            role: 1
+        }).exec()));
+        const usersBypeopleReporterId = await Promise.all(peopleReporterIds.map(id => User.findById(id, {
+            firstName: 1, lastName: 1,
+            avatarphoto: 1,
+            role: 1
+        }).exec()));
 
         // สร้างอ็อบเจ็กต์ที่ใช้ในการจับคู่ข้อมูลของผู้ใช้กับบริษัทและพนักงานในรายงาน
         const usersMap = new Map();

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import ReportIcon from '@mui/icons-material/Report';
 import PeopleIcon from "@mui/icons-material/People";
 import AccountBoxIcon from "@mui/icons-material/AccountBox";
 import WorkIcon from "@mui/icons-material/Work";
@@ -31,6 +31,11 @@ export const DMenu = () => {
       label: "จัดการผู้ใช้งาน",
       icon: <PeopleIcon />,
       href: "/dashboard-admin/manage-user",
+    },
+    {
+      label: "ดูการแจ้งปัญหา",
+      icon: <ReportIcon />,
+      href: "/dashboard-admin/report",
     },
     {
       label: "แชท",
