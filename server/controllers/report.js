@@ -27,7 +27,11 @@ exports.report = async (req, res) => {
         if (reporter === employeeId) {
             employee.ownermentStatusRe = 'รีวิวแล้ว';
         }
-        employee.employmentStatusRe = 'รีวิวแล้ว';
+        else {
+            employee.employmentStatusRe = 'รีวิวแล้ว'
+        }
+
+
         // Save the changes to the database
         await work.save();
         await report.save();
