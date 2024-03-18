@@ -30,7 +30,7 @@ import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import NotInterestedIcon from "@mui/icons-material/NotInterested";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import dayjs from "dayjs";
 import "dayjs/locale/th";
@@ -39,6 +39,7 @@ import { workList } from "../../../services/work";
 import { loadPhoto } from "../../../services/user";
 import { currentUser } from "../../../services/auth";
 import { getReviewOwner } from "../../../services/review";
+import { createChat } from "../../../services/chat";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -61,6 +62,9 @@ export default function WorkAnnounce() {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [review, setReview] = useState([]);
+  const [employeeId, setEmployeeId] = useState("");
+
+  const navigate = useNavigate();
 
   const baseURL = import.meta.env.VITE_API;
 
@@ -105,6 +109,7 @@ export default function WorkAnnounce() {
   const loadData = (token) => {
     currentUser(token)
       .then((currentUserResponse) => {
+        setEmployeeId(currentUserResponse.data._id);
         if (currentUserResponse.data.statusBlacklist === true) {
           setLoading(false);
         }
@@ -173,6 +178,16 @@ export default function WorkAnnounce() {
       setWork(dateFilteredData);
     }
     setSelectedTab(tabIndex);
+  };
+
+  const crateChat = async (companyId) => {
+    const data = {
+      firstId: employeeId,
+      secondId: companyId,
+    };
+    createChat(data)
+      .then(navigate("/dashboard-employee/chat"))
+      .catch((error) => console.log(error));
   };
 
   const currentDate = dayjs();
@@ -325,6 +340,21 @@ export default function WorkAnnounce() {
                               <Typography variant="body1">
                                 {item.dailyWage}บาท/ชั่วโมง
                               </Typography>
+                            </Stack>
+                            <Stack
+                              direction={"row"}
+                              justifyContent={"flex-end"}
+                            >
+                              <Button
+                                variant="contained"
+                                color="warning"
+                                disabled={
+                                  item.numOfReady === item.numOfEmployee
+                                }
+                                onClick={() => crateChat(item.companyId)}
+                              >
+                                แชท
+                              </Button>
                             </Stack>
                             <Stack
                               direction={"row"}

@@ -216,6 +216,7 @@ export default function ChatPage() {
               ))}
             </Paper>
           ) : null}
+          <br />
           <TextField
             value={messageText}
             onChange={(e) => setMessageText(e.target.value)}

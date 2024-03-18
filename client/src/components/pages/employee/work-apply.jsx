@@ -266,14 +266,6 @@ export default function WorkApply() {
               <Grid container spacing={2}>
                 {filteredData.map((item) => (
                   <Grid key={item._id} item lg={3} md={6} sm={12}>
-                    <div key={item._id}>
-                      {/* Display the countdown for each item */}
-                      <Typography variant="body1">
-                        Countdown: {countdowns[item._id]?.hours || 0} hours,
-                        {countdowns[item._id]?.minutes || 0} minutes,
-                        {countdowns[item._id]?.seconds || 0} seconds
-                      </Typography>
-                    </div>
                     <Card sx={{ maxWidth: 350 }}>
                       <CardActionArea>
                         <CardMedia

@@ -55,7 +55,6 @@ export default function ProfilePage() {
   const loadReview = async (token, id) => {
     getReviewOwner(token, id)
       .then((res) => {
-        console.log(res.data);
         setReview(res.data);
       })
       .catch((error) => console.log(error));

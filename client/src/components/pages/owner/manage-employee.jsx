@@ -32,6 +32,7 @@ import { currentUser } from "../../../services/auth";
 import { ChangeEmploymentStatus } from "../../../services/work";
 import { profileUser } from "../../../services/user";
 import { getReviewEmployee } from "../../../services/review";
+import { createChat } from "../../../services/chat";
 
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -52,6 +53,7 @@ export default function ManageEmployee() {
     minutes: 0,
     seconds: 0,
   });
+  const [companyId, setCompanyId] = useState("");
 
   const baseURL = import.meta.env.VITE_API;
 
@@ -69,7 +71,6 @@ export default function ManageEmployee() {
     getReviewEmployee(token, employeeID)
       .then((res) => {
         setReviewEmployee(res.data);
-        console.log(res.data);
       })
       .catch((error) => console.log(error));
   };
@@ -84,6 +85,7 @@ export default function ManageEmployee() {
     currentUser(token)
       .then((res) => {
         const id = res.data._id;
+        setCompanyId(id);
         loadData(token, id);
       })
       .catch((error) => console.log(error));
@@ -134,12 +136,21 @@ export default function ManageEmployee() {
       status: item,
       action: action,
     };
-    console.log(values);
     ChangeEmploymentStatus(token, values)
       .then((res) => {
         loadData(token, companyId);
         toast.success(res.data);
       })
+      .catch((error) => console.log(error));
+  };
+
+  const crateChat = async (employeeId) => {
+    const data = {
+      firstId: companyId,
+      secondId: employeeId,
+    };
+    createChat(data)
+      .then(navigate("/dashboard-employee/chat"))
       .catch((error) => console.log(error));
   };
 
@@ -246,8 +257,7 @@ export default function ManageEmployee() {
                           </Table>
                         </TableContainer>
                         <br />
-                        คัดเลือกคนเข้าทำงาน {countdown.hours}h{" "}
-                        {countdown.minutes}m {countdown.seconds}s
+                        คัดเลือกคนเข้าทำงาน
                         {item.employees.length > 0 ? (
                           <TableContainer component={Paper}>
                             <Table>
@@ -359,6 +369,15 @@ export default function ManageEmployee() {
                                             }
                                           >
                                             ดูข้อมูล
+                                          </Button>
+                                          <Button
+                                            variant="contained"
+                                            color="warning"
+                                            onClick={() =>
+                                              crateChat(employee.employeeId)
+                                            }
+                                          >
+                                            แชท
                                           </Button>
                                         </Stack>
                                       </TableCell>
