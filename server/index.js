@@ -13,8 +13,6 @@ const report = require("./routes/report");
 const chat = require("./routes/chat");
 const message = require("./routes/message");
 
-const io = require('./socketServer');
-
 connectDB();
 
 // Middlewares
