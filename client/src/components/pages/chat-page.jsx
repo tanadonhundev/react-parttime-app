@@ -76,7 +76,7 @@ export default function ChatPage() {
   }, [chats, userId]);
 
   useEffect(() => {
-    const newSocket = io("http://localhost:3000");
+    const newSocket = io("https://react-parttime-app-fa3t.vercel.app");
     setSocket(newSocket);
 
     return () => {
