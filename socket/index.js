@@ -5,7 +5,7 @@ const io = new Server({ cors: "http://localhost:4000" })
 let onlineUsers = []
 
 io.on("connection", (socket) => {
-    console.log("New Connection", socket.id)
+    //console.log("New Connection", socket.id)
 
     socket.on("addNewUser", (userId) => {
         !onlineUsers.some(user => user.userId === userId) &&
@@ -13,7 +13,7 @@ io.on("connection", (socket) => {
                 userId,
                 socketId: socket.id,
             });
-        console.log("onlineUsers", onlineUsers)
+        //console.log("onlineUsers", onlineUsers)
         io.emit("getOnlineUsers", onlineUsers)
     });
 

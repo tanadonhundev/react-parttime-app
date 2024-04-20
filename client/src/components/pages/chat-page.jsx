@@ -90,7 +90,7 @@ export default function ChatPage() {
     if (socket === null) return;
     socket.emit("addNewUser", userId);
     socket.on("getOnlineUsers", (res) => {
-      //console.log(res[0].userId);
+      console.log(res[0].userId);
       setOnlineUsers(res);
     });
 
@@ -127,11 +127,11 @@ export default function ChatPage() {
     };
   }, [socket, currentChatId]);
 
-  const handleClick = (chatId,index) => {
+  const handleClick = (chatId, index) => {
     setMessageText("");
     //console.log(chatId);
     setCurrentChatId(chatId);
-    setIndexMsg(index)
+    setIndexMsg(index);
     getMessage(chatId)
       .then((res) => {
         setMessages(res.data);
@@ -165,32 +165,41 @@ export default function ChatPage() {
           <CircularProgress />
         ) : (
           <>
-            {chats.map((chat, index) => (
-              <Button
-                variant="contained"
-                color={"success"}
-                key={chat._id}
-                onClick={() => handleClick(chat._id,index)}
-                sx={{ marginBottom: 1 }}
-              >
-                <Typography variant="body1" sx={{ fontSize: "14px" }}>
-                  <Avatar
-                    sx={{
-                      width: 35,
-                      height: 35,
-                      margin: "auto",
-                    }}
-                    alt="Remy Sharp"
-                    src={`${baseURL}/uploads/avatar/${data[index]?.data.avatarphoto}`}
-                  />
-                  {data[index]?.data.role === "owner" ? (
-                    <span>{data[index]?.data.companyName}</span>
-                  ) : (
-                    <>{data[index]?.data.firstName}</>
-                  )}
-                </Typography>
-              </Button>
-            ))}
+            <Typography>เลือกคนที่จะพูดคุยกับคุณ</Typography>
+            <Stack direction={"row"} spacing={0.5}>
+              {chats.map((chat, index) => (
+                <Button
+                  variant="contained"
+                  color={
+                    onlineUsers.some(
+                      (user) => user.userId === data[index]?.data._id
+                    )
+                      ? "success"
+                      : "error"
+                  }
+                  key={chat._id}
+                  onClick={() => handleClick(chat._id, index)}
+                  sx={{ marginBottom: 1 }}
+                >
+                  <Typography variant="body1" sx={{ fontSize: "14px" }}>
+                    <Avatar
+                      sx={{
+                        width: 35,
+                        height: 35,
+                        margin: "auto",
+                      }}
+                      alt="Remy Sharp"
+                      src={`${baseURL}/uploads/avatar/${data[index]?.data.avatarphoto}`}
+                    />
+                    {data[index]?.data.role === "owner" ? (
+                      <span>{data[index]?.data.companyName}</span>
+                    ) : (
+                      <>{data[index]?.data.firstName}</>
+                    )}
+                  </Typography>
+                </Button>
+              ))}
+            </Stack>
           </>
         )}
         {currentChatId ? (
@@ -202,7 +211,8 @@ export default function ChatPage() {
                   <span>{data[indexMsg]?.data.companyName}</span>
                 ) : (
                   <span>
-                    {data[indexMsg]?.data.firstName} {data[indexMsg]?.data.lastName}
+                    {data[indexMsg]?.data.firstName}{" "}
+                    {data[indexMsg]?.data.lastName}
                   </span>
                 )}
               </Typography>
@@ -233,7 +243,6 @@ export default function ChatPage() {
                   </Stack>
                 ))}
               </Paper>
-
               <br />
               <TextField
                 value={messageText}
