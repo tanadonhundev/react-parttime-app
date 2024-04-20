@@ -1,6 +1,6 @@
 const { Server } = require("socket.io")
 
-const io = new Server({ cors: "http://localhost:4000" })
+const io = new Server({ cors: "https://react-parttime-app-38ij.vercel.app" })
 
 let onlineUsers = []
 
