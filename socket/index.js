@@ -1,6 +1,9 @@
 const { Server } = require("socket.io")
 
-const io = new Server({ cors: "http://localhost:4000" })
+require('dotenv').config();
+const url = process.env.CLIENT_URL;
+
+const io = new Server({ cors: url })
 
 let onlineUsers = []
 

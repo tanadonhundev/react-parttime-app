@@ -29,6 +29,7 @@ export default function ChatPage() {
   const [indexMsg, setIndexMsg] = useState("");
 
   const baseURL = import.meta.env.VITE_API;
+  const socketURL = import.meta.env.VITE_API_SOCKET;
 
   //console.log("onlineUsers", onlineUsers);
 
@@ -76,7 +77,7 @@ export default function ChatPage() {
   }, [chats, userId]);
 
   useEffect(() => {
-    const newSocket = io("https://react-parttime-app-fa3t.vercel.app");
+    const newSocket = io(socketURL);
     setSocket(newSocket);
 
     return () => {
