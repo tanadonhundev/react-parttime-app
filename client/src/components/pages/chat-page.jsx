@@ -26,6 +26,7 @@ export default function ChatPage() {
   const [socket, setSocket] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [newMessage, setNewMessage] = useState(null);
+  const [indexMsg, setIndexMsg] = useState("");
 
   const baseURL = import.meta.env.VITE_API;
 
@@ -126,10 +127,11 @@ export default function ChatPage() {
     };
   }, [socket, currentChatId]);
 
-  const handleClick = (chatId) => {
+  const handleClick = (chatId,index) => {
     setMessageText("");
     //console.log(chatId);
     setCurrentChatId(chatId);
+    setIndexMsg(index)
     getMessage(chatId)
       .then((res) => {
         setMessages(res.data);
@@ -168,10 +170,10 @@ export default function ChatPage() {
                 variant="contained"
                 color={"success"}
                 key={chat._id}
-                onClick={() => handleClick(chat._id)}
+                onClick={() => handleClick(chat._id,index)}
                 sx={{ marginBottom: 1 }}
               >
-                <Typography variant="body1">
+                <Typography variant="body1" sx={{ fontSize: "14px" }}>
                   <Avatar
                     sx={{
                       width: 35,
@@ -181,67 +183,87 @@ export default function ChatPage() {
                     alt="Remy Sharp"
                     src={`${baseURL}/uploads/avatar/${data[index]?.data.avatarphoto}`}
                   />
-                  {data[index]?.data.firstName} {data[index]?.data.lastName}
+                  {data[index]?.data.role === "owner" ? (
+                    <span>{data[index]?.data.companyName}</span>
+                  ) : (
+                    <>{data[index]?.data.firstName}</>
+                  )}
                 </Typography>
               </Button>
             ))}
           </>
         )}
-        <Paper sx={{ padding: 2 }}>
-          <Typography variant="h6">Chat Room</Typography>
-          {currentChatId ? (
-            <Paper sx={{ padding: 2, backgroundColor: "#f0f0f0" }}>
-              {messages.map((message, index) => (
-                <Stack
-                  key={index}
-                  className={`message-container ${
-                    message.senderId === userId ? "message-right" : ""
-                  }`}
-                  direction="row"
-                  justifyContent={
-                    message.senderId === userId ? "flex-end" : "flex-start"
-                  }
-                  sx={{ marginBottom: 1 }}
-                >
-                  <Stack justifyContent={"flex-end"}>
-                    <Typography variant="body1">{message.text}</Typography>
-                    <Typography variant="caption">
-                      {dayjs(message.createdAt).format("DD/MM/YYYY") ===
-                      dayjs().format("DD/MM/YYYY")
-                        ? `Today at ${dayjs(message.createdAt).format("HH:mm")}`
-                        : dayjs(message.createdAt).format("DD/MM/YYYY HH:mm")}
-                    </Typography>
+        {currentChatId ? (
+          <>
+            <Paper sx={{ padding: 2 }}>
+              <Typography variant="h6">
+                Chat Room{" "}
+                {data[indexMsg]?.data.role === "owner" ? (
+                  <span>{data[indexMsg]?.data.companyName}</span>
+                ) : (
+                  <span>
+                    {data[indexMsg]?.data.firstName} {data[indexMsg]?.data.lastName}
+                  </span>
+                )}
+              </Typography>
+              <Paper sx={{ padding: 2, backgroundColor: "#f0f0f0" }}>
+                {messages.map((message, index) => (
+                  <Stack
+                    key={index}
+                    className={`message-container ${
+                      message.senderId === userId ? "message-right" : ""
+                    }`}
+                    direction="row"
+                    justifyContent={
+                      message.senderId === userId ? "flex-end" : "flex-start"
+                    }
+                    sx={{ marginBottom: 1 }}
+                  >
+                    <Stack justifyContent={"flex-end"}>
+                      <Typography variant="body1">{message.text}</Typography>
+                      <Typography variant="caption">
+                        {dayjs(message.createdAt).format("DD/MM/YYYY") ===
+                        dayjs().format("DD/MM/YYYY")
+                          ? `Today at ${dayjs(message.createdAt).format(
+                              "HH:mm"
+                            )}`
+                          : dayjs(message.createdAt).format("DD/MM/YYYY HH:mm")}
+                      </Typography>
+                    </Stack>
                   </Stack>
-                </Stack>
-              ))}
+                ))}
+              </Paper>
+
+              <br />
+              <TextField
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                label="Type your message"
+                variant="outlined"
+                fullWidth
+                disabled={!currentChatId}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    handleSendMessage();
+                  }
+                }}
+                sx={{ marginBottom: 1 }}
+              />
+              <Stack direction={"row"} justifyContent={"flex-end"}>
+                <Button
+                  onClick={handleSendMessage}
+                  variant="contained"
+                  color="primary"
+                  disabled={!currentChatId}
+                >
+                  Send
+                </Button>
+              </Stack>
             </Paper>
-          ) : null}
-          <br />
-          <TextField
-            value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
-            label="Type your message"
-            variant="outlined"
-            fullWidth
-            disabled={!currentChatId}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                handleSendMessage();
-              }
-            }}
-            sx={{ marginBottom: 1 }}
-          />
-          <Stack direction={"row"} justifyContent={"flex-end"}>
-            <Button
-              onClick={handleSendMessage}
-              variant="contained"
-              color="primary"
-              disabled={!currentChatId}
-            >
-              Send
-            </Button>
-          </Stack>
-        </Paper>
+          </>
+        ) : (
+          <></>
+        )}
       </div>
     </Stack>
   );
