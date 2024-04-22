@@ -38,6 +38,8 @@ import {
   removeUser,
   statusBlacklisUser,
 } from "../../../services/user";
+import { currentUser } from "../../../services/auth";
+import { createChat } from "../../../services/chat";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -53,6 +55,7 @@ export default function ManageUser() {
   const [isCheckedChecked, setIsCheckedChecked] = useState(false);
   const [isCheckedPending, setIsCheckedPending] = useState(false);
   const [isCheckedEditing, setIsCheckedEditing] = useState(false);
+  const [adminId, setAdminId] = useState("");
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -70,6 +73,12 @@ export default function ManageUser() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     loadData(token);
+    currentUser(token)
+      .then((res) => {
+        const id = res.data._id;
+        setAdminId(id);
+      })
+      .catch((error) => console.log(error));
   }, []);
 
   const loadData = async (token) => {
@@ -176,6 +185,16 @@ export default function ManageUser() {
   const handleClose = () => {
     setOpen(false);
     setUserToDelete(null);
+  };
+
+  const crateChat = async (id) => {
+    const data = {
+      firstId: adminId,
+      secondId: id,
+    };
+    createChat(data)
+      .then(navigate("/dashboard-employee/chat"))
+      .catch((error) => console.log(error));
   };
 
   return (
@@ -322,6 +341,17 @@ export default function ManageUser() {
                                 //disabled={item.statusVerify === "ตรวจสอบแล้ว"}
                               >
                                 ตรวจสอบ
+                              </Button>
+                              <Button
+                                variant="contained"
+                                color="warning"
+                                component={Link}
+                                //to={`/dashboard-employee/chat`}
+                                style={{ textAlign: "center" }}
+                                onClick={() => crateChat(item._id)}
+                                //disabled={item.statusVerify === "ตรวจสอบแล้ว"}
+                              >
+                                แชท
                               </Button>
                             </Stack>
                           </TableCell>

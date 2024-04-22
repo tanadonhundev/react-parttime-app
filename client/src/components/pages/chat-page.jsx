@@ -91,7 +91,6 @@ export default function ChatPage() {
     if (socket === null) return;
     socket.emit("addNewUser", userId);
     socket.on("getOnlineUsers", (res) => {
-      console.log(res[0].userId);
       setOnlineUsers(res);
     });
 
