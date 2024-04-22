@@ -157,12 +157,15 @@ export default function ChatPage() {
         .catch((error) => console.log(error));
     }
   };
-  
+
   return (
     <Stack direction="row" spacing={4} sx={{ marginTop: 4 }}>
       <div className="chat-box" style={{ flex: 1 }}>
         {loading ? (
-          <CircularProgress />
+          <Stack alignItems={"center"}>
+            <CircularProgress />
+            <Typography>กำลังโหลดข้อมูลข้อมูล</Typography>
+          </Stack>
         ) : (
           <>
             <Typography>เลือกคนที่จะพูดคุยกับคุณ</Typography>
