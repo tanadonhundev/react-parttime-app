@@ -116,7 +116,7 @@ export default function ChatPage() {
     if (socket === null) return;
 
     socket.on("getMessage", (res) => {
-      console.log(res);
+      //console.log(res);
       if (currentChatId?._id !== res.chatId) return;
 
       setMessages((prev) => [...prev, res.data]);
@@ -157,6 +157,7 @@ export default function ChatPage() {
         .catch((error) => console.log(error));
     }
   };
+  
 
   return (
     <Stack direction="row" spacing={4} sx={{ marginTop: 4 }}>
