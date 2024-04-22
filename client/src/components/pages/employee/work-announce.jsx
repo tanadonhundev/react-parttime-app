@@ -353,7 +353,7 @@ export default function WorkAnnounce() {
                                 }
                                 onClick={() => crateChat(item.companyId)}
                               >
-                                แชท
+                                สร้างห้องแชท
                               </Button>
                             </Stack>
                             <Stack
