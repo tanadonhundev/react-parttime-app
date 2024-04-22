@@ -158,7 +158,6 @@ export default function ChatPage() {
     }
   };
   
-
   return (
     <Stack direction="row" spacing={4} sx={{ marginTop: 4 }}>
       <div className="chat-box" style={{ flex: 1 }}>
