@@ -204,6 +204,9 @@ export default function ManageUser() {
       </Typography>
       <FormGroup>
         <Stack direction={"row"} spacing={2}>
+          <Stack direction={"row"} alignItems={"center"}>
+            <Typography>กรองข้อมูล:</Typography>
+          </Stack>
           <FormControlLabel
             control={
               <Checkbox
