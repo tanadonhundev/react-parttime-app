@@ -4,14 +4,14 @@ const Work = require("../models/work");
 
 exports.reviewEmployee = async (req, res) => {
     try {
-        const { companyId, companyName, workDay, employeeId, employeeRating, employeeReviewText } = req.body;
+        const { companyId, companyName, workDay, employeeId, rating, reviewText } = req.body;
 
         const review = new ReviewEmployee({
             employeeId,
             companyName,
             workDay,
-            employeeRating,
-            employeeReviewText
+            rating,
+            reviewText
         })
 
         const work = await Work.findOne({ companyId: companyId, workDay: workDay });
@@ -25,7 +25,7 @@ exports.reviewEmployee = async (req, res) => {
             return res.status(404).json({ msg: 'Employee not found' });
         }
 
-        employee.employmentStatusRe = 'รีวิวแล้ว';
+        //employee.employmentStatusRe = 'รีวิวแล้ว';
 
         // Save the changes to the database
         await work.save();
@@ -40,7 +40,7 @@ exports.reviewEmployee = async (req, res) => {
 
 exports.reviewOwner = async (req, res) => {
     try {
-        const { companyId, workDay, companyName, employeeId, employeeFirstName, employeeLastName, employeeRating, employeeReviewText } = req.body;
+        const { companyId, workDay, companyName, employeeId, employeeFirstName, employeeLastName, rating, reviewText } = req.body;
 
         console.log(req.body)
 
@@ -50,8 +50,8 @@ exports.reviewOwner = async (req, res) => {
             employeeFirstName,
             employeeLastName,
             workDay,
-            employeeRating,
-            employeeReviewText
+            rating,
+            reviewText
         })
 
         const work = await Work.findOne({ companyId: companyId, workDay: workDay });
@@ -65,7 +65,7 @@ exports.reviewOwner = async (req, res) => {
             return res.status(404).json({ msg: 'Employee not found' });
         }
 
-        employee.ownermentStatusRe = 'รีวิวแล้ว';
+        //employee.ownermentStatusRe = 'รีวิวแล้ว';
 
         // Save the changes to the database
         await work.save();

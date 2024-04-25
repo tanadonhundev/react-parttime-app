@@ -145,8 +145,8 @@ export default function ReviewEmployee() {
         workDay: employeeToReview.workDay,
         employeeId: employeeToReview.employeeId,
         status: employeeToReview.employmentStatusRe,
-        employeeRating: value,
-        employeeReviewText: reviewText,
+        rating: value,
+        reviewText: reviewText,
       };
       reviewEmployee(token, values)
         .then((res) => {

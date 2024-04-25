@@ -246,12 +246,12 @@ export default function ProfilePage() {
                       <Typography variant="body1">คะแนน:</Typography>
                       <Rating
                         name="half-rating-read"
-                        defaultValue={reviewItem.employeeRating}
+                        defaultValue={reviewItem.rating}
                         readOnly
                       />
                     </Stack>
                     <Typography variant="body1">
-                      ข้อความ: {reviewItem.employeeReviewText}
+                      ข้อความ: {reviewItem.reviewText}
                     </Typography>
                     <Divider sx={{ margin: "8px 0" }} />
                   </Stack>

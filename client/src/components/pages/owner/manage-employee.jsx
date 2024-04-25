@@ -506,12 +506,12 @@ export default function ManageEmployee() {
                       <Typography>คะแนน:</Typography>
                       <Rating
                         name="half-rating-read"
-                        defaultValue={employee.employeeRating}
+                        defaultValue={employee.rating}
                         readOnly
                       />
                     </Stack>
                     <Typography>
-                      ข้อความ: {employee.employeeReviewText}
+                      ข้อความ: {employee.reviewText}
                     </Typography>
                     <br />
                     <Divider />

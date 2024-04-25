@@ -6,8 +6,8 @@ const reviewOwnerScheme = mongoose.Schema({
     employeeFirstName: String,
     employeeLastName: String,
     workDay: Date,
-    employeeRating: Number,
-    employeeReviewText: String,
+    rating: Number,
+    reviewText: String,
 }, { timestamps: true });
 
 module.exports = mongoose.model("ReviewOwner", reviewOwnerScheme);

@@ -196,8 +196,8 @@ export default function ReviewOwner() {
         employeeLastName: ownerToReview.employeeLastName,
         workDay: ownerToReview.workDay,
         employeeId: employeeId,
-        employeeRating: value,
-        employeeReviewText: reviewText,
+        rating: value,
+        reviewText: reviewText,
       };
       reviewOwner(token, values)
         .then((res) => {
