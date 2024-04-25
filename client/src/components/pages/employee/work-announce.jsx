@@ -434,11 +434,11 @@ export default function WorkAnnounce() {
                   <Typography>คะแนน:</Typography>
                   <Rating
                     name="half-rating-read"
-                    defaultValue={employee.rating}
+                    defaultValue={employee.employeeRating}
                     readOnly
                   />
                 </Stack>
-                <Typography>ข้อความ:{employee.reviewText}</Typography>
+                <Typography>ข้อความ:{employee.employeeReviewText}</Typography>
                 <br />
                 <Divider />
                 <br />
