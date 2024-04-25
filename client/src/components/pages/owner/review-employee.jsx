@@ -148,7 +148,6 @@ export default function ReviewEmployee() {
         employeeRating: value,
         employeeReviewText: reviewText,
       };
-      console.log(values);
       reviewEmployee(token, values)
         .then((res) => {
           toast.success(res.data);
