@@ -377,7 +377,7 @@ export default function ManageEmployee() {
                                               crateChat(employee.employeeId)
                                             }
                                           >
-                                            สร้างห้องแชท
+                                            แชท
                                           </Button>
                                         </Stack>
                                       </TableCell>
@@ -510,9 +510,7 @@ export default function ManageEmployee() {
                         readOnly
                       />
                     </Stack>
-                    <Typography>
-                      ข้อความ: {employee.reviewText}
-                    </Typography>
+                    <Typography>ข้อความ: {employee.reviewText}</Typography>
                     <br />
                     <Divider />
                     <br />

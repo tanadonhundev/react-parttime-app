@@ -360,7 +360,7 @@ export default function WorkAnnounce() {
                                 }
                                 onClick={() => crateChat(item.companyId)}
                               >
-                                สร้างห้องแชท
+                                แชท
                               </Button>
                             </Stack>
                             <Stack
@@ -446,7 +446,7 @@ export default function WorkAnnounce() {
                       color="warning"
                       onClick={() => crateChat(employee.employeeId)}
                     >
-                      สร้างห้องแชท
+                      แชท
                     </Button>
                   </Stack>
                 )}

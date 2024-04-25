@@ -354,7 +354,7 @@ export default function ManageUser() {
                                 onClick={() => crateChat(item._id)}
                                 //disabled={item.statusVerify === "ตรวจสอบแล้ว"}
                               >
-                                สร้างห้องแชท
+                                แชท
                               </Button>
                             </Stack>
                           </TableCell>
