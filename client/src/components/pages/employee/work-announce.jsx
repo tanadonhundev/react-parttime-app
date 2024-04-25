@@ -439,6 +439,18 @@ export default function WorkAnnounce() {
                   />
                 </Stack>
                 <Typography>ข้อความ:{employee.employeeReviewText}</Typography>
+                {employeeId !== employee.employeeId && (
+                  <Stack direction={"row"} justifyContent={"flex-end"}>
+                    <Button
+                      variant="contained"
+                      color="warning"
+                      onClick={() => crateChat(employee.employeeId)}
+                    >
+                      สร้างห้องแชท
+                    </Button>
+                  </Stack>
+                )}
+
                 <br />
                 <Divider />
                 <br />
