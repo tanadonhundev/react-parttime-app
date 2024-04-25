@@ -31,7 +31,7 @@ export default function ChatPage() {
   const baseURL = import.meta.env.VITE_API;
   const socketURL = import.meta.env.VITE_API_SOCKET;
 
-  console.log("onlineUsers", onlineUsers);
+  //console.log("onlineUsers", onlineUsers);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
