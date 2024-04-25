@@ -1,7 +1,7 @@
 const { Server } = require("socket.io")
 
 require('dotenv').config();
-const url = process.env.CLIENT_URL;
+const url = "https://react-parttime-app-38ij.vercel.app";
 
 const io = new Server({ cors: url })
 
