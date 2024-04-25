@@ -40,6 +40,7 @@ import { loadPhoto } from "../../../services/user";
 import { currentUser } from "../../../services/auth";
 import { getReviewOwner } from "../../../services/review";
 import { createChat } from "../../../services/chat";
+import { profileUser } from "../../../services/user";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -63,19 +64,25 @@ export default function WorkAnnounce() {
   const [open, setOpen] = useState(false);
   const [review, setReview] = useState([]);
   const [employeeId, setEmployeeId] = useState("");
+  const [nameCompany, setNameCompany] = useState("");
 
   const navigate = useNavigate();
 
   const baseURL = import.meta.env.VITE_API;
 
   const handleClickOpen = (ownerID) => {
+    console.log(ownerID);
     const token = localStorage.getItem("token");
     setOpen(true);
-
     getReviewOwner(token, ownerID)
       .then((res) => {
         setReview(res.data);
-        //console.log(res.data);
+      })
+      .catch((error) => console.log(error));
+    profileUser(token, ownerID)
+      .then((res) => {
+        setNameCompany(res.data.companyName);
+        //setReview(res.data);
       })
       .catch((error) => console.log(error));
   };
@@ -353,7 +360,7 @@ export default function WorkAnnounce() {
                                 }
                                 onClick={() => crateChat(item.companyId)}
                               >
-                                แชท
+                                สร้างห้องแชท
                               </Button>
                             </Stack>
                             <Stack
@@ -402,7 +409,9 @@ export default function WorkAnnounce() {
         aria-describedby="alert-dialog-description"
         PaperProps={{ style: { width: "1000px" } }}
       >
-        <DialogTitle>{"ข้อมูลการรีวิว"}</DialogTitle>
+        <DialogTitle>
+          {"ข้อมูลการรีวิว"} {nameCompany}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
             {review.map((employee, index) => (
