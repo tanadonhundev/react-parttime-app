@@ -25,7 +25,7 @@ exports.reviewEmployee = async (req, res) => {
             return res.status(404).json({ msg: 'Employee not found' });
         }
 
-        employee.employmentStatusRe = 'รีวิวแล้ว';
+        //employee.employmentStatusRe = 'รีวิวแล้ว';
 
         // Save the changes to the database
         await work.save();
@@ -42,8 +42,11 @@ exports.reviewOwner = async (req, res) => {
     try {
         const { companyId, workDay, companyName, employeeId, employeeFirstName, employeeLastName, employeeRating, employeeReviewText } = req.body;
 
+        console.log(req.body)
+
         const review = new ReviewOwner({
-            companyName,
+            companyId,
+            employeeId,
             employeeFirstName,
             employeeLastName,
             workDay,
@@ -62,7 +65,7 @@ exports.reviewOwner = async (req, res) => {
             return res.status(404).json({ msg: 'Employee not found' });
         }
 
-        employee.ownermentStatusRe = 'รีวิวแล้ว';
+        //employee.ownermentStatusRe = 'รีวิวแล้ว';
 
         // Save the changes to the database
         await work.save();
