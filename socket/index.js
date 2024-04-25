@@ -1,9 +1,10 @@
 const { Server } = require("socket.io")
+const cors = require("cors");
 
 require('dotenv').config();
-const url = "https://react-parttime-app-38ij.vercel.app";
+const url = process.env.CLIENT_URL;
 
-const io = new Server({ cors: url })
+const io = new Server({ cors: { origin: url } })
 
 let onlineUsers = []
 
