@@ -36,5 +36,6 @@ io.on("connection", (socket) => {
         io.emit("getOnlineUsers", onlineUsers)
     });
 });
+const port = process.env.PORT || 3000;
 
-io.listen(3000);
+io.listen(port);
