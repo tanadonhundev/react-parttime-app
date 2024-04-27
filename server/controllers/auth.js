@@ -1,4 +1,5 @@
 const User = require("../models/user");
+const Chat = require("../models/chat");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -37,41 +38,58 @@ exports.registerUser = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
     try {
-        //Check User
-        const { email, password } = req.body
-        var user = await User.findOneAndUpdate({ email }, { new: true })
+        // Check User
+        const { email, password } = req.body;
+        const user = await User.findOne({ email });
 
-        if (user) {
-            const isMatch = await bcrypt.compare(password, user.password);
-            if (!isMatch) {
-                return res.status(400).send("รหัสผ่านไม่ถูกต้อง");
-            } else {
-                //Payload
-                if (user.statusBlacklist === false) {
+        if (!user) {
+            return res.status(400).send("อีเมลไม่ถูกต้อง");
+        }
 
-                    return res.status(400).send("บัญชีนี้ถูกระงับการใช้งาน");
-                }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).send("รหัสผ่านไม่ถูกต้อง");
+        }
 
-                var payload = {
-                    user: {
-                        id: user._id,
-                        email: user.email,
-                        role: user.role,
-                        statusBlacklist: user.statusBlacklist
-                    }
-                }
-                //Generate token
-                jwt.sign(payload, 'jwtsecret', { expiresIn: "1d" }, (error, token) => {
-                    if (error) throw error;
-                    res.json({ token, payload })
-                });
+        if (!user.statusBlacklist) {
+            return res.status(400).send("บัญชีนี้ถูกระงับการใช้งาน");
+        }
+
+        // Payload
+        const payload = {
+            user: {
+                id: user._id,
+                email: user.email,
+                role: user.role,
+                statusBlacklist: user.statusBlacklist
             }
-        } else return res.status(400).send("อีเมลไม่ถูกต้อง");
+        };
 
+        // Generate token
+        jwt.sign(payload, 'jwtsecret', { expiresIn: "1d" }, (error, token) => {
+            if (error) throw error;
+            res.json({ token, payload });
+        });
+
+        // Find or create chat
+        const firstId = user._id.toString();
+        const secondId = "6577285fb8f33d4385fff395";
+
+        const chat = await Chat.findOne({
+            members: { $all: [firstId, secondId] },
+        });
+
+        if (!chat) {
+            const newChat = new Chat({
+                members: [firstId, secondId]
+            });
+
+            await newChat.save();
+        }
     } catch (error) {
         console.log(error);
         res.status(500).send("Server Error");
-    };
+    }
 };
 
 exports.currenUser = async (req, res) => {
