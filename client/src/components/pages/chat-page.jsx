@@ -9,10 +9,11 @@ import Avatar from "@mui/material/Avatar";
 
 import dayjs from "dayjs";
 
+import { useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { currentUser } from "../../services/auth";
 import { profileUser } from "../../services/user";
-import { findUserChats } from "../../services/chat";
+import { findChats, findUserChats } from "../../services/chat";
 import { createMessage, getMessage } from "../../services/message";
 
 export default function ChatPage() {
@@ -30,6 +31,15 @@ export default function ChatPage() {
 
   const baseURL = import.meta.env.VITE_API;
   const socketURL = import.meta.env.VITE_API_SOCKET;
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+
+  const employeeId = queryParams.get("employeeId");
+  const companyId = queryParams.get("companyId");
+  const nameCompany = queryParams.get("nameCompany");
+
+  const navigate = useNavigate();
 
   //console.log("onlineUsers", onlineUsers);
 
@@ -127,6 +137,31 @@ export default function ChatPage() {
     };
   }, [socket, currentChatId]);
 
+  useEffect(() => {
+    if (employeeId && companyId) {
+      handleFindChat(employeeId, companyId);
+    } else {
+      console.error("Employee ID or Company ID is not defined.");
+    }
+  }, [employeeId, companyId]);
+
+  const handleFindChat = (employeeId, companyId) => {
+    if (employeeId && companyId) {
+      findChats(employeeId, companyId)
+        .then((res) => {
+          setCurrentChatId(res.data[0]._id);
+          getMessage(res.data[0]._id)
+            .then((res) => {
+              setMessages(res.data);
+            })
+            .catch((error) => console.log(error));
+        })
+        .catch((error) => console.log(error));
+    } else {
+      console.error("Employee ID or Company ID is not defined.");
+    }
+  };
+
   const handleClick = (chatId, index) => {
     setMessageText("");
     //console.log(chatId);
@@ -135,7 +170,10 @@ export default function ChatPage() {
     getMessage(chatId)
       .then((res) => {
         setMessages(res.data);
-        //console.log(res.data);
+        navigate({
+          pathname: "/dashboard-employee/chat",
+          search: "",
+        });
       })
       .catch((error) => console.log(error));
   };
@@ -209,7 +247,7 @@ export default function ChatPage() {
           <>
             <Paper sx={{ padding: 2 }}>
               <Typography variant="h6">
-                Chat Room{" "}
+                Chat Room {nameCompany && <span>{nameCompany}</span>}
                 {data[indexMsg]?.data.role === "owner" ? (
                   <span>{data[indexMsg]?.data.companyName}</span>
                 ) : (

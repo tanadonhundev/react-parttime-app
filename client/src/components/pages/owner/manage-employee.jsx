@@ -150,7 +150,13 @@ export default function ManageEmployee() {
       secondId: employeeId,
     };
     createChat(data)
-      .then(navigate("/dashboard-employee/chat"))
+      .then(() => {
+        const queryParams = new URLSearchParams({
+          companyId: companyId,
+          employeeId: employeeId,
+        }).toString();
+        navigate(`/dashboard-employee/chat?${queryParams}`);
+      })
       .catch((error) => console.log(error));
   };
 

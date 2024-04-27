@@ -9,6 +9,6 @@ export const findUserChats = async (id) => {
     return await axios.get(`${baseURL}/api/chats/` + id);
 }
 
-/*export const findChats = async (id ,id1) => {
-    return await axios.get(`${baseURL}/api/chats/find/` + id/+id1);
-}*/
+export const findChats = async (id, id1) => {
+    return await axios.get(`${baseURL}/api/chats/find/${id}/${id1}`);
+}

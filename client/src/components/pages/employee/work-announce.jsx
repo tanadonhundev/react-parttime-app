@@ -187,13 +187,20 @@ export default function WorkAnnounce() {
     setSelectedTab(tabIndex);
   };
 
-  const crateChat = async (companyId) => {
+  const crateChat = async (companyId, nameCompany) => {
     const data = {
       firstId: employeeId,
       secondId: companyId,
     };
     createChat(data)
-      .then(navigate("/dashboard-employee/chat"))
+      .then(() => {
+        const queryParams = new URLSearchParams({
+          employeeId: employeeId,
+          companyId: companyId,
+          nameCompany: nameCompany,
+        }).toString();
+        navigate(`/dashboard-employee/chat?${queryParams}`);
+      })
       .catch((error) => console.log(error));
   };
 
@@ -358,7 +365,9 @@ export default function WorkAnnounce() {
                                 disabled={
                                   item.numOfReady === item.numOfEmployee
                                 }
-                                onClick={() => crateChat(item.companyId)}
+                                onClick={() =>
+                                  crateChat(item.companyId, item.companyName)
+                                }
                               >
                                 แชท
                               </Button>
