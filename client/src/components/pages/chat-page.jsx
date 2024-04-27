@@ -247,17 +247,19 @@ export default function ChatPage() {
                 <Typography variant="h5">Chat Room</Typography>
                 <Typography variant="h6">คุณกำลังพูดคุยอยู่กับ</Typography>
                 <Typography variant="h6">
-                  {nameCompany && <span>{nameCompany}</span>}
-                  {employeeFirstName && <span>{employeeFirstName}</span>}
-                  {employeeLastName && <span>{employeeLastName}</span>}
-                  {data[indexMsg]?.data.role === "owner" ? (
-                    <span>{data[indexMsg]?.data.companyName}</span>
-                  ) : (
-                    <span>
-                      {data[indexMsg]?.data.firstName}{" "}
-                      {data[indexMsg]?.data.lastName}
-                    </span>
-                  )}
+                  <Stack direction={"row"} spacing={1}>
+                    {nameCompany && <span>{nameCompany}</span>}
+                    {employeeFirstName && <span>{employeeFirstName}</span>}
+                    {employeeLastName && <span>{employeeLastName}</span>}
+                    {data[indexMsg]?.data.role === "owner" ? (
+                      <span>{data[indexMsg]?.data.companyName}</span>
+                    ) : (
+                      <span>
+                        {data[indexMsg]?.data.firstName}{" "}
+                        {data[indexMsg]?.data.lastName}
+                      </span>
+                    )}
+                  </Stack>
                 </Typography>
               </Stack>
               <Paper sx={{ padding: 2, backgroundColor: "#f0f0f0" }}>
