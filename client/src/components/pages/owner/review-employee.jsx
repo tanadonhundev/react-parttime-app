@@ -114,6 +114,8 @@ export default function ReviewEmployee() {
   const handleClose = () => {
     setOpen(false);
     setEmployeeToReview(null);
+    setReviewText("");
+    setValue(5);
   };
 
   const handleClickOpenReport = (
