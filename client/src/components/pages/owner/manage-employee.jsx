@@ -499,6 +499,9 @@ export default function ManageEmployee() {
                 <br />
                 <Divider />
                 <br />
+                <Stack direction={"row"} justifyContent={"center"}>
+                  <Typography variant="h6">ข้อมูลการรีวิว/ประวัติการทำงาน</Typography>
+                </Stack>
                 {reviewEmployee.map((employee, index) => (
                   <div key={index}>
                     <Stack direction={"row"} spacing={1}>
