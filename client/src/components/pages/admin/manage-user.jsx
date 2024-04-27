@@ -187,14 +187,25 @@ export default function ManageUser() {
     setUserToDelete(null);
   };
 
-  const crateChat = async (id) => {
-    const data = {
-      firstId: adminId,
-      secondId: id,
-    };
-    createChat(data)
-      .then(navigate("/dashboard-employee/chat"))
-      .catch((error) => console.log(error));
+  const handleChat = async (item) => {
+    console.log(item);
+    console.log(item.role);
+    if (item.role === "employee") {
+      const queryParams = new URLSearchParams({
+        employeeId: adminId,
+        companyId: item._id,
+        employeeFirstName: item.firstName,
+        employeeLastName: item.lastName,
+      }).toString();
+      navigate(`/dashboard-employee/chat?${queryParams}`);
+    } else {
+      const queryParams = new URLSearchParams({
+        employeeId: adminId,
+        companyId: item._id,
+        nameCompany: item.companyName,
+      }).toString();
+      navigate(`/dashboard-employee/chat?${queryParams}`);
+    }
   };
 
   return (
@@ -351,7 +362,7 @@ export default function ManageUser() {
                                 component={Link}
                                 //to={`/dashboard-employee/chat`}
                                 style={{ textAlign: "center" }}
-                                onClick={() => crateChat(item._id)}
+                                onClick={() => handleChat(item)}
                                 //disabled={item.statusVerify === "ตรวจสอบแล้ว"}
                               >
                                 แชท
