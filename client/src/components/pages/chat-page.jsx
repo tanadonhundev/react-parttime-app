@@ -139,11 +139,7 @@ export default function ChatPage() {
   }, [socket, currentChatId]);
 
   useEffect(() => {
-    if (employeeId && companyId) {
-      handleFindChat(employeeId, companyId);
-    } else {
-      console.error("Employee ID or Company ID is not defined.");
-    }
+    handleFindChat(employeeId, companyId);
   }, [employeeId, companyId]);
 
   const handleFindChat = (employeeId, companyId) => {
