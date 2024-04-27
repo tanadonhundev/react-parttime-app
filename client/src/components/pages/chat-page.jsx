@@ -38,7 +38,8 @@ export default function ChatPage() {
   const employeeId = queryParams.get("employeeId");
   const companyId = queryParams.get("companyId");
   const nameCompany = queryParams.get("nameCompany");
-
+  const employeeFirstName = queryParams.get("employeeFirstName");
+  const employeeLastName = queryParams.get("employeeLastName");
   const navigate = useNavigate();
 
   //console.log("onlineUsers", onlineUsers);
@@ -246,17 +247,23 @@ export default function ChatPage() {
         {currentChatId ? (
           <>
             <Paper sx={{ padding: 2 }}>
-              <Typography variant="h6">
-                Chat Room {nameCompany && <span>{nameCompany}</span>}
-                {data[indexMsg]?.data.role === "owner" ? (
-                  <span>{data[indexMsg]?.data.companyName}</span>
-                ) : (
-                  <span>
-                    {data[indexMsg]?.data.firstName}{" "}
-                    {data[indexMsg]?.data.lastName}
-                  </span>
-                )}
-              </Typography>
+              <Stack direction={"row"} spacing={1}>
+                <Typography variant="h5">Chat Room</Typography>
+                <Typography variant="h6">คุณกำลังพูดคุยอยู่กับ</Typography>
+                <Typography variant="h6">
+                  {nameCompany && <span>{nameCompany}</span>}
+                  {employeeFirstName && <span>{employeeFirstName}</span>}
+                  {employeeLastName && <span>{employeeLastName}</span>}
+                  {data[indexMsg]?.data.role === "owner" ? (
+                    <span>{data[indexMsg]?.data.companyName}</span>
+                  ) : (
+                    <span>
+                      {data[indexMsg]?.data.firstName}{" "}
+                      {data[indexMsg]?.data.lastName}
+                    </span>
+                  )}
+                </Typography>
+              </Stack>
               <Paper sx={{ padding: 2, backgroundColor: "#f0f0f0" }}>
                 {messages.map((message, index) => (
                   <Stack

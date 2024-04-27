@@ -144,7 +144,7 @@ export default function ManageEmployee() {
       .catch((error) => console.log(error));
   };
 
-  const crateChat = async (employeeId) => {
+  const crateChat = async (employeeId, employeeFirstName, employeeLastName) => {
     const data = {
       firstId: companyId,
       secondId: employeeId,
@@ -154,6 +154,8 @@ export default function ManageEmployee() {
         const queryParams = new URLSearchParams({
           companyId: companyId,
           employeeId: employeeId,
+          employeeFirstName: employeeFirstName,
+          employeeLastName: employeeLastName,
         }).toString();
         navigate(`/dashboard-employee/chat?${queryParams}`);
       })
@@ -380,7 +382,11 @@ export default function ManageEmployee() {
                                             variant="contained"
                                             color="warning"
                                             onClick={() =>
-                                              crateChat(employee.employeeId)
+                                              crateChat(
+                                                employee.employeeId,
+                                                employee.employeeFirstName,
+                                                employee.employeeLastName
+                                              )
                                             }
                                           >
                                             แชท
