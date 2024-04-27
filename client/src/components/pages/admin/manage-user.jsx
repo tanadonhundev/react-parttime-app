@@ -188,8 +188,6 @@ export default function ManageUser() {
   };
 
   const handleChat = async (item) => {
-    console.log(item);
-    console.log(item.role);
     if (item.role === "employee") {
       const queryParams = new URLSearchParams({
         employeeId: adminId,
