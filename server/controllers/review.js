@@ -25,7 +25,7 @@ exports.reviewEmployee = async (req, res) => {
             return res.status(404).json({ msg: 'Employee not found' });
         }
 
-        //employee.employmentStatusRe = 'รีวิวแล้ว';
+        employee.employmentStatusRe = 'รีวิวแล้ว';
 
         // Save the changes to the database
         await work.save();
@@ -65,7 +65,7 @@ exports.reviewOwner = async (req, res) => {
             return res.status(404).json({ msg: 'Employee not found' });
         }
 
-        //employee.ownermentStatusRe = 'รีวิวแล้ว';
+        employee.ownermentStatusRe = 'รีวิวแล้ว';
 
         // Save the changes to the database
         await work.save();
