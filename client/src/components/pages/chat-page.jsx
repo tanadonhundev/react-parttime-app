@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -42,6 +42,11 @@ export default function ChatPage() {
   const employeeLastName = queryParams.get("employeeLastName");
   const navigate = useNavigate();
 
+  const scroll = useRef();
+
+  useEffect(() => {
+    scroll.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
   //console.log("onlineUsers", onlineUsers);
 
   useEffect(() => {
@@ -262,33 +267,52 @@ export default function ChatPage() {
                   </Stack>
                 </Typography>
               </Stack>
-              <Paper sx={{ padding: 2, backgroundColor: "#f0f0f0" }}>
-                {messages.map((message, index) => (
-                  <Stack
-                    key={index}
-                    className={`message-container ${
-                      message.senderId === userId ? "message-right" : ""
-                    }`}
-                    direction="row"
-                    justifyContent={
-                      message.senderId === userId ? "flex-end" : "flex-start"
-                    }
-                    sx={{ marginBottom: 1 }}
+              <Stack direction="row" spacing={4} sx={{ marginTop: 4 }}>
+                <div className="chat-box" style={{ flex: 1 }}>
+                  <Paper
+                    ref={scroll}
+                    sx={{
+                      padding: 2,
+                      backgroundColor: "#f0f0f0",
+                      width: "100%",
+                      maxHeight: "400px",
+                      overflowY: "auto",
+                    }}
                   >
-                    <Stack justifyContent={"flex-end"}>
-                      <Typography variant="body1">{message.text}</Typography>
-                      <Typography variant="caption">
-                        {dayjs(message.createdAt).format("DD/MM/YYYY") ===
-                        dayjs().format("DD/MM/YYYY")
-                          ? `Today at ${dayjs(message.createdAt).format(
-                              "HH:mm"
-                            )}`
-                          : dayjs(message.createdAt).format("DD/MM/YYYY HH:mm")}
-                      </Typography>
-                    </Stack>
-                  </Stack>
-                ))}
-              </Paper>
+                    {messages.map((message, index) => (
+                      <Stack
+                        key={index}
+                        className={`message-container ${
+                          message.senderId === userId ? "message-right" : ""
+                        }`}
+                        direction="row"
+                        justifyContent={
+                          message.senderId === userId
+                            ? "flex-end"
+                            : "flex-start"
+                        }
+                        sx={{ marginBottom: 1 }}
+                      >
+                        <Stack justifyContent={"flex-end"}>
+                          <Typography variant="body1">
+                            {message.text}
+                          </Typography>
+                          <Typography variant="caption">
+                            {dayjs(message.createdAt).format("DD/MM/YYYY") ===
+                            dayjs().format("DD/MM/YYYY")
+                              ? `Today at ${dayjs(message.createdAt).format(
+                                  "HH:mm"
+                                )}`
+                              : dayjs(message.createdAt).format(
+                                  "DD/MM/YYYY HH:mm"
+                                )}
+                          </Typography>
+                        </Stack>
+                      </Stack>
+                    ))}
+                  </Paper>
+                </div>
+              </Stack>
               <br />
               <TextField
                 value={messageText}
