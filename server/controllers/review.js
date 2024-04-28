@@ -81,8 +81,8 @@ exports.reviewOwner = async (req, res) => {
 exports.getReviewEmployee = async (req, res) => {
     try {
         const id = req.params.id;
-        const review = await ReviewEmployee.find({ employeeId: id })
-        res.status(200).send(review);
+        const reviews = await ReviewEmployee.find({ employeeId: id }).sort({ createdAt: -1 });
+        res.status(200).send(reviews);
     } catch (error) {
         console.log(error);
         res.status(500).send('Server Error');
@@ -96,7 +96,7 @@ exports.getReviewOwner = async (req, res) => {
         const review = await ReviewOwner.find({
             companyId
                 : id
-        })
+        }).sort({ createdAt: -1 });
         res.status(200).send(review);
     } catch (error) {
         console.log(error);
