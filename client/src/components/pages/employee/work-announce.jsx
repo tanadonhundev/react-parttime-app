@@ -64,6 +64,7 @@ export default function WorkAnnounce() {
   const [open, setOpen] = useState(false);
   const [review, setReview] = useState([]);
   const [employeeId, setEmployeeId] = useState("");
+  const [employeeId1, setEmployeeId1] = useState("");
   const [nameCompany, setNameCompany] = useState("");
 
   const navigate = useNavigate();
@@ -117,6 +118,7 @@ export default function WorkAnnounce() {
     currentUser(token)
       .then((currentUserResponse) => {
         setEmployeeId(currentUserResponse.data._id);
+        setEmployeeId1(currentUserResponse.data._id);
         if (currentUserResponse.data.statusBlacklist === true) {
           setLoading(false);
         }
@@ -199,6 +201,29 @@ export default function WorkAnnounce() {
           companyId: companyId,
           nameCompany: nameCompany,
         }).toString();
+        navigate(`/dashboard-employee/chat?${queryParams}`);
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const crateChat1 = async (
+    employeeId,
+    employeeFirstName,
+    employeeLastName
+  ) => {
+    const data = {
+      firstId: employeeId1,
+      secondId: employeeId,
+    };
+    createChat(data)
+      .then(() => {
+        const queryParams = new URLSearchParams({
+          companyId: employeeId1,
+          employeeId: employeeId,
+          employeeFirstName: employeeFirstName,
+          employeeLastName: employeeLastName,
+        }).toString();
+        console.log(employeeId);
         navigate(`/dashboard-employee/chat?${queryParams}`);
       })
       .catch((error) => console.log(error));
@@ -453,7 +478,13 @@ export default function WorkAnnounce() {
                     <Button
                       variant="contained"
                       color="warning"
-                      onClick={() => crateChat(employee.employeeId)}
+                      onClick={() =>
+                        crateChat1(
+                          employee.employeeId,
+                          employee.employeeFirstName,
+                          employee.employeeLastName
+                        )
+                      }
                     >
                       แชท
                     </Button>
