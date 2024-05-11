@@ -266,7 +266,7 @@ export default function WorkApply() {
               <Grid container spacing={2}>
                 {filteredData.map((item) => (
                   <Grid key={item._id} item lg={3} md={6} sm={12}>
-                    <Card sx={{ maxWidth: 350 }}>
+                    <Card>
                       <CardActionArea>
                         <CardMedia
                           component="img"
