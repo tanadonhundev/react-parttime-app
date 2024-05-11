@@ -223,7 +223,6 @@ export default function WorkAnnounce() {
           employeeFirstName: employeeFirstName,
           employeeLastName: employeeLastName,
         }).toString();
-        console.log(employeeId);
         navigate(`/dashboard-employee/chat?${queryParams}`);
       })
       .catch((error) => console.log(error));
