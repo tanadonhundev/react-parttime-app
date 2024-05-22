@@ -450,7 +450,7 @@ export default function ReviewEmployee() {
           aria-describedby="alert-dialog-description"
           PaperProps={{ style: { width: "1000px" } }}
         >
-          <DialogTitle>{"รายงานนายจ้าง"}</DialogTitle>
+          <DialogTitle>{"รายงานพนักงาน"}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
               {employeeToReport &&
