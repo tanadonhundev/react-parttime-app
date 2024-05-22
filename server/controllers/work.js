@@ -202,7 +202,7 @@ exports.CancelWork = async (req, res) => {
         work.employees = work.employees.filter(emp => emp.employeeId !== employeeId);
 
         // Decrement numOfReady by 1 only if employmentStatus is not 'รอคัดเลิก'
-        if (employmentStatus !== 'รอคัดเลือก') {
+        if (employmentStatus === 'พร้อมเริ่มงาน') {
             work.numOfReady -= 1;
         }
 
