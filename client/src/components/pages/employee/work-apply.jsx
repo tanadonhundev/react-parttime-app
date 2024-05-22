@@ -395,19 +395,31 @@ export default function WorkApply() {
                                           ยกเลิก
                                         </Button>
                                       ) : (
-                                        <Button
-                                          variant="contained"
-                                          onClick={() =>
-                                            handleConfirm(
-                                              employee.employeeId,
-                                              item.companyId,
-                                              item.workDay
-                                            )
-                                          }
-                                          color="success"
-                                        >
-                                          ยืนยัน
-                                        </Button>
+                                        <>
+                                          <Button
+                                            variant="contained"
+                                            onClick={() =>
+                                              handleConfirm(
+                                                employee.employeeId,
+                                                item.companyId,
+                                                item.workDay
+                                              )
+                                            }
+                                            color="success"
+                                          >
+                                            ยืนยัน
+                                          </Button>
+                                          <Button
+                                            variant="contained"
+                                            color="error"
+                                            startIcon={<CancelIcon />}
+                                            onClick={() =>
+                                              handleClickOpen(item)
+                                            }
+                                          >
+                                            ยกเลิก
+                                          </Button>
+                                        </>
                                       )}
                                     </React.Fragment>
                                   );
