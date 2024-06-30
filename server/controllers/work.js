@@ -221,7 +221,6 @@ cron.schedule('*/5 * * * * *', async () => {
     try {
         const works = await Work.find({});
         const now = new Date();
-        now.setHours(now.getHours() + 24);
 
         for (let work of works) {
             const workStartTime = new Date(work.workDay);
