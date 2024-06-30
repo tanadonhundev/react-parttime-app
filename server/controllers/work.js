@@ -216,40 +216,38 @@ exports.CancelWork = async (req, res) => {
     }
 };
 
-
 cron.schedule('*/5 * * * * *', async () => {
     try {
         const works = await Work.find({});
         const now = new Date();
 
-        for (let work of works) {
+        works.forEach(async (work) => {
             const workStartTime = new Date(work.workDay);
-            let employeesToRemove = [];
+            const twoHoursInMillis = 2 * 60 * 60 * 1000;
 
-            // const workDayDateOnly = workStartTime.toISOString().split('T')[0];
-            // console.log(workDayDateOnly)
+            //console.log(twoHoursInMillis)
+            if (now - workStartTime >= twoHoursInMillis) {
+                const employeesToRemove = work.employees.filter(employee =>
+                    employee.employmentStatus === 'รอคัดเลือก' || employee.employmentStatus === 'รอยืนยัน'
+                );
 
-            // Check if 2 hours have passed since workStartTime
-            if (now - workStartTime >= 2 * 60 * 60 * 1000) {
-
-                // Loop through employees to update status and find those to remove
-                for (let i = work.employees.length - 1; i >= 0; i--) {
-                    if (work.employees[i].employmentStatus === 'รอคัดเลือก' || work.employees[i].employmentStatus === 'รอยืนยัน') {
-                        employeesToRemove.push(i); // Collect indices of employees to remove
-                    } else {
-                        // work.employees[i].employmentStatus = 'ยกเลิกงานทั้งหมด';
+                // Remove employees with status 'รอคัดเลือก' or 'รอยืนยัน'
+                employeesToRemove.forEach(employeeToRemove => {
+                    const index = work.employees.indexOf(employeeToRemove);
+                    if (index !== -1) {
+                        work.employees.splice(index, 1);
                     }
-                }
+                });
 
-                // Remove employees with status 'รอคัดเลือก'
-                for (let index of employeesToRemove) {
-                    work.employees.splice(index, 1);
-                }
+                // Alternatively, you can use the following to filter out employees:
+                // work.employees = work.employees.filter(employee =>
+                //     employee.employmentStatus !== 'รอคัดเลือก' && employee.employmentStatus !== 'รอยืนยัน'
+                // );
 
                 await work.save();
             }
-        }
-        console.log(`Scheduled task executed successfully.`);
+        });
+        //console.log(`Scheduled task executed successfully.`);
     } catch (error) {
         console.error('Scheduled task failed:', error);
     }
