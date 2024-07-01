@@ -82,7 +82,6 @@ exports.applyWork = async (req, res) => {
         if (!work) {
             return res.status(404).send("Work document not found");
         }
-
         // Check if the maximum number of employees has been reached
         if (work.numOfReady >= req.body.company.numOfEmployee) {
             return res.status(400).send("พนักงานเต็มแล้ว");
@@ -93,14 +92,12 @@ exports.applyWork = async (req, res) => {
         if (employee) {
             return res.status(400).send("สมัครงานนี้ไปแล้ว");
         }
-
         const otherJobsOnSameDay = await Work.find({
             companyId: { $ne: req.body.company._id }, // Exclude the current job 
             "employees.employeeId": req.body.employee._id, // Check if the employee is already assigned to another job
             workDay: work.workDay,
             "employees.employmentStatus": "พร้อมเริ่มงาน"
         }).exec();
-
         if (otherJobsOnSameDay.length > 0) {
             return res.status(400).send("มีงานในวันนี้แล้ว");
         }
@@ -216,22 +213,37 @@ exports.CancelWork = async (req, res) => {
     }
 };
 
-cron.schedule('*/5 * * * * *', async () => {
+cron.schedule('0 */2 * * *', async () => {
     try {
-        const works = await Work.find({});
-        const now = new Date();
+        const now = new Date(); // เรียกใช้วันที่ปัจจุบัน
+        const todayStart = new Date(now.setHours(0, 0, 0, 0)).toISOString();
+        // เวลาที่เริ่มต้นของวันนี้
+        const todayEnd = new Date(now.setHours(23, 59, 59, 999)).toISOString(); // เวลาสุดท้ายของวันนี้
 
-        works.forEach(async (work) => {
+        const works = await Work.find({
+            workDay: {
+                $gte: todayStart,
+                $lte: todayEnd
+            }
+        });
+        // console.log(todayStart);
+        //console.log(works);
+
+        // Process each work item
+        for (const work of works) {
             const workStartTime = new Date(work.workDay);
-            const twoHoursInMillis = 2 * 60 * 60 * 1000;
+            const twoHoursInMillis = 6 * 60 * 60 * 1000;
 
+            // Check if it has been at least two hours since workStartTime
             //console.log(twoHoursInMillis)
+            console.log(now - workStartTime)
             if (now - workStartTime >= twoHoursInMillis) {
+                // Filter employees to remove those with specific employment statuses
                 const employeesToRemove = work.employees.filter(employee =>
                     employee.employmentStatus === 'รอคัดเลือก' || employee.employmentStatus === 'รอยืนยัน'
                 );
 
-                // Remove employees with status 'รอคัดเลือก' or 'รอยืนยัน'
+                // Remove identified employees
                 employeesToRemove.forEach(employeeToRemove => {
                     const index = work.employees.indexOf(employeeToRemove);
                     if (index !== -1) {
@@ -244,9 +256,10 @@ cron.schedule('*/5 * * * * *', async () => {
                 //     employee.employmentStatus !== 'รอคัดเลือก' && employee.employmentStatus !== 'รอยืนยัน'
                 // );
 
+                // Save the updated work document
                 await work.save();
             }
-        });
+        }
         //console.log(`Scheduled task executed successfully.`);
     } catch (error) {
         console.error('Scheduled task failed:', error);
