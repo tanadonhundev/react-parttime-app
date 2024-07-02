@@ -93,10 +93,14 @@ exports.applyWork = async (req, res) => {
             return res.status(400).send("สมัครงานนี้ไปแล้ว");
         }
         const otherJobsOnSameDay = await Work.find({
-            companyId: { $ne: req.body.company._id }, // Exclude the current job 
-            "employees.employeeId": req.body.employee._id, // Check if the employee is already assigned to another job
+            companyId: { $ne: req.body.company._id }, // Exclude the current job
             workDay: work.workDay,
-            "employees.employmentStatus": "พร้อมเริ่มงาน"
+            employees: {
+                $elemMatch: {
+                    employeeId: req.body.employee._id, // Exclude the current employee
+                    employmentStatus: 'พร้อมเริ่มงาน'
+                }
+            }
         }).exec();
         if (otherJobsOnSameDay.length > 0) {
             return res.status(400).send("มีงานในวันนี้แล้ว");
@@ -213,12 +217,11 @@ exports.CancelWork = async (req, res) => {
     }
 };
 
-cron.schedule('0 */2 * * *', async () => {
+cron.schedule('*/5 * * * * *', async () => {
     try {
-        const now = new Date(); // เรียกใช้วันที่ปัจจุบัน
-        const todayStart = new Date(now.setHours(0, 0, 0, 0)).toISOString();
-        // เวลาที่เริ่มต้นของวันนี้
-        const todayEnd = new Date(now.setHours(23, 59, 59, 999)).toISOString(); // เวลาสุดท้ายของวันนี้
+        const now = new Date(); // Current date and time
+        const todayStart = new Date(now.setHours(0, 0, 0, 0)).toISOString(); // Start of today
+        const todayEnd = new Date(now.setHours(23, 59, 59, 999)).toISOString(); // End of today
 
         const works = await Work.find({
             workDay: {
@@ -226,18 +229,30 @@ cron.schedule('0 */2 * * *', async () => {
                 $lte: todayEnd
             }
         });
-        // console.log(todayStart);
-        //console.log(works);
 
-        // Process each work item
         for (const work of works) {
-            const workStartTime = new Date(work.workDay);
-            const twoHoursInMillis = 6 * 60 * 60 * 1000;
+            const workDay = new Date(work.workDay);
+            const workStartTime = new Date(work.workStartTime);
 
-            // Check if it has been at least two hours since workStartTime
-            //console.log(twoHoursInMillis)
-            console.log(now - workStartTime)
-            if (now - workStartTime >= twoHoursInMillis) {
+            // Combine workDay date with workStartTime time
+            const combinedWorkStartTime = new Date(
+                workDay.getFullYear(),
+                workDay.getMonth(),
+                workDay.getDate(),
+                workStartTime.getUTCHours(),
+                workStartTime.getUTCMinutes(),
+                workStartTime.getUTCSeconds()
+            );
+
+            // Calculate two hours in milliseconds
+            const twoHoursInMillis = 1 * 60 * 60 * 1000;
+
+            const now = new Date(); // Current time
+
+            // Check if it is less than two hours before the workStartTime
+             //console.log(combinedWorkStartTime)
+             //console.log(now)
+            if (combinedWorkStartTime - now <= twoHoursInMillis) {
                 // Filter employees to remove those with specific employment statuses
                 const employeesToRemove = work.employees.filter(employee =>
                     employee.employmentStatus === 'รอคัดเลือก' || employee.employmentStatus === 'รอยืนยัน'
@@ -251,15 +266,10 @@ cron.schedule('0 */2 * * *', async () => {
                     }
                 });
 
-                // Alternatively, you can use the following to filter out employees:
-                // work.employees = work.employees.filter(employee =>
-                //     employee.employmentStatus !== 'รอคัดเลือก' && employee.employmentStatus !== 'รอยืนยัน'
-                // );
-
-                // Save the updated work document
                 await work.save();
             }
         }
+
         //console.log(`Scheduled task executed successfully.`);
     } catch (error) {
         console.error('Scheduled task failed:', error);
