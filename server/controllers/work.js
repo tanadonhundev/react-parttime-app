@@ -166,13 +166,14 @@ exports.applyList = async (req, res) => {
 exports.ChangeEmploymentStatus = async (req, res) => {
     try {
         const workDay = req.body.workDay;
+        const workId = req.body.workId
         const companyId = req.body.companyId;
         const employeeId = req.body.employeeId;
         const status = req.body.status;
         const action = req.body.action;
-
         // Find the work record based on companyId and workDay
-        const work = await Work.findOne({ companyId: companyId, workDay: workDay });
+
+        const work = await Work.findOne({ _id: workId, workDay: workDay });
 
         if (!work) {
             return res.status(404).json({ msg: 'Work record not found' });

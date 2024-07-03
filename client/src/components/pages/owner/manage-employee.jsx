@@ -127,12 +127,20 @@ export default function ManageEmployee() {
     setSelectedTab(newValue);
   };
 
-  const handleConfirm = (item, employeeId, companyId, workDay, action) => {
+  const handleConfirm = (
+    item,
+    employeeId,
+    companyId,
+    workDay,
+    workId,
+    action
+  ) => {
     const token = localStorage.getItem("token");
     const values = {
       workDay: workDay,
       companyId: companyId,
       employeeId: employeeId,
+      workId: workId,
       status: item,
       action: action,
     };
@@ -334,7 +342,8 @@ export default function ManageEmployee() {
                                                 employee.employmentStatus,
                                                 employee.employeeId,
                                                 item.companyId,
-                                                item.workDay
+                                                item.workDay,
+                                                item._id
                                               )
                                             }
                                             disabled={
@@ -355,6 +364,7 @@ export default function ManageEmployee() {
                                                 employee.employeeId,
                                                 item.companyId,
                                                 item.workDay,
+                                                item._id,
                                                 1
                                               )
                                             }
@@ -500,7 +510,9 @@ export default function ManageEmployee() {
                 <Divider />
                 <br />
                 <Stack direction={"row"} justifyContent={"center"}>
-                  <Typography variant="h6">ข้อมูลการรีวิว/ประวัติการทำงาน</Typography>
+                  <Typography variant="h6">
+                    ข้อมูลการรีวิว/ประวัติการทำงาน
+                  </Typography>
                 </Stack>
                 {reviewEmployee.map((employee, index) => (
                   <div key={index}>
