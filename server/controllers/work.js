@@ -1,5 +1,6 @@
 const cron = require('node-cron');
 const Work = require("../models/work");
+const dayjs = require("dayjs")
 
 exports.postWork = async (req, res) => {
     try {
@@ -217,7 +218,8 @@ exports.CancelWork = async (req, res) => {
     }
 };
 
-cron.schedule('*/5 * * * * *', async () => {
+
+cron.schedule('*/10 * * * * *', async () => {
     try {
         const now = new Date(); // Current date and time
         const todayStart = new Date(now.setHours(0, 0, 0, 0)).toISOString(); // Start of today
@@ -236,23 +238,28 @@ cron.schedule('*/5 * * * * *', async () => {
 
             // Combine workDay date with workStartTime time
             const combinedWorkStartTime = new Date(
-                workDay.getFullYear(),
-                workDay.getMonth(),
-                workDay.getDate(),
-                workStartTime.getUTCHours(),
-                workStartTime.getUTCMinutes(),
-                workStartTime.getUTCSeconds()
+                Date.UTC(
+                    workDay.getUTCFullYear(),
+                    workDay.getUTCMonth(),
+                    workDay.getUTCDate(),
+                    workStartTime.getUTCHours(),
+                    workStartTime.getUTCMinutes(),
+                    workStartTime.getUTCSeconds()
+                )
             );
+
+            // Add 24 hours to the combinedWorkStartTime
+            const combinedWorkStartTimeWith24Hours = new Date(combinedWorkStartTime.getTime() + (24 * 60 * 60 * 1000));
 
             // Calculate two hours in milliseconds
             const twoHoursInMillis = 1 * 60 * 60 * 1000;
 
             const now = new Date(); // Current time
 
-            // Check if it is less than two hours before the workStartTime
-             //console.log(combinedWorkStartTime)
-             //console.log(now)
-            if (combinedWorkStartTime - now <= twoHoursInMillis) {
+            // Check if it is less than two hours before the workStartTime (after adding 24 hours)
+            // console.log(combinedWorkStartTimeWith24Hours - now)
+            //console.log(twoHoursInMillis)
+            if (combinedWorkStartTimeWith24Hours - now <= twoHoursInMillis) {
                 // Filter employees to remove those with specific employment statuses
                 const employeesToRemove = work.employees.filter(employee =>
                     employee.employmentStatus === 'รอคัดเลือก' || employee.employmentStatus === 'รอยืนยัน'
