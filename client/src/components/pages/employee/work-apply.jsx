@@ -164,11 +164,12 @@ export default function WorkApply() {
       .catch((error) => console.log(error));
   };
 
-  const handleConfirm = (employeeId, companyId, workDay) => {
+  const handleConfirm = (employeeId, companyId, workDay, workId) => {
     const token = localStorage.getItem("token");
     const values = {
       employeeId: employeeId,
       companyId: companyId,
+      workId: workId,
       workDay: workDay,
       status: "พร้อมเริ่มงาน",
     };
@@ -403,7 +404,8 @@ export default function WorkApply() {
                                               handleConfirm(
                                                 employee.employeeId,
                                                 item.companyId,
-                                                item.workDay
+                                                item.workDay,
+                                                item._id
                                               )
                                             }
                                             color="success"
