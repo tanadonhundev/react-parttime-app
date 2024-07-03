@@ -83,6 +83,7 @@ exports.applyWork = async (req, res) => {
         if (!work) {
             return res.status(404).send("Work document not found");
         }
+
         // Check if the maximum number of employees has been reached
         if (work.numOfReady >= req.body.company.numOfEmployee) {
             return res.status(400).send("พนักงานเต็มแล้ว");
@@ -93,18 +94,33 @@ exports.applyWork = async (req, res) => {
         if (employee) {
             return res.status(400).send("สมัครงานนี้ไปแล้ว");
         }
+
+        // Check if the employee has already applied for another job on the same day
         const otherJobsOnSameDay = await Work.find({
             companyId: { $ne: req.body.company._id }, // Exclude the current job
             workDay: work.workDay,
             employees: {
                 $elemMatch: {
-                    employeeId: req.body.employee._id, // Exclude the current employee
+                    employeeId: req.body.employee._id,
                     employmentStatus: 'พร้อมเริ่มงาน'
                 }
             }
         }).exec();
         if (otherJobsOnSameDay.length > 0) {
             return res.status(400).send("มีงานในวันนี้แล้ว");
+        }
+
+        // Check if the employee has applied for more than 3 jobs on the same day
+        const jobsOnSameDay = await Work.find({
+            workDay: work.workDay,
+            employees: {
+                $elemMatch: {
+                    employeeId: req.body.employee._id,
+                }
+            }
+        }).exec();
+        if (jobsOnSameDay.length >= 3) {
+            return res.status(400).send("ห้ามสมัครงานเกิน 3 งานในวันเดียวกัน");
         }
 
         // Add the employee to the current job
@@ -124,6 +140,7 @@ exports.applyWork = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
 
 exports.applyList = async (req, res) => {
     try {
@@ -194,8 +211,10 @@ exports.CancelWork = async (req, res) => {
         const companyId = req.body.companyId;
         const employeeId = req.body.employeeId;
         const employmentStatus = req.body.employmentStatus
+        const workId = req.body.workId
 
-        const work = await Work.findOne({ companyId: companyId, workDay: workDay });
+
+        const work = await Work.findOne({ _id: workId, workDay: workDay });
 
         if (!work) {
             return res.status(404).json({ msg: 'Work record not found' });
@@ -219,66 +238,66 @@ exports.CancelWork = async (req, res) => {
 };
 
 
-cron.schedule('*/10 * * * * *', async () => {
-    try {
-        const now = new Date(); // Current date and time
-        const todayStart = new Date(now.setHours(0, 0, 0, 0)).toISOString(); // Start of today
-        const todayEnd = new Date(now.setHours(23, 59, 59, 999)).toISOString(); // End of today
+// cron.schedule('*/10 * * * * *', async () => {
+//     try {
+//         const now = new Date(); // Current date and time
+//         const todayStart = new Date(now.setHours(0, 0, 0, 0)).toISOString(); // Start of today
+//         const todayEnd = new Date(now.setHours(23, 59, 59, 999)).toISOString(); // End of today
 
-        const works = await Work.find({
-            workDay: {
-                $gte: todayStart,
-                $lte: todayEnd
-            }
-        });
+//         const works = await Work.find({
+//             workDay: {
+//                 $gte: todayStart,
+//                 $lte: todayEnd
+//             }
+//         });
 
-        for (const work of works) {
-            const workDay = new Date(work.workDay);
-            const workStartTime = new Date(work.workStartTime);
+//         for (const work of works) {
+//             const workDay = new Date(work.workDay);
+//             const workStartTime = new Date(work.workStartTime);
 
-            // Combine workDay date with workStartTime time
-            const combinedWorkStartTime = new Date(
-                Date.UTC(
-                    workDay.getUTCFullYear(),
-                    workDay.getUTCMonth(),
-                    workDay.getUTCDate(),
-                    workStartTime.getUTCHours(),
-                    workStartTime.getUTCMinutes(),
-                    workStartTime.getUTCSeconds()
-                )
-            );
+//             // Combine workDay date with workStartTime time
+//             const combinedWorkStartTime = new Date(
+//                 Date.UTC(
+//                     workDay.getUTCFullYear(),
+//                     workDay.getUTCMonth(),
+//                     workDay.getUTCDate(),
+//                     workStartTime.getUTCHours(),
+//                     workStartTime.getUTCMinutes(),
+//                     workStartTime.getUTCSeconds()
+//                 )
+//             );
 
-            // Add 24 hours to the combinedWorkStartTime
-            const combinedWorkStartTimeWith24Hours = new Date(combinedWorkStartTime.getTime() + (24 * 60 * 60 * 1000));
+//             // Add 24 hours to the combinedWorkStartTime
+//             const combinedWorkStartTimeWith24Hours = new Date(combinedWorkStartTime.getTime() + (24 * 60 * 60 * 1000));
 
-            // Calculate two hours in milliseconds
-            const twoHoursInMillis = 1 * 60 * 60 * 1000;
+//             // Calculate two hours in milliseconds
+//             const twoHoursInMillis = 1 * 60 * 60 * 1000;
 
-            const now = new Date(); // Current time
+//             const now = new Date(); // Current time
 
-            // Check if it is less than two hours before the workStartTime (after adding 24 hours)
-            // console.log(combinedWorkStartTimeWith24Hours - now)
-            //console.log(twoHoursInMillis)
-            if (combinedWorkStartTimeWith24Hours - now <= twoHoursInMillis) {
-                // Filter employees to remove those with specific employment statuses
-                const employeesToRemove = work.employees.filter(employee =>
-                    employee.employmentStatus === 'รอคัดเลือก' || employee.employmentStatus === 'รอยืนยัน'
-                );
+//             // Check if it is less than two hours before the workStartTime (after adding 24 hours)
+//             // console.log(combinedWorkStartTimeWith24Hours - now)
+//             //console.log(twoHoursInMillis)
+//             if (combinedWorkStartTimeWith24Hours - now <= twoHoursInMillis) {
+//                 // Filter employees to remove those with specific employment statuses
+//                 const employeesToRemove = work.employees.filter(employee =>
+//                     employee.employmentStatus === 'รอคัดเลือก' || employee.employmentStatus === 'รอยืนยัน'
+//                 );
 
-                // Remove identified employees
-                employeesToRemove.forEach(employeeToRemove => {
-                    const index = work.employees.indexOf(employeeToRemove);
-                    if (index !== -1) {
-                        work.employees.splice(index, 1);
-                    }
-                });
+//                 // Remove identified employees
+//                 employeesToRemove.forEach(employeeToRemove => {
+//                     const index = work.employees.indexOf(employeeToRemove);
+//                     if (index !== -1) {
+//                         work.employees.splice(index, 1);
+//                     }
+//                 });
 
-                await work.save();
-            }
-        }
+//                 await work.save();
+//             }
+//         }
 
-        //console.log(`Scheduled task executed successfully.`);
-    } catch (error) {
-        console.error('Scheduled task failed:', error);
-    }
-});
+//         //console.log(`Scheduled task executed successfully.`);
+//     } catch (error) {
+//         console.error('Scheduled task failed:', error);
+//     }
+// });

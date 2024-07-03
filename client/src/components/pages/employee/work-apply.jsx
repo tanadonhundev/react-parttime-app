@@ -187,6 +187,7 @@ export default function WorkApply() {
       );
       if (filteredEmploymentStatus) {
         const values = {
+          workId: userToCancel._id,
           workDay: userToCancel.workDay,
           companyId: userToCancel.companyId,
           employeeId: employeeId,
