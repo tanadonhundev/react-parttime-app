@@ -167,7 +167,7 @@ exports.ChangeEmploymentStatus = async (req, res) => {
     try {
         const workDay = req.body.workDay;
         const workId = req.body.workId
-        const companyId = req.body.companyId;
+        //const companyId = req.body.companyId;
         const employeeId = req.body.employeeId;
         const status = req.body.status;
         const action = req.body.action;
@@ -184,11 +184,11 @@ exports.ChangeEmploymentStatus = async (req, res) => {
         if (!employee) {
             return res.status(404).json({ msg: 'Employee not found' });
         }
-
         if (action === 1 && status === 'รอคัดเลือก') {
             employee.employmentStatus = 'ตำแหน่งเต็ม';
         } else if (status === 'รอคัดเลือก' || status === 'ตำแหน่งเต็ม') {
-            employee.employmentStatus = 'รอยืนยัน';
+            employee.employmentStatus = 'พร้อมเริ่มงาน';
+            work.numOfReady += 1;
         } else if (status === 'รอยืนยัน') {
             employee.employmentStatus = 'ตำแหน่งเต็ม';
         } else if (status === 'พร้อมเริ่มงาน') {
@@ -209,7 +209,7 @@ exports.ChangeEmploymentStatus = async (req, res) => {
 exports.CancelWork = async (req, res) => {
     try {
         const workDay = req.body.workDay;
-        const companyId = req.body.companyId;
+        //const companyId = req.body.companyId;
         const employeeId = req.body.employeeId;
         const employmentStatus = req.body.employmentStatus
         const workId = req.body.workId
