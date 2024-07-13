@@ -24,11 +24,11 @@ export default function HomePage() {
       .then((res) => {
         const role = res.data.role;
         if (role === "admin") {
-          navigate("/dashboard-admin");
+          navigate("/dashboard-admin/manage-user");
         } else if (role === "owner") {
-          navigate("/dashboard-owner");
+          navigate("/dashboard-owner/company-announce");
         } else if (role === "employee") {
-          navigate("/dashboard-employee");
+          navigate("/dashboard-employee/work-announce");
         } else {
           navigate("/");
         }

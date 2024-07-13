@@ -79,16 +79,16 @@ function DashboardContent() {
     const token = localStorage.getItem("token");
     currentUser(token)
       .then((res) => {
-        const role = res.data.role;
-        if (role === "admin") {
-          navigate("/dashboard-admin/manage-user");
-        } else if (role === "owner") {
-          navigate("/dashboard-owner/company-announce");
-        } else if (role === "employee") {
-          navigate("/dashboard-employee/work-announce");
-        } else {
-          navigate("/");
-        }
+        // const role = res.data.role;
+        // if (role === "admin") {
+        //   navigate("/dashboard-admin/manage-user");
+        // } else if (role === "owner") {
+        //   navigate("/dashboard-owner/company-announce");
+        // } else if (role === "employee") {
+        //   navigate("/dashboard-employee/work-announce");
+        // } else {
+        //   navigate("/");
+        // }
       })
       .catch((error) => {
         console.log(error);
