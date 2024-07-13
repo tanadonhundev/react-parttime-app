@@ -238,6 +238,30 @@ exports.CancelWork = async (req, res) => {
     }
 };
 
+exports.CancelWork1 = async (req, res) => {
+    try {
+        const workId = req.body.workId;
+        const workDay = req.body.workDay;
+
+        const work = await Work.findOne({ _id: workId, workDay: workDay });
+
+        if (!work) {
+            return res.status(404).send('ไม่พบงานที่ต้องการยกเลิก');
+        }
+
+        if (work.employees.length > 0) {
+            return res.status(400).send('ไม่สามารถยกเลิกงานได้เนื่องจากมีพนักงานมีพนักงานมาสมัครงานแล้ว');
+        }
+
+        await Work.deleteOne({ _id: workId, workDay: workDay });
+
+        res.status(200).send('ยกเลิกสมัครงานสำเร็จ');
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server Error');
+    }
+};
+
 
 // cron.schedule('*/10 * * * * *', async () => {
 //     try {

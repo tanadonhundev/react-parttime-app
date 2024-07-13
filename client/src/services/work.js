@@ -65,3 +65,11 @@ export const CancelWork = async (authtoken, data) => {
     });
 }
 
+export const CancelWork1 = async (authtoken, data) => {
+    return await axios.post(`${baseURL}/api/cancelwork1`, data, {
+        headers: {
+            authtoken
+        }
+    });
+}
+

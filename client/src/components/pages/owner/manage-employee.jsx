@@ -27,7 +27,7 @@ import NotInterestedIcon from "@mui/icons-material/NotInterested";
 import dayjs from "dayjs";
 import "dayjs/locale/th";
 
-import { workDescripList } from "../../../services/work";
+import { CancelWork1, workDescripList } from "../../../services/work";
 import { currentUser } from "../../../services/auth";
 import { ChangeEmploymentStatus } from "../../../services/work";
 import { profileUser } from "../../../services/user";
@@ -48,12 +48,14 @@ export default function ManageEmployee() {
   const [open, setOpen] = useState(false);
   const [dataEmployee, setDataEmployee] = useState([]);
   const [reviewEmployee, setReviewEmployee] = useState([]);
-  const [countdown, setCountdown] = useState({
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-  });
+  // const [countdown, setCountdown] = useState({
+  //   hours: 0,
+  //   minutes: 0,
+  //   seconds: 0,
+  // });
   const [companyId, setCompanyId] = useState("");
+  const [open1, setOpen1] = useState(false);
+  const [dataWork, setDataWork] = useState([]);
 
   const baseURL = import.meta.env.VITE_API;
 
@@ -80,6 +82,15 @@ export default function ManageEmployee() {
     setReviewEmployee([]);
   };
 
+  const handleClickOpen1 = (data) => {
+    setDataWork(data);
+    setOpen1(true);
+  };
+
+  const handleClose1 = () => {
+    setOpen1(false);
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     currentUser(token)
@@ -91,28 +102,28 @@ export default function ManageEmployee() {
       .catch((error) => console.log(error));
   }, []);
 
-  const updateCountdown = () => {
-    const currentDate = dayjs();
-    const targetDate = dayjs(uniqueDates[selectedTab]);
-    const diffInSeconds = targetDate.diff(currentDate, "second");
+  // const updateCountdown = () => {
+  //   const currentDate = dayjs();
+  //   const targetDate = dayjs(uniqueDates[selectedTab]);
+  //   const diffInSeconds = targetDate.diff(currentDate, "second");
 
-    const hours = Math.floor(diffInSeconds / 3600);
-    const minutes = Math.floor((diffInSeconds % 3600) / 60);
-    const seconds = diffInSeconds % 60;
+  //   const hours = Math.floor(diffInSeconds / 3600);
+  //   const minutes = Math.floor((diffInSeconds % 3600) / 60);
+  //   const seconds = diffInSeconds % 60;
 
-    setCountdown({
-      hours: hours >= 0 ? hours : 0,
-      minutes: minutes >= 0 ? minutes : 0,
-      seconds: seconds >= 0 ? seconds : 0,
-    });
-  };
+  //   setCountdown({
+  //     hours: hours >= 0 ? hours : 0,
+  //     minutes: minutes >= 0 ? minutes : 0,
+  //     seconds: seconds >= 0 ? seconds : 0,
+  //   });
+  // };
 
-  // Update countdown every second
-  useEffect(() => {
-    const intervalId = setInterval(updateCountdown, 1000);
+  // // Update countdown every second
+  // useEffect(() => {
+  //   const intervalId = setInterval(updateCountdown, 1000);
 
-    return () => clearInterval(intervalId);
-  }, [selectedTab]);
+  //   return () => clearInterval(intervalId);
+  // }, [selectedTab]);
 
   const loadData = async (token, id) => {
     workDescripList(token, id)
@@ -182,6 +193,27 @@ export default function ManageEmployee() {
   );
 
   uniqueDates.sort((a, b) => (dayjs(a).isBefore(dayjs(b)) ? -1 : 1));
+
+  const handleCancelWork = async (token) => {
+    if (dataWork) {
+      const values = {
+        workId: dataWork._id,
+        workDay: dataWork.workDay,
+      };
+      await CancelWork1(token, values)
+        .then((res) => {
+          console.log(res.data);
+          loadData(token, companyId);
+          toast.success(res.data);
+          handleClose1();
+        })
+        .catch((error) => {
+          console.log(error);
+          toast.error(error.response.data);
+        })
+        .finally(handleClose1());
+    }
+  };
 
   return (
     <>
@@ -254,6 +286,9 @@ export default function ManageEmployee() {
                                 <TableCell style={{ textAlign: "center" }}>
                                   พร้อมเริ่มงาน
                                 </TableCell>
+                                <TableCell
+                                  style={{ textAlign: "center" }}
+                                ></TableCell>
                               </TableRow>
                             </TableHead>
                             <TableBody>
@@ -267,6 +302,15 @@ export default function ManageEmployee() {
                                 </TableCell>
                                 <TableCell style={{ textAlign: "center" }}>
                                   {item.numOfReady}
+                                </TableCell>
+                                <TableCell style={{ textAlign: "center" }}>
+                                  <Button
+                                    variant="contained"
+                                    color="error"
+                                    onClick={() => handleClickOpen1(item)}
+                                  >
+                                    ยกเลิก
+                                  </Button>
                                 </TableCell>
                               </TableRow>
                             </TableBody>
@@ -555,6 +599,35 @@ export default function ManageEmployee() {
             onClick={handleClose}
           >
             ปิด
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={open1}
+        TransitionComponent={Transition}
+        onClose={handleClose1}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        PaperProps={{ style: { width: "1000px" } }}
+      >
+        <DialogTitle>{"ยืนยันการยกเลิกงานประกาศจ้างงาน"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            <Stack direction={"row"} justifyContent={"center"}>
+              <Typography>คุณยืนยันที่จะยกเลิกประกาศจ้างงานหรือไม่</Typography>
+            </Stack>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="warning" onClick={handleClose1}>
+            ยกเลิก
+          </Button>
+          <Button
+            variant="contained"
+            color="success"
+            onClick={() => handleCancelWork(localStorage.getItem("token"))}
+          >
+            ยืนยัน
           </Button>
         </DialogActions>
       </Dialog>
