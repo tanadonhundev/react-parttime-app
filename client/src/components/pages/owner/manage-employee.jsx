@@ -158,6 +158,11 @@ export default function ManageEmployee() {
     ChangeEmploymentStatus(token, values)
       .then((res) => {
         loadData(token, companyId);
+        console.log(res.data);
+        if (res.data === "พนักงานมีงานในวันอื่นแล้ว") {
+          toast.error(res.data);
+          return;
+        }
         toast.success(res.data);
       })
       .catch((error) => console.log(error));
@@ -394,7 +399,9 @@ export default function ManageEmployee() {
                                               employee.employmentStatus ===
                                                 "รอยืนยัน" ||
                                               employee.employmentStatus ===
-                                                "พร้อมเริ่มงาน"
+                                                "พร้อมเริ่มงาน" ||
+                                              employee.employmentStatus ===
+                                                "ถูกยกเลิก"
                                             }
                                           >
                                             ยืนยัน
@@ -414,9 +421,11 @@ export default function ManageEmployee() {
                                             }
                                             disabled={
                                               employee.employmentStatus ===
-                                                "ตำแหน่งเต็ม" ||
+                                                "รอยืนยัน" ||
                                               employee.employmentStatus ===
-                                                "พร้อมเริ่มงาน"
+                                                "พร้อมเริ่มงาน" ||
+                                              employee.employmentStatus ===
+                                                "ถูกยกเลิก"
                                             }
                                           >
                                             ปฎิเสธ
@@ -428,6 +437,10 @@ export default function ManageEmployee() {
                                               handleClickOpen(
                                                 employee.employeeId
                                               )
+                                            }
+                                            disabled={
+                                              employee.employmentStatus ===
+                                              "ถูกยกเลิก"
                                             }
                                           >
                                             ดูข้อมูล
@@ -441,6 +454,10 @@ export default function ManageEmployee() {
                                                 employee.employeeFirstName,
                                                 employee.employeeLastName
                                               )
+                                            }
+                                            disabled={
+                                              employee.employmentStatus ===
+                                              "ถูกยกเลิก"
                                             }
                                           >
                                             แชท

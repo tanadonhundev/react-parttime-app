@@ -165,25 +165,55 @@ exports.applyList = async (req, res) => {
 
 exports.ChangeEmploymentStatus = async (req, res) => {
     try {
-        const workDay = req.body.workDay;
-        const workId = req.body.workId
-        //const companyId = req.body.companyId;
-        const employeeId = req.body.employeeId;
-        const status = req.body.status;
-        const action = req.body.action;
-        // Find the work record based on companyId and workDay
+        const { workDay, workId, employeeId, status, action } = req.body;
 
+        // Check if there are other works with the same workDay and 'พร้อมเริ่มงาน'
+        const otherWorks = await Work.find({
+            _id: { $ne: workId },
+            workDay: workDay,
+            employees: {
+                $elemMatch: {
+                    employeeId: employeeId,
+                    employmentStatus: 'พร้อมเริ่มงาน'
+                }
+            }
+        });
+
+        if (otherWorks.length > 0) {
+            // Find the work record based on workId and workDay
+            const work = await Work.findOne({ _id: workId, workDay: workDay });
+
+            if (!work) {
+                return res.status(404).json({ msg: 'Work record not found' });
+            }
+
+            // Find the employee within the work record based on employeeId
+            const employee = work.employees.find(emp => emp.employeeId === employeeId);
+
+            if (!employee) {
+                return res.status(404).json({ msg: 'Employee not found' });
+            }
+
+            employee.employmentStatus = 'ถูกยกเลิก';
+            await work.save();
+            return res.status(200).send('พนักงานมีงานในวันอื่นแล้ว');
+        }
+
+        // Find the work record based on workId and workDay
         const work = await Work.findOne({ _id: workId, workDay: workDay });
 
         if (!work) {
             return res.status(404).json({ msg: 'Work record not found' });
         }
+
         // Find the employee within the work record based on employeeId
         const employee = work.employees.find(emp => emp.employeeId === employeeId);
 
         if (!employee) {
             return res.status(404).json({ msg: 'Employee not found' });
         }
+
+        // Update employee status based on conditions
         if (action === 1 && status === 'รอคัดเลือก') {
             employee.employmentStatus = 'ตำแหน่งเต็ม';
         } else if (status === 'รอคัดเลือก' || status === 'ตำแหน่งเต็ม') {
@@ -195,6 +225,7 @@ exports.ChangeEmploymentStatus = async (req, res) => {
             employee.employmentStatus = 'พร้อมเริ่มงาน';
             work.numOfReady += 1;
         }
+
         // Save the changes to the database
         await work.save();
 
@@ -204,6 +235,7 @@ exports.ChangeEmploymentStatus = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
 
 
 exports.CancelWork = async (req, res) => {

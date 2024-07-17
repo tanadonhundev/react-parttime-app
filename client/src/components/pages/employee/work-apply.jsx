@@ -364,6 +364,14 @@ export default function WorkApply() {
                                         >
                                           {employee.employmentStatus}
                                         </Button>
+                                      ) : employee.employmentStatus ===
+                                        "ถูกยกเลิก" ? (
+                                        <Button
+                                          variant="outlined"
+                                          color="error"
+                                        >
+                                          {employee.employmentStatus}
+                                        </Button>
                                       ) : null}
 
                                       {employee.employmentStatus ===
@@ -387,7 +395,9 @@ export default function WorkApply() {
                                           หางานใหม่
                                         </Button>
                                       ) : employee.employmentStatus ===
-                                        "พร้อมเริ่มงาน" ? (
+                                          "พร้อมเริ่มงาน" ||
+                                        employee.employmentStatus ===
+                                          "ถูกยกเลิก" ? (
                                         <Button
                                           variant="contained"
                                           color="error"
