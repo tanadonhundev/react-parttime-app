@@ -6,6 +6,8 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
 import Avatar from "@mui/material/Avatar";
+import Badge from "@mui/material/Badge";
+import MailIcon from "@mui/icons-material/Mail";
 
 import dayjs from "dayjs";
 
@@ -28,6 +30,7 @@ export default function ChatPage() {
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [newMessage, setNewMessage] = useState(null);
   const [indexMsg, setIndexMsg] = useState("");
+  const [unreadMessages, setUnreadMessages] = useState({});
 
   const baseURL = import.meta.env.VITE_API;
   const socketURL = import.meta.env.VITE_API_SOCKET;
@@ -119,14 +122,24 @@ export default function ChatPage() {
     if (!receiverId) return;
 
     socket.emit("sendMessage", { ...newMessage, receiverId });
-  }, [newMessage]);
+  }, [newMessage, socket, currentChatId, chats, userId]);
 
   useEffect(() => {
     if (socket === null) return;
 
-    socket.on("getMessage", (res) => {
-      if (currentChatId !== res.chatId) return;
-      setMessages((prev) => [...prev, res.data]);
+    // Listen for incoming messages
+    socket.on("getMessage", (message) => {
+      // If the message is for the current chat, add it to the chat window
+      if (currentChatId === message.chatId) {
+        setMessages((prevMessages) => [...prevMessages, message]);
+        scroll.current?.scrollIntoView({ behavior: "smooth" });
+      } else {
+        // If the message is for another chat, update the unread messages count
+        setUnreadMessages((prev) => ({
+          ...prev,
+          [message.chatId]: (prev[message.chatId] || 0) + 1,
+        }));
+      }
     });
 
     return () => {
@@ -159,6 +172,10 @@ export default function ChatPage() {
     setMessageText("");
     setCurrentChatId(chatId);
     setIndexMsg(index);
+    setUnreadMessages((prev) => ({
+      ...prev,
+      [chatId]: 0, // Reset unread messages count for this chat
+    }));
     getMessage(chatId)
       .then((res) => {
         setMessages(res.data);
@@ -177,6 +194,9 @@ export default function ChatPage() {
         senderId: userId,
         text: messageText,
       };
+
+      // Emit the message to the server
+      socket.emit("sendMessage", messageData);
 
       createMessage(messageData)
         .then((res) => {
@@ -201,35 +221,41 @@ export default function ChatPage() {
             <Typography>เลือกคนที่จะพูดคุยกับคุณ</Typography>
             <Stack direction={"row"} spacing={0.5} sx={{ marginBottom: 1 }}>
               {chats.map((chat, index) => (
-                <Button
-                  variant="contained"
-                  color={
-                    onlineUsers.some(
-                      (user) => user.userId === data[index]?.data._id
-                    )
-                      ? "success"
-                      : "error"
-                  }
+                <Badge
+                  badgeContent={unreadMessages[chat._id] || 0}
+                  color="primary"
+                  invisible={(unreadMessages[chat._id] || 0) === 0}
                   key={chat._id}
-                  onClick={() => handleClick(chat._id, index)}
                 >
-                  <Typography variant="body1" sx={{ fontSize: "14px" }}>
-                    <Avatar
-                      sx={{
-                        width: 35,
-                        height: 35,
-                        margin: "auto",
-                      }}
-                      alt="Remy Sharp"
-                      src={`${baseURL}/uploads/avatar/${data[index]?.data.avatarphoto}`}
-                    />
-                    {data[index]?.data.role === "owner" ? (
-                      <span>{data[index]?.data.companyName}</span>
-                    ) : (
-                      <>{data[index]?.data.firstName}</>
-                    )}
-                  </Typography>
-                </Button>
+                  <Button
+                    variant="contained"
+                    color={
+                      onlineUsers.some(
+                        (user) => user.userId === data[index]?.data._id
+                      )
+                        ? "success"
+                        : "error"
+                    }
+                    onClick={() => handleClick(chat._id, index)}
+                  >
+                    <Typography variant="body1" sx={{ fontSize: "14px" }}>
+                      <Avatar
+                        sx={{
+                          width: 35,
+                          height: 35,
+                          margin: "auto",
+                        }}
+                        alt="Remy Sharp"
+                        src={`${baseURL}/uploads/avatar/${data[index]?.data.avatarphoto}`}
+                      />
+                      {data[index]?.data.role === "owner" ? (
+                        <span>{data[index]?.data.companyName}</span>
+                      ) : (
+                        <>{data[index]?.data.firstName}</>
+                      )}
+                    </Typography>
+                  </Button>
+                </Badge>
               ))}
             </Stack>
           </>
