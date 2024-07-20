@@ -12,6 +12,7 @@ const review = require("./routes/review");
 const report = require("./routes/report");
 const chat = require("./routes/chat");
 const message = require("./routes/message");
+const unreadMessage = require("./routes/unreadMessage");
 
 connectDB();
 
@@ -30,6 +31,7 @@ app.use("/api", review);
 app.use("/api", report);
 app.use("/api", chat);
 app.use("/api", message);
+app.use("/api", unreadMessage);
 
 // connection
 const port = process.env.PORT || 5000;

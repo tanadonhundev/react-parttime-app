@@ -17,6 +17,7 @@ import { currentUser } from "../../services/auth";
 import { profileUser } from "../../services/user";
 import { findChats, findUserChats } from "../../services/chat";
 import { createMessage, getMessage } from "../../services/message";
+import { FindunreadMessage, unreadMessage } from "../../services/unreadMessage";
 
 export default function ChatPage() {
   const [chats, setChats] = useState([]);
@@ -168,24 +169,99 @@ export default function ChatPage() {
     }
   };
 
-  const handleClick = (chatId, index) => {
-    setMessageText("");
-    setCurrentChatId(chatId);
-    setIndexMsg(index);
-    setUnreadMessages((prev) => ({
-      ...prev,
-      [chatId]: 0, // Reset unread messages count for this chat
-    }));
-    getMessage(chatId)
-      .then((res) => {
-        setMessages(res.data);
-        navigate({
-          pathname: "/dashboard-employee/chat",
-          search: "",
-        });
-      })
-      .catch((error) => console.log(error));
+  const handleClick = async (chatId, index) => {
+    try {
+      setMessageText("");
+      setCurrentChatId(chatId);
+      setIndexMsg(index);
+
+      // Reset unread count in the database
+      await unreadMessage({ chatId, userId, count: 0 });
+
+      // Update unread message count in local state
+      setUnreadMessages((prev) => ({
+        ...prev,
+        [chatId]: 0,
+      }));
+
+      // Fetch new messages
+      const res = await getMessage(chatId);
+      setMessages(res.data);
+
+      // Navigate to the chat page
+      navigate({
+        pathname: "/dashboard-employee/chat",
+        search: "",
+      });
+    } catch (error) {
+      console.error(error);
+    }
   };
+
+  useEffect(() => {
+    const fetchUnreadMessages = async () => {
+      try {
+        // Fetch unread messages using FindunreadMessage
+        const response = await FindunreadMessage(userId);
+        // Convert data into a map of chatId to unread count
+        const unreadMap = response.data.reduce((acc, item) => {
+          acc[item.chatId] = item.count;
+          return acc;
+        }, {});
+
+        // Update state with the unread messages
+        setUnreadMessages(unreadMap);
+      } catch (error) {
+        console.error("Error fetching unread messages:", error);
+      }
+    };
+
+    // Fetch unread messages when userId changes
+    fetchUnreadMessages();
+  }, [userId]); // Dependency array ensures effect runs when userId changes
+
+  useEffect(() => {
+    if (socket === null) return;
+
+    const handleMessage = async (message) => {
+      try {
+        if (currentChatId === message.chatId) {
+          setMessages((prevMessages) => {
+            // ตรวจสอบว่าข้อความนี้มีอยู่ในรายการข้อความแล้วหรือไม่
+            const isDuplicate = prevMessages.some(
+              (msg) => msg._id === message._id
+            );
+            if (isDuplicate) {
+              return prevMessages;
+            }
+            return [...prevMessages, message];
+          });
+          scroll.current?.scrollIntoView({ behavior: "smooth" });
+        } else {
+          setUnreadMessages((prev) => {
+            const newCount = prev[message.chatId] || 0;
+
+            // Save the unread count to the database
+            unreadMessage({ chatId: message.chatId, userId, count: newCount })
+              .then(() => console.log("Unread count updated"))
+              .catch((error) =>
+                console.error("Error updating unread count:", error)
+              );
+
+            return { ...prev, [message.chatId]: newCount };
+          });
+        }
+      } catch (error) {
+        console.error("Error handling message:", error);
+      }
+    };
+
+    socket.on("getMessage", handleMessage);
+
+    return () => {
+      socket.off("getMessage", handleMessage);
+    };
+  }, [socket, currentChatId, userId]);
 
   const handleSendMessage = () => {
     if (messageText.trim() !== "" && currentChatId) {
@@ -194,10 +270,6 @@ export default function ChatPage() {
         senderId: userId,
         text: messageText,
       };
-
-      // Emit the message to the server
-      socket.emit("sendMessage", messageData);
-
       createMessage(messageData)
         .then((res) => {
           setMessages((prevMessages) => [...prevMessages, res.data]);
