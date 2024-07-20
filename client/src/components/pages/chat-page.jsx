@@ -47,7 +47,6 @@ export default function ChatPage() {
   useEffect(() => {
     scroll.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
-  //console.log("onlineUsers", onlineUsers);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -55,10 +54,8 @@ export default function ChatPage() {
       .then((res) => {
         const id = res.data._id;
         setUserId(res.data._id);
-        //console.log(id);
         findUserChats(id)
           .then((res) => {
-            //console.log(res.data);
             setChats(res.data);
             setLoading(false);
           })
@@ -101,9 +98,7 @@ export default function ChatPage() {
     };
   }, [userId]);
 
-  // add online user
   useEffect(() => {
-    //console.log(userId);
     if (socket === null) return;
     socket.emit("addNewUser", userId);
     socket.on("getOnlineUsers", (res) => {
@@ -115,7 +110,6 @@ export default function ChatPage() {
     };
   }, [socket]);
 
-  // send message
   useEffect(() => {
     if (socket === null || !newMessage || !currentChatId) return;
 
@@ -127,14 +121,11 @@ export default function ChatPage() {
     socket.emit("sendMessage", { ...newMessage, receiverId });
   }, [newMessage]);
 
-  //receive message
   useEffect(() => {
     if (socket === null) return;
 
     socket.on("getMessage", (res) => {
-      //console.log(res);
-      if (currentChatId?._id !== res.chatId) return;
-
+      if (currentChatId !== res.chatId) return;
       setMessages((prev) => [...prev, res.data]);
     });
 
@@ -166,7 +157,6 @@ export default function ChatPage() {
 
   const handleClick = (chatId, index) => {
     setMessageText("");
-    //console.log(chatId);
     setCurrentChatId(chatId);
     setIndexMsg(index);
     getMessage(chatId)
@@ -181,7 +171,7 @@ export default function ChatPage() {
   };
 
   const handleSendMessage = () => {
-    if (messageText.trim() !== "") {
+    if (messageText.trim() !== "" && currentChatId) {
       const messageData = {
         chatId: currentChatId,
         senderId: userId,
@@ -190,9 +180,9 @@ export default function ChatPage() {
 
       createMessage(messageData)
         .then((res) => {
-          setMessages((prevMessages) => [...prevMessages, res.data]); // Add the new message to the messages array
-          setNewMessage(res);
-          setMessageText(""); // Clear the message text field
+          setMessages((prevMessages) => [...prevMessages, res.data]);
+          setNewMessage(res.data);
+          setMessageText("");
         })
         .catch((error) => console.log(error));
     }
@@ -200,7 +190,7 @@ export default function ChatPage() {
 
   return (
     <Stack direction="row" spacing={4} sx={{ marginTop: 4 }}>
-      <div className="chat-box" style={{ flex: 1 }}>
+      <Paper sx={{ flex: 1, padding: 2 }}>
         {loading ? (
           <Stack alignItems={"center"}>
             <CircularProgress />
@@ -209,7 +199,7 @@ export default function ChatPage() {
         ) : (
           <>
             <Typography>เลือกคนที่จะพูดคุยกับคุณ</Typography>
-            <Stack direction={"row"} spacing={0.5}>
+            <Stack direction={"row"} spacing={0.5} sx={{ marginBottom: 1 }}>
               {chats.map((chat, index) => (
                 <Button
                   variant="contained"
@@ -222,7 +212,6 @@ export default function ChatPage() {
                   }
                   key={chat._id}
                   onClick={() => handleClick(chat._id, index)}
-                  sx={{ marginBottom: 1 }}
                 >
                   <Typography variant="body1" sx={{ fontSize: "14px" }}>
                     <Avatar
@@ -245,105 +234,105 @@ export default function ChatPage() {
             </Stack>
           </>
         )}
+      </Paper>
+
+      <Paper sx={{ flex: 2, padding: 2 }}>
         {currentChatId ? (
           <>
-            <Paper sx={{ padding: 2 }}>
+            <Stack direction={"row"} spacing={1} alignItems="center">
+              <Typography variant="h5">Chat Room</Typography>
+              <Typography variant="h6">คุณกำลังพูดคุยอยู่กับ</Typography>
               <Stack direction={"row"} spacing={1}>
-                <Typography variant="h5">Chat Room</Typography>
-                <Typography variant="h6">คุณกำลังพูดคุยอยู่กับ</Typography>
-                <Typography variant="h6">
-                  <Stack direction={"row"} spacing={1}>
-                    {nameCompany && <span>{nameCompany}</span>}
-                    {employeeFirstName && <span>{employeeFirstName}</span>}
-                    {employeeLastName && <span>{employeeLastName}</span>}
-                    {data[indexMsg]?.data.role === "owner" ? (
-                      <span>{data[indexMsg]?.data.companyName}</span>
-                    ) : (
-                      <span>
-                        {data[indexMsg]?.data.firstName}{" "}
-                        {data[indexMsg]?.data.lastName}
-                      </span>
-                    )}
-                  </Stack>
-                </Typography>
+                {nameCompany && <span>{nameCompany}</span>}
+                {employeeFirstName && <span>{employeeFirstName}</span>}
+                {employeeLastName && <span>{employeeLastName}</span>}
+                {data[indexMsg]?.data.role === "owner" ? (
+                  <span>{data[indexMsg]?.data.companyName}</span>
+                ) : (
+                  <span>
+                    {data[indexMsg]?.data.firstName}{" "}
+                    {data[indexMsg]?.data.lastName}
+                  </span>
+                )}
               </Stack>
-              <Stack direction="row" spacing={4} sx={{ marginTop: 4 }}>
-                <div className="chat-box" style={{ flex: 1 }}>
-                  <Paper
-                    ref={scroll}
-                    sx={{
-                      padding: 2,
-                      backgroundColor: "#f0f0f0",
-                      width: "100%",
-                      maxHeight: "400px",
-                      overflowY: "auto",
-                    }}
-                  >
-                    {messages.map((message, index) => (
-                      <Stack
-                        key={index}
-                        className={`message-container ${
-                          message.senderId === userId ? "message-right" : ""
-                        }`}
-                        direction="row"
-                        justifyContent={
-                          message.senderId === userId
-                            ? "flex-end"
-                            : "flex-start"
-                        }
-                        sx={{ marginBottom: 1 }}
-                      >
-                        <Stack justifyContent={"flex-end"}>
-                          <Typography variant="body1">
-                            {message.text}
-                          </Typography>
-                          <Typography variant="caption">
-                            {dayjs(message.createdAt).format("DD/MM/YYYY") ===
-                            dayjs().format("DD/MM/YYYY")
-                              ? `Today at ${dayjs(message.createdAt).format(
-                                  "HH:mm"
-                                )}`
-                              : dayjs(message.createdAt).format(
-                                  "DD/MM/YYYY HH:mm"
-                                )}
-                          </Typography>
-                        </Stack>
-                      </Stack>
-                    ))}
-                  </Paper>
-                </div>
-              </Stack>
-              <br />
-              <TextField
-                value={messageText}
-                onChange={(e) => setMessageText(e.target.value)}
-                label="Type your message"
-                variant="outlined"
-                fullWidth
-                disabled={!currentChatId}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    handleSendMessage();
-                  }
+            </Stack>
+
+            <div className="chat-box" style={{ flex: 1, marginTop: 2 }}>
+              <Paper
+                ref={scroll}
+                sx={{
+                  padding: 2,
+                  backgroundColor: "#f0f0f0",
+                  width: "100%",
+                  maxHeight: "400px",
+                  overflowY: "auto",
                 }}
-                sx={{ marginBottom: 1 }}
-              />
-              <Stack direction={"row"} justifyContent={"flex-end"}>
-                <Button
-                  onClick={handleSendMessage}
-                  variant="contained"
-                  color="primary"
-                  disabled={!currentChatId}
-                >
-                  Send
-                </Button>
-              </Stack>
-            </Paper>
+              >
+                {messages.map((message, index) => (
+                  <Stack
+                    key={index}
+                    className={`message-container ${
+                      message?.senderId === userId ? "message-right" : ""
+                    }`}
+                    direction="row"
+                    justifyContent={
+                      message?.senderId === userId ? "flex-end" : "flex-start"
+                    }
+                    sx={{ marginBottom: 1 }}
+                  >
+                    <Stack justifyContent={"flex-end"}>
+                      <Typography variant="body1">{message?.text}</Typography>
+                      <Typography variant="caption">
+                        {dayjs(message?.createdAt).format("DD/MM/YYYY") ===
+                        dayjs().format("DD/MM/YYYY")
+                          ? `Today at ${dayjs(message?.createdAt).format(
+                              "HH:mm"
+                            )}`
+                          : dayjs(message?.createdAt).format(
+                              "DD/MM/YYYY HH:mm"
+                            )}
+                      </Typography>
+                    </Stack>
+                  </Stack>
+                ))}
+              </Paper>
+            </div>
+
+            <TextField
+              value={messageText}
+              onChange={(e) => setMessageText(e.target.value)}
+              label="Type your message"
+              variant="outlined"
+              fullWidth
+              disabled={!currentChatId}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  handleSendMessage();
+                }
+              }}
+              sx={{ marginTop: 2 }}
+            />
+            <Stack
+              direction={"row"}
+              justifyContent={"flex-end"}
+              sx={{ marginTop: 1 }}
+            >
+              <Button
+                onClick={handleSendMessage}
+                variant="contained"
+                color="primary"
+                disabled={!currentChatId}
+              >
+                Send
+              </Button>
+            </Stack>
           </>
         ) : (
-          <></>
+          <Typography variant="h6" sx={{ textAlign: "center" }}>
+            กรุณาเลือกผู้ใช้งานเพื่อเริ่มการสนทนา
+          </Typography>
         )}
-      </div>
+      </Paper>
     </Stack>
   );
 }
