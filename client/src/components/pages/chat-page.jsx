@@ -8,6 +8,8 @@ import Paper from "@mui/material/Paper";
 import Avatar from "@mui/material/Avatar";
 import Badge from "@mui/material/Badge";
 import MailIcon from "@mui/icons-material/Mail";
+import FiberManualRecord from "@mui/icons-material/FiberManualRecord";
+import Grid from "@mui/material/Grid";
 
 import dayjs from "dayjs";
 
@@ -281,156 +283,237 @@ export default function ChatPage() {
   };
 
   return (
-    <Stack direction="row" spacing={4} sx={{ marginTop: 4 }}>
-      <Paper sx={{ flex: 1, padding: 2 }}>
-        {loading ? (
-          <Stack alignItems={"center"}>
-            <CircularProgress />
-            <Typography>กำลังโหลดข้อมูลข้อมูล</Typography>
-          </Stack>
-        ) : (
-          <>
-            <Typography>เลือกคนที่จะพูดคุยกับคุณ</Typography>
-            <Stack direction={"row"} spacing={0.5} sx={{ marginBottom: 1 }}>
-              {chats.map((chat, index) => (
-                <Badge
-                  badgeContent={unreadMessages[chat._id] || 0}
-                  color="primary"
-                  invisible={(unreadMessages[chat._id] || 0) === 0}
-                  key={chat._id}
-                >
-                  <Button
-                    variant="contained"
-                    color={
-                      onlineUsers.some(
-                        (user) => user.userId === data[index]?.data._id
-                      )
-                        ? "success"
-                        : "error"
-                    }
-                    onClick={() => handleClick(chat._id, index)}
-                  >
-                    <Typography variant="body1" sx={{ fontSize: "14px" }}>
-                      <Avatar
+    <Grid container spacing={2} sx={{ marginTop: 4 }}>
+      <Grid item xs={12} sm={12} lg={4} md={4}>
+        <Paper sx={{ padding: 2, height: "100%" }}>
+          {loading ? (
+            <Stack alignItems={"center"}>
+              <CircularProgress />
+              <Typography>กำลังโหลดข้อมูล</Typography>
+            </Stack>
+          ) : (
+            <>
+              <Stack
+                direction="column"
+                justifyContent="center"
+                spacing={1}
+                sx={{ marginBottom: 2 }}
+              >
+                {chats.map((chat, index) => {
+                  const unreadCount = unreadMessages[chat._id] || 0;
+                  const isOnline = onlineUsers.some(
+                    (user) => user.userId === data[index]?.data._id
+                  );
+                  const avatarSrc = `${baseURL}/uploads/avatar/${data[index]?.data.avatarphoto}`;
+                  const displayName =
+                    data[index]?.data.role === "owner"
+                      ? `${data[index]?.data.firstName} ${data[index]?.data.lastName} (${data[index]?.data.role} - ${data[index]?.data.companyName})`
+                      : `${data[index]?.data.firstName} ${data[index]?.data.lastName} (${data[index]?.data.role})`;
+
+                  return (
+                    <Paper key={chat._id} sx={{ marginBottom: 1 }}>
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        spacing={1}
                         sx={{
-                          width: 35,
-                          height: 35,
-                          margin: "auto",
+                          width: "100%",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          bgcolor: "lavender",
                         }}
-                        alt="Remy Sharp"
-                        src={`${baseURL}/uploads/avatar/${data[index]?.data.avatarphoto}`}
-                      />
-                      {data[index]?.data.role === "owner" ? (
-                        <span>{data[index]?.data.companyName}</span>
-                      ) : (
-                        <>{data[index]?.data.firstName}</>
-                      )}
-                    </Typography>
-                  </Button>
-                </Badge>
-              ))}
-            </Stack>
-          </>
-        )}
-      </Paper>
-
-      <Paper sx={{ flex: 2, padding: 2 }}>
-        {currentChatId ? (
-          <>
-            <Stack direction={"row"} spacing={1} alignItems="center">
-              <Typography variant="h5">Chat Room</Typography>
-              <Typography variant="h6">คุณกำลังพูดคุยอยู่กับ</Typography>
-              <Stack direction={"row"} spacing={1}>
-                {nameCompany && <span>{nameCompany}</span>}
-                {employeeFirstName && <span>{employeeFirstName}</span>}
-                {employeeLastName && <span>{employeeLastName}</span>}
-                {data[indexMsg]?.data.role === "owner" ? (
-                  <span>{data[indexMsg]?.data.companyName}</span>
-                ) : (
-                  <span>
-                    {data[indexMsg]?.data.firstName}{" "}
-                    {data[indexMsg]?.data.lastName}
-                  </span>
-                )}
+                      >
+                        <Typography
+                          variant="contained"
+                          onClick={() => handleClick(chat._id, index)}
+                          sx={{
+                            flex: 1,
+                            padding: 1,
+                            borderRadius: 2,
+                            display: "flex",
+                            alignItems: "center",
+                            textTransform: "none",
+                          }}
+                        >
+                          <Badge
+                            overlap="circular"
+                            anchorOrigin={{
+                              vertical: "top",
+                              horizontal: "right",
+                            }}
+                            badgeContent={
+                              isOnline ? (
+                                <FiberManualRecord
+                                  sx={{ fontSize: 10, color: "success.main" }}
+                                />
+                              ) : (
+                                <FiberManualRecord
+                                  sx={{ fontSize: 10, color: "error.main" }}
+                                />
+                              )
+                            }
+                          >
+                            <Avatar
+                              sx={{ width: 40, height: 40, marginRight: 1 }}
+                              alt="User Avatar"
+                              src={avatarSrc}
+                            />
+                          </Badge>
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            sx={{ flex: 1, alignItems: "center" }}
+                          >
+                            <Typography
+                              variant="body2"
+                              sx={{ fontSize: "14px", flex: 1 }}
+                            >
+                              {displayName}
+                            </Typography>
+                            <Badge
+                              badgeContent={unreadCount}
+                              color="primary"
+                              invisible={unreadCount === 0}
+                              sx={{ marginLeft: 1 }}
+                              anchorOrigin={{
+                                vertical: "top",
+                                horizontal: "left",
+                              }}
+                            >
+                              <MailIcon color="action" />
+                            </Badge>
+                          </Stack>
+                        </Typography>
+                      </Stack>
+                    </Paper>
+                  );
+                })}
               </Stack>
-            </Stack>
+            </>
+          )}
+        </Paper>
+      </Grid>
 
-            <div className="chat-box" style={{ flex: 1, marginTop: 2 }}>
-              <Paper
-                ref={scroll}
-                sx={{
-                  padding: 2,
-                  backgroundColor: "#f0f0f0",
-                  width: "100%",
-                  maxHeight: "400px",
-                  overflowY: "auto",
-                }}
-              >
-                {messages.map((message, index) => (
-                  <Stack
-                    key={index}
-                    className={`message-container ${
-                      message?.senderId === userId ? "message-right" : ""
-                    }`}
-                    direction="row"
-                    justifyContent={
-                      message?.senderId === userId ? "flex-end" : "flex-start"
-                    }
-                    sx={{ marginBottom: 1 }}
-                  >
-                    <Stack justifyContent={"flex-end"}>
-                      <Typography variant="body1">{message?.text}</Typography>
-                      <Typography variant="caption">
-                        {dayjs(message?.createdAt).format("DD/MM/YYYY") ===
-                        dayjs().format("DD/MM/YYYY")
-                          ? `Today at ${dayjs(message?.createdAt).format(
-                              "HH:mm"
-                            )}`
-                          : dayjs(message?.createdAt).format(
-                              "DD/MM/YYYY HH:mm"
-                            )}
-                      </Typography>
+      {/* ช่องที่ 5-10 */}
+      <Grid item xs={12} sm={12} lg={8} md={8}>
+        <Paper sx={{ padding: 2, height: "100%" }}>
+          {currentChatId ? (
+            <>
+              <Stack direction={"row"} spacing={1} alignItems="center">
+                <Typography variant="h5">Chat Room</Typography>
+                <Typography variant="h6">คุณกำลังพูดคุยอยู่กับ</Typography>
+                <Stack direction={"row"} spacing={1}>
+                  {nameCompany && <span>{nameCompany}</span>}
+                  {employeeFirstName && <span>{employeeFirstName}</span>}
+                  {employeeLastName && <span>{employeeLastName}</span>}
+                  {data[indexMsg]?.data.role === "owner" ? (
+                    <span>
+                      {data[indexMsg]?.data.firstName}{" "}
+                      {data[indexMsg]?.data.lastName}(
+                      {data[indexMsg]?.data.role} -{" "}
+                      {data[indexMsg]?.data.companyName})
+                    </span>
+                  ) : (
+                    <span>
+                      {data[indexMsg]?.data.firstName}{" "}
+                      {data[indexMsg]?.data.lastName}
+                      {data[indexMsg]?.data.role &&
+                        ` (${data[indexMsg]?.data.role})`}
+                    </span>
+                  )}
+                </Stack>
+              </Stack>
+
+              <div className="chat-box" style={{ flex: 1, marginTop: 2 }}>
+                <Paper
+                  ref={scroll}
+                  sx={{
+                    padding: 2,
+                    backgroundColor: "#f0f0f0",
+                    width: "100%",
+                    maxHeight: "400px",
+                    overflowY: "auto",
+                  }}
+                >
+                  {messages.map((message, index) => (
+                    <Stack
+                      key={index}
+                      className={`message-container ${
+                        message?.senderId === userId ? "message-right" : ""
+                      }`}
+                      direction="row"
+                      justifyContent={
+                        message?.senderId === userId ? "flex-end" : "flex-start"
+                      }
+                      sx={{ marginBottom: 1 }}
+                    >
+                      <Stack justifyContent={"flex-end"}>
+                        <Paper
+                          sx={{
+                            backgroundColor:
+                              message?.senderId === userId
+                                ? "lightblue"
+                                : "lightgreen",
+                            padding: 1,
+                          }}
+                        >
+                          <Typography variant="body1">
+                            {message?.text}
+                          </Typography>
+                        </Paper>
+                        <Typography variant="caption">
+                          {dayjs(message?.createdAt).format("DD/MM/YYYY") ===
+                          dayjs().format("DD/MM/YYYY")
+                            ? `Today at ${dayjs(message?.createdAt).format(
+                                "HH:mm"
+                              )}`
+                            : dayjs(message?.createdAt).format(
+                                "DD/MM/YYYY HH:mm"
+                              )}
+                        </Typography>
+                      </Stack>
                     </Stack>
-                  </Stack>
-                ))}
-              </Paper>
-            </div>
+                  ))}
+                </Paper>
+              </div>
 
-            <TextField
-              value={messageText}
-              onChange={(e) => setMessageText(e.target.value)}
-              label="Type your message"
-              variant="outlined"
-              fullWidth
-              disabled={!currentChatId}
-              onKeyPress={(e) => {
-                if (e.key === "Enter") {
-                  handleSendMessage();
-                }
-              }}
-              sx={{ marginTop: 2 }}
-            />
-            <Stack
-              direction={"row"}
-              justifyContent={"flex-end"}
-              sx={{ marginTop: 1 }}
-            >
-              <Button
-                onClick={handleSendMessage}
-                variant="contained"
-                color="primary"
+              <TextField
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                label="Type your message"
+                variant="outlined"
+                fullWidth
                 disabled={!currentChatId}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter") {
+                    handleSendMessage();
+                  }
+                }}
+                sx={{ marginTop: 2 }}
+              />
+              <Stack
+                direction={"row"}
+                justifyContent={"flex-end"}
+                sx={{ marginTop: 1 }}
               >
-                Send
-              </Button>
-            </Stack>
-          </>
-        ) : (
-          <Typography variant="h6" sx={{ textAlign: "center" }}>
-            กรุณาเลือกผู้ใช้งานเพื่อเริ่มการสนทนา
-          </Typography>
-        )}
-      </Paper>
-    </Stack>
+                <Button
+                  onClick={handleSendMessage}
+                  variant="contained"
+                  color="primary"
+                  disabled={!currentChatId}
+                >
+                  Send
+                </Button>
+              </Stack>
+            </>
+          ) : (
+            <Typography variant="h6" sx={{ textAlign: "center" }}>
+              กรุณาเลือกผู้ใช้งานเพื่อเริ่มการสนทนา
+            </Typography>
+          )}
+        </Paper>
+      </Grid>
+    </Grid>
   );
 }
