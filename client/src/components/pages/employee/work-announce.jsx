@@ -241,6 +241,12 @@ export default function WorkAnnounce() {
   // Sort uniqueDates in ascending order
   uniqueDates.sort((a, b) => (dayjs(a).isBefore(dayjs(b)) ? -1 : 1));
 
+  const averageRating =
+    review.length === 0
+      ? 0
+      : review.reduce((sum, employee) => sum + employee.rating, 0) /
+        review.length;
+
   return (
     <>
       <Box component="form" noValidate>
@@ -447,54 +453,82 @@ export default function WorkAnnounce() {
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            {review.map((employee, index) => (
-              <div key={index}>
-                <Stack direction={"row"} spacing={1}>
-                  <Stack direction={"row"} spacing={2}>
-                    <Typography>
-                      {employee.employeeFirstName} {employee.employeeLastName}
-                    </Typography>
-                  </Stack>
-                  <Typography>
-                    | {dayjs(employee.createdAt).format("DD-MM-YYYY HH:mm:ss")}
+            {review.length === 0 ? (
+              <Stack direction={"row"} justifyContent={"center"}>
+                <Typography variant="body1">ยังไม่มีข้อมูลการรีวิว</Typography>
+              </Stack>
+            ) : (
+              <>
+                {/* แสดงคะแนนรีวิวเฉลี่ย */}
+                <Stack direction={"row"} justifyContent={"center"}>
+                  <Typography variant="subtitle1" gutterBottom>
+                    คะแนนรีวิวเฉลี่ย:{" "}
+                    <Rating
+                      name="average-rating"
+                      value={averageRating}
+                      readOnly
+                    />
+                    <span style={{ marginLeft: 8 }}>
+                      {averageRating.toFixed(1)}
+                    </span>
                   </Typography>
                 </Stack>
-                <Typography variant="subtitle1">
-                  วันที่ทำงาน:
-                  {dayjs(employee.workDay).locale("th").format("DD-MM-YYYY")}
-                </Typography>
-                <Stack direction={"row"}>
-                  <Typography>คะแนน:</Typography>
-                  <Rating
-                    name="half-rating-read"
-                    defaultValue={employee.rating}
-                    readOnly
-                  />
-                </Stack>
-                <Typography>ข้อความ:{employee.reviewText}</Typography>
-                {employeeId !== employee.employeeId && (
-                  <Stack direction={"row"} justifyContent={"flex-end"}>
-                    <Button
-                      variant="contained"
-                      color="warning"
-                      onClick={() =>
-                        crateChat1(
-                          employee.employeeId,
-                          employee.employeeFirstName,
-                          employee.employeeLastName
-                        )
-                      }
-                    >
-                      แชท
-                    </Button>
-                  </Stack>
-                )}
-
-                <br />
                 <Divider />
-                <br />
-              </div>
-            ))}
+                {review.map((employee, index) => (
+                  <div key={index}>
+                    <Stack direction={"row"} spacing={1}>
+                      <Stack direction={"row"} spacing={2}>
+                        <Typography>
+                          {employee.employeeFirstName}{" "}
+                          {employee.employeeLastName}
+                        </Typography>
+                      </Stack>
+                      <Typography>
+                        |{" "}
+                        {dayjs(employee.createdAt).format(
+                          "DD-MM-YYYY HH:mm:ss"
+                        )}
+                      </Typography>
+                    </Stack>
+                    <Typography variant="subtitle1">
+                      วันที่ทำงาน:
+                      {dayjs(employee.workDay)
+                        .locale("th")
+                        .format("DD-MM-YYYY")}
+                    </Typography>
+                    <Stack direction={"row"}>
+                      <Typography>คะแนน:</Typography>
+                      <Rating
+                        name="half-rating-read"
+                        defaultValue={employee.rating}
+                        readOnly
+                      />
+                    </Stack>
+                    <Typography>ข้อความ: {employee.reviewText}</Typography>
+                    {employeeId !== employee.employeeId && (
+                      <Stack direction={"row"} justifyContent={"flex-end"}>
+                        <Button
+                          variant="contained"
+                          color="warning"
+                          onClick={() =>
+                            crateChat1(
+                              employee.employeeId,
+                              employee.employeeFirstName,
+                              employee.employeeLastName
+                            )
+                          }
+                        >
+                          แชท
+                        </Button>
+                      </Stack>
+                    )}
+                    <br />
+                    <Divider />
+                    <br />
+                  </div>
+                ))}
+              </>
+            )}
           </DialogContentText>
         </DialogContent>
         <DialogActions>

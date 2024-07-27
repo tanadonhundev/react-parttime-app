@@ -59,6 +59,10 @@ export default function ProfilePage() {
       })
       .catch((error) => console.log(error));
   };
+  const averageRating =
+    review.length === 0
+      ? 0
+      : review.reduce((sum, item) => sum + item.rating, 0) / review.length;
   return (
     <>
       {loading ? (
@@ -224,38 +228,52 @@ export default function ProfilePage() {
             {review.length === 0 ? (
               <Typography variant="body1">ไม่มีรีวิว</Typography>
             ) : (
-              review.map((reviewItem, index) => (
-                <div key={index}>
-                  <Divider sx={{ margin: "8px 0" }} />
-                  <Stack>
-                    <Typography variant="subtitle1">
-                      {reviewItem.companyName} |{" "}
-                      {dayjs(reviewItem.createdAt)
-                        .locale("th")
-                        .format("DD-MM-YYYY HH:mm:ss")}
-                    </Typography>
-                    <Typography variant="subtitle1">
-                      วันที่ทำงาน:
-                      {dayjs(reviewItem.workDay)
-                        .locale("th")
-                        .format("DD-MM-YYYY")}
-                    </Typography>
-
-                    <Stack direction={"row"}>
-                      <Typography variant="body1">คะแนน:</Typography>
-                      <Rating
-                        name="half-rating-read"
-                        defaultValue={reviewItem.rating}
-                        readOnly
-                      />
-                    </Stack>
-                    <Typography variant="body1">
-                      ข้อความ: {reviewItem.reviewText}
-                    </Typography>
+              <>
+                {/* แสดงคะแนนรีวิวเฉลี่ย */}
+                <Typography variant="subtitle1" gutterBottom>
+                  คะแนนรีวิวเฉลี่ย:{" "}
+                  <Rating
+                    name="average-rating"
+                    value={averageRating}
+                    readOnly
+                  />
+                  <span style={{ marginLeft: 8 }}>
+                    {averageRating.toFixed(1)}
+                  </span>
+                </Typography>
+                {review.map((reviewItem, index) => (
+                  <div key={index}>
                     <Divider sx={{ margin: "8px 0" }} />
-                  </Stack>
-                </div>
-              ))
+                    <Stack>
+                      <Typography variant="subtitle1">
+                        {reviewItem.companyName} |{" "}
+                        {dayjs(reviewItem.createdAt)
+                          .locale("th")
+                          .format("DD-MM-YYYY HH:mm:ss")}
+                      </Typography>
+                      <Typography variant="subtitle1">
+                        วันที่ทำงาน:
+                        {dayjs(reviewItem.workDay)
+                          .locale("th")
+                          .format("DD-MM-YYYY")}
+                      </Typography>
+
+                      <Stack direction={"row"}>
+                        <Typography variant="body1">คะแนน:</Typography>
+                        <Rating
+                          name="half-rating-read"
+                          defaultValue={reviewItem.rating}
+                          readOnly
+                        />
+                      </Stack>
+                      <Typography variant="body1">
+                        ข้อความ: {reviewItem.reviewText}
+                      </Typography>
+                      <Divider sx={{ margin: "8px 0" }} />
+                    </Stack>
+                  </div>
+                ))}
+              </>
             )}
           </Paper>
         </>
