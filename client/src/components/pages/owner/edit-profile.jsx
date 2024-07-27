@@ -59,12 +59,43 @@ export default function EditProfile() {
   const schema = yup.object().shape({
     idCard: yup
       .string()
-      .min(13, "เลขบัตรประชาชนต้องมี 13 หลัก")
-      .max(13, "เลขบัตรประชาชนต้องมี 13 หลัก"),
+      .length(13, "เลขบัตรประชาชนต้องมี 13 หลัก")
+      .required("เลขบัตรประชาชนเป็นข้อมูลที่จำเป็น"),
     phoneNumber: yup
       .string()
-      .min(10, "เบอร์โทรศัพท์ต้องมี 10 หลัก")
-      .max(10, "เบอร์โทรศัพท์ต้องมี 10 หลัก"),
+      .length(10, "เบอร์โทรศัพท์ต้องมี 10 หลัก")
+      .required("เบอร์โทรศัพท์เป็นข้อมูลที่จำเป็น"),
+    birthDay: yup
+      .date()
+      .required("วันเดือนปีเกิดเป็นข้อมูลที่จำเป็น")
+      .test("age", "อายุของคุณต้องไม่น้อยกว่า 18 ปี", (value) => {
+        const age = dayjs().diff(dayjs(value), "year");
+        return age >= 18;
+      }),
+    groupNumber: yup
+      .number()
+      .typeError("หมู่ที่ต้องเป็นตัวเลข")
+      .positive("หมู่ที่ต้องเป็นตัวเลขที่ไม่เป็นลบ")
+      .integer("หมู่ที่ต้องเป็นตัวเลขจำนวนเต็ม")
+      .required("หมู่ที่เป็นข้อมูลที่จำเป็น"),
+    postCode: yup
+      .number()
+      .typeError("รหัสไปรษณีย์ต้องเป็นตัวเลข")
+      .positive("รหัสไปรษณีย์ต้องเป็นตัวเลขที่ไม่เป็นลบ")
+      .integer("รหัสไปรษณีย์ต้องเป็นตัวเลขจำนวนเต็ม")
+      .required("รหัสไปรษณีย์เป็นข้อมูลที่จำเป็น"),
+    companyGroupNumber: yup
+      .number()
+      .typeError("หมู่ที่ต้องเป็นตัวเลข")
+      .positive("หมู่ที่ต้องเป็นตัวเลขที่ไม่เป็นลบ")
+      .integer("หมู่ที่ต้องเป็นตัวเลขจำนวนเต็ม")
+      .required("หมู่ที่เป็นข้อมูลที่จำเป็น"),
+    CompanyPostCode: yup
+      .number()
+      .typeError("รหัสไปรษณีย์ต้องเป็นตัวเลข")
+      .positive("รหัสไปรษณีย์ต้องเป็นตัวเลขที่ไม่เป็นลบ")
+      .integer("รหัสไปรษณีย์ต้องเป็นตัวเลขจำนวนเต็ม")
+      .required("รหัสไปรษณีย์เป็นข้อมูลที่จำเป็น"),
   });
 
   const {
@@ -92,19 +123,26 @@ export default function EditProfile() {
   }, [data]);
 
   const onSubmit = async (data) => {
-    // Check if the birthDay field has changed
+    // ตรวจสอบการเปลี่ยนแปลงในฟิลด์ birthDay
     if (data.birthDay !== dayjs(data.birthDay)) {
-      // Calculate the new age
+      // คำนวณอายุ
       const birthDate = dayjs(data.birthDay);
 
       const currentYear = dayjs().year();
       const birthYear = birthDate.year();
       const age = currentYear - birthYear;
 
-      // Update the age in the form data
+      // กำหนดค่าอายุในข้อมูลฟอร์ม
       data.age = age;
     }
 
+    // ตรวจสอบอายุ
+    if (data.age < 18) {
+      toast.error("อายุของคุณต้องไม่น้อยกว่า 18 ปี");
+      return;
+    }
+
+    // ตรวจสอบพิกัดที่ถูกคลิก
     if (clickedLatLng.lat !== 0 && clickedLatLng.lng !== 0) {
       data.lat = clickedLatLng.lat;
       data.lng = clickedLatLng.lng;
@@ -112,26 +150,24 @@ export default function EditProfile() {
 
     const formData = new FormData();
 
-    // Append avatarphoto and idcardphoto files to the formData
+    // เพิ่มไฟล์ที่เลือกลงใน formData
     if (data.avatarphoto[0]) {
       formData.append("avatarphoto", data.avatarphoto[0]);
     } else {
       formData.append("avatarphoto", avatarImage);
     }
-    // Append idcardphoto files to the formData
     if (data.idcardphoto[0]) {
       formData.append("idcardphoto", data.idcardphoto[0]);
     } else {
       formData.append("idcardphoto", idcardImage);
     }
-    // Append companyphoto files to the formData
     if (data.companyphoto[0]) {
       formData.append("companyphoto", data.companyphoto[0]);
     } else {
       formData.append("companyphoto", companyImage);
     }
 
-    // Append other form data fields (excluding avatarphoto and idcardphoto)
+    // เพิ่มข้อมูลฟอร์มอื่น ๆ
     for (const key in data) {
       if (
         key !== "avatarphoto" &&
@@ -255,7 +291,9 @@ export default function EditProfile() {
                 <Grid item xs={12} sm={5}>
                   <TextField
                     {...register("age")}
-                    defaultValue={data.age}
+                    defaultValue={data.age || 0}
+                    helperText={errors.birthDay && errors.birthDay.message}
+                    error={errors.birthDay ? true : false}
                     disabled
                     InputProps={{
                       startAdornment: (
@@ -309,6 +347,10 @@ export default function EditProfile() {
                     {...register("groupNumber")}
                     label="หมู่ที่"
                     defaultValue={data.groupNumber}
+                    error={errors.groupNumber ? true : false}
+                    helperText={
+                      errors.groupNumber && errors.groupNumber.message
+                    }
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -337,6 +379,8 @@ export default function EditProfile() {
                     {...register("postCode")}
                     label="รหัสไปรษณีย์"
                     defaultValue={data.postCode}
+                    error={errors.postCode ? true : false}
+                    helperText={errors.postCode && errors.postCode.message}
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -385,6 +429,11 @@ export default function EditProfile() {
                     {...register("companyGroupNumber")}
                     label="หมู่ที่"
                     defaultValue={data.companyGroupNumber}
+                    error={errors.companyGroupNumber ? true : false}
+                    helperText={
+                      errors.companyGroupNumber &&
+                      errors.companyGroupNumber.message
+                    }
                   />
                 </Grid>
                 <Grid item xs={6}>
@@ -413,6 +462,10 @@ export default function EditProfile() {
                     {...register("CompanyPostCode")}
                     label="รหัสไปรษณีย์"
                     defaultValue={data.CompanyPostCode}
+                    error={errors.CompanyPostCode ? true : false}
+                    helperText={
+                      errors.CompanyPostCode && errors.CompanyPostCode.message
+                    }
                   />
                 </Grid>
                 <Grid item xs={12}>
