@@ -41,9 +41,6 @@ exports.reviewEmployee = async (req, res) => {
 exports.reviewOwner = async (req, res) => {
     try {
         const { companyId, workDay, companyName, employeeId, employeeFirstName, employeeLastName, rating, reviewText } = req.body;
-
-        console.log(req.body)
-
         const review = new ReviewOwner({
             companyId,
             employeeId,
