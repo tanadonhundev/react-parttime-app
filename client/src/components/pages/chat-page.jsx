@@ -266,7 +266,7 @@ export default function ChatPage() {
     };
   }, [socket, currentChatId, userId]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (messageText.trim() !== "" && currentChatId) {
       const messageData = {
         chatId: currentChatId,
@@ -274,39 +274,44 @@ export default function ChatPage() {
         text: messageText,
       };
 
-      createMessage(messageData)
-        .then((res) => {
-          setMessages((prevMessages) => [...prevMessages, res.data]);
-          setNewMessage(res.data);
-          setMessageText("");
+      try {
+        // ส่งข้อความไปยังเซิร์ฟเวอร์
+        const res = await createMessage(messageData);
+        setMessages((prevMessages) => [...prevMessages, res.data]);
+        setNewMessage(res.data);
+        setMessageText("");
 
-          // ตรวจสอบผู้รับข้อความ
-          const receiverId = chats
-            .find((chat) => chat._id === currentChatId)
-            ?.members.find((id) => id !== userId);
+        // ตรวจสอบผู้รับข้อความ
+        const receiverId = chats
+          .find((chat) => chat._id === currentChatId)
+          ?.members.find((id) => id !== userId);
 
-          if (
-            receiverId &&
-            !onlineUsers.some((user) => user.userId === receiverId)
-          ) {
-            // ถ้าผู้รับไม่ได้ออนไลน์ อัปเดตจำนวนข้อความที่ยังไม่ได้อ่าน
-            unreadMessage({
-              chatId: currentChatId,
-              userId: receiverId,
-              count: (unreadMessages[currentChatId] || 0) + 1,
-            })
-              .then(() => {
-                setUnreadMessages((prev) => ({
-                  ...prev,
-                  [currentChatId]: (prev[currentChatId] || 0) + 1,
-                }));
-              })
-              .catch((error) =>
-                console.error("Error updating unread count:", error)
-              );
-          }
-        })
-        .catch((error) => console.log(error));
+        if (receiverId) {
+          // ดึงข้อมูลจำนวนข้อความที่ยังไม่ได้อ่านจากฐานข้อมูล
+          const response = await FindunreadMessage(receiverId);
+          const unreadCount =
+            response.data.find((item) => item.chatId === currentChatId)
+              ?.count || 0;
+
+          // เพิ่มจำนวนข้อความใหม่ที่ยังไม่ได้อ่าน
+          const newCount = unreadCount + 1;
+
+          // อัปเดตจำนวนข้อความที่ยังไม่ได้อ่านในฐานข้อมูล
+          await unreadMessage({
+            chatId: currentChatId,
+            userId: receiverId,
+            count: newCount,
+          });
+
+          // อัปเดตจำนวนข้อความที่ยังไม่ได้อ่านใน state
+          setUnreadMessages((prev) => ({
+            ...prev,
+            [currentChatId]: newCount,
+          }));
+        }
+      } catch (error) {
+        console.error("Error handling message:", error);
+      }
     }
   };
 
