@@ -48,7 +48,7 @@ export default function ChatPage() {
   const employeeLastName = queryParams.get("employeeLastName");
   const navigate = useNavigate();
 
-  const scroll = useRef();
+  const scroll = useRef(null);
 
   useEffect(() => {
     scroll.current?.scrollIntoView({ behavior: "smooth" });
@@ -228,8 +228,8 @@ export default function ChatPage() {
     const handleMessage = async (message) => {
       try {
         if (currentChatId === message.chatId) {
+          // ข้อความนี้อยู่ในแชทที่กำลังเปิดอยู่
           setMessages((prevMessages) => {
-            // ตรวจสอบว่าข้อความนี้มีอยู่ในรายการข้อความแล้วหรือไม่
             const isDuplicate = prevMessages.some(
               (msg) => msg._id === message._id
             );
@@ -240,10 +240,11 @@ export default function ChatPage() {
           });
           scroll.current?.scrollIntoView({ behavior: "smooth" });
         } else {
+          // ข้อความนี้เป็นของแชทอื่น
           setUnreadMessages((prev) => {
             const newCount = prev[message.chatId] || 0;
 
-            // Save the unread count to the database
+            // อัปเดตจำนวนข้อความที่ยังไม่ได้อ่านในฐานข้อมูล
             unreadMessage({ chatId: message.chatId, userId, count: newCount })
               .then(() => console.log("Unread count updated"))
               .catch((error) =>
@@ -272,11 +273,38 @@ export default function ChatPage() {
         senderId: userId,
         text: messageText,
       };
+
       createMessage(messageData)
         .then((res) => {
           setMessages((prevMessages) => [...prevMessages, res.data]);
           setNewMessage(res.data);
           setMessageText("");
+
+          // ตรวจสอบผู้รับข้อความ
+          const receiverId = chats
+            .find((chat) => chat._id === currentChatId)
+            ?.members.find((id) => id !== userId);
+
+          if (
+            receiverId &&
+            !onlineUsers.some((user) => user.userId === receiverId)
+          ) {
+            // ถ้าผู้รับไม่ได้ออนไลน์ อัปเดตจำนวนข้อความที่ยังไม่ได้อ่าน
+            unreadMessage({
+              chatId: currentChatId,
+              userId: receiverId,
+              count: (unreadMessages[currentChatId] || 0) + 1,
+            })
+              .then(() => {
+                setUnreadMessages((prev) => ({
+                  ...prev,
+                  [currentChatId]: (prev[currentChatId] || 0) + 1,
+                }));
+              })
+              .catch((error) =>
+                console.error("Error updating unread count:", error)
+              );
+          }
         })
         .catch((error) => console.log(error));
     }
@@ -394,8 +422,6 @@ export default function ChatPage() {
           )}
         </Paper>
       </Grid>
-
-      {/* ช่องที่ 5-10 */}
       <Grid item xs={12} sm={12} lg={8} md={8}>
         <Paper sx={{ padding: 2, height: "100%" }}>
           {currentChatId ? (
@@ -472,6 +498,7 @@ export default function ChatPage() {
                                 "DD/MM/YYYY HH:mm"
                               )}
                         </Typography>
+                        <div ref={scroll} />
                       </Stack>
                     </Stack>
                   ))}
