@@ -245,7 +245,11 @@ export default function ChatPage() {
             const newCount = prev[message.chatId] || 0;
 
             // อัปเดตจำนวนข้อความที่ยังไม่ได้อ่านในฐานข้อมูล
-            unreadMessage({ chatId: message.chatId, userId, count: newCount })
+            unreadMessage({
+              chatId: message.chatId,
+              userId,
+              count: newCount,
+            })
               .then(() => console.log("Unread count updated"))
               .catch((error) =>
                 console.error("Error updating unread count:", error)
@@ -293,21 +297,24 @@ export default function ChatPage() {
             response.data.find((item) => item.chatId === currentChatId)
               ?.count || 0;
 
-          // เพิ่มจำนวนข้อความใหม่ที่ยังไม่ได้อ่าน
-          const newCount = unreadCount + 1;
+          // ตรวจสอบว่าผู้รับอยู่ในช่องแชทเดียวกันหรือไม่
+          if (currentChatId !== chat._id) {
+            // เพิ่มจำนวนข้อความใหม่ที่ยังไม่ได้อ่าน
+            const newCount = unreadCount + 1;
 
-          // อัปเดตจำนวนข้อความที่ยังไม่ได้อ่านในฐานข้อมูล
-          await unreadMessage({
-            chatId: currentChatId,
-            userId: receiverId,
-            count: newCount,
-          });
+            // อัปเดตจำนวนข้อความที่ยังไม่ได้อ่านในฐานข้อมูล
+            await unreadMessage({
+              chatId: currentChatId,
+              userId: receiverId,
+              count: newCount,
+            });
 
-          // อัปเดตจำนวนข้อความที่ยังไม่ได้อ่านใน state
-          setUnreadMessages((prev) => ({
-            ...prev,
-            [currentChatId]: newCount,
-          }));
+            // อัปเดตจำนวนข้อความที่ยังไม่ได้อ่านใน state
+            setUnreadMessages((prev) => ({
+              ...prev,
+              [currentChatId]: newCount,
+            }));
+          }
         }
       } catch (error) {
         console.error("Error handling message:", error);
