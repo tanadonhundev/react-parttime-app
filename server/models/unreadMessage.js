@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const unreadMessageSchema = new mongoose.Schema({
-  chatId: { type: mongoose.Schema.Types.ObjectId, required: true },
-  userId: { type: mongoose.Schema.Types.ObjectId, required: true },
+  chatId: { type: String, required: true },
+  userId: { type: String, required: true },
   count: { type: Number, default: 0 },
 });
 
