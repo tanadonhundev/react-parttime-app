@@ -35,7 +35,6 @@ exports.registerUser = async (req, res) => {
 
         user.verificationToken = token;
         user.verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day expiry
-        console.log(token)
 
         await user.save();
 
@@ -105,10 +104,8 @@ exports.verifyEmail = async (req, res) => {
             <html>
                 <body>
                     <h2>อีเมลของคุณได้รับการยืนยันแล้ว</h2>
-                    <p>บัญชีของคุณได้รับการยืนยันสำเร็จแล้ว.</p>
                     <p>คุณสามารถเข้าสู่ระบบได้โดยคลิกปุ่มด้านล่าง:</p>
                     <a href="${process.env.LOGIN_URL}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 5px;">เข้าสู่ระบบ</a>
-                    <p>หากคุณมีปัญหาหรือข้อสงสัยเพิ่มเติม, กรุณาติดต่อเรา.</p>
                 </body>
             </html>
         `;
@@ -137,6 +134,10 @@ exports.loginUser = async (req, res) => {
 
         if (!user.statusBlacklist) {
             return res.status(400).send("บัญชีนี้ถูกระงับการใช้งาน");
+        }
+
+        if (!user.isVerified) {
+            return res.status(400).send("บัญชีนี้ยังไม่ได้รับการยืนยัน");
         }
 
         // Payload
