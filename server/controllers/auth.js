@@ -158,7 +158,7 @@ exports.loginUser = async (req, res) => {
 
         // Find or create chat
         const firstId = user._id.toString();
-        const secondId = "6577285fb8f33d4385fff395";
+        const secondId = "66cb36ab9921d568721221b9";
 
         const chat = await Chat.findOne({
             members: { $all: [firstId, secondId] },
