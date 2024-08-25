@@ -17,13 +17,16 @@ const userScheme = mongoose.Schema({
     district: String,
     proVince: String,
     postCode: Number,
-    LegalNumber:Number,
+    LegalNumber: Number,
     companyHouseNumber: String,
     companyGroupNumber: Number,
     CompanySubDistrict: String,
     CompanyDistrict: String,
     CompanyProVince: String,
     CompanyPostCode: Number,
+    isVerified: { type: Boolean, default: false },
+    verificationToken: String,
+    verificationTokenExpiry: Date,
     statusVerify: {
         type: String,
         default: 'รอตรวจสอบ'

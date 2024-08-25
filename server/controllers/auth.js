@@ -2,19 +2,18 @@ const User = require("../models/user");
 const Chat = require("../models/chat");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const nodemailer = require('nodemailer');
 
 exports.registerUser = async (req, res) => {
     try {
-        //CheckUser
         const { firstName, lastName, email, password, role } = req.body;
 
-        var user = await User.findOne({ email });
+        let user = await User.findOne({ email });
 
         if (user) {
             return res.status(400).send("มีผู้ใช้งานในระบบแล้ว");
         }
 
-        //Encrypt
         const salt = await bcrypt.genSalt(10);
 
         user = new User({
@@ -26,13 +25,98 @@ exports.registerUser = async (req, res) => {
         });
 
         user.password = await bcrypt.hash(password, salt);
-        //Save in Database
+
+        // Generate a verification token
+        const token = jwt.sign(
+            { userId: user._id },
+            'jwtsecret', // Should be stored in environment variables
+            { expiresIn: '1d' }
+        );
+
+        user.verificationToken = token;
+        user.verificationTokenExpiry = Date.now() + 24 * 60 * 60 * 1000; // 1 day expiry
+        console.log(token)
+
         await user.save();
-        res.status(200).send("สมัครสมาชิกสำเร็จแล้ว");
+
+        // Send verification email
+        await sendVerificationEmail(user);
+
+        res.status(200).send("สมัครสมาชิกสำเร็จแล้ว, กรุณาตรวจสอบอีเมลของคุณเพื่อยืนยันบัญชีของคุณ");
     } catch (error) {
         console.log(error);
         res.status(500).send("Server Error");
-        throw error;
+    }
+};
+
+// Function to send verification email
+const sendVerificationEmail = async (user) => {
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    });
+
+    const verificationUrl = `${process.env.BASE_URL}/api/verify-email/${user.verificationToken}`;
+
+    const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: user.email,
+        subject: 'Verify Your Email',
+        html: `
+            <html>
+                <body>
+                    <h2>Verify Your Email Address</h2>
+                    <p>Please verify your email by clicking the link below:</p>
+                    <a href="${verificationUrl}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 5px;">Verify Email</a>
+                </body>
+            </html>
+        `
+    };
+
+    await transporter.sendMail(mailOptions);
+};
+
+exports.verifyEmail = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+        const user = await User.findOne({
+            _id: decoded.userId,
+            verificationToken: token,
+            verificationTokenExpiry: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).send("Invalid or expired token");
+        }
+
+        user.isVerified = true;
+        user.verificationToken = undefined; // Clear the verification token
+        user.verificationTokenExpiry = undefined; // Clear the token expiry
+
+        await user.save();
+
+        // HTML response with a button to redirect to the login page
+        const responseHtml = `
+            <html>
+                <body>
+                    <h2>อีเมลของคุณได้รับการยืนยันแล้ว</h2>
+                    <p>บัญชีของคุณได้รับการยืนยันสำเร็จแล้ว.</p>
+                    <p>คุณสามารถเข้าสู่ระบบได้โดยคลิกปุ่มด้านล่าง:</p>
+                    <a href="${process.env.LOGIN_URL}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 5px;">เข้าสู่ระบบ</a>
+                    <p>หากคุณมีปัญหาหรือข้อสงสัยเพิ่มเติม, กรุณาติดต่อเรา.</p>
+                </body>
+            </html>
+        `;
+
+        res.status(200).send(responseHtml);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send("Server Error");
     }
 };
 
