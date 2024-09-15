@@ -32,6 +32,8 @@ const workScheme = mongoose.Schema({
   workScope: String,
   workWelfare: String,
   workDress: String,
+  lat: Number,
+  lng: Number,
   numOfReady: {
     type: Number,
     default: 0

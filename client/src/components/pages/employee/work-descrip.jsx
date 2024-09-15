@@ -64,6 +64,13 @@ export default function WorkDescrip() {
           setCompany(companyData);
           setCompanyId(companyData.companyId);
           loadDataCompany(token, companyData.companyId);
+          setLntlng(companyData);
+          setMarkers([
+            {
+              lat: parseFloat(companyData.lat),
+              lng: parseFloat(companyData.lng),
+            },
+          ]);
           setLoading(false);
         } else {
           setLoading(false);
@@ -77,10 +84,10 @@ export default function WorkDescrip() {
       profileUser(token, id)
         .then((res) => {
           setcompanyImage(res.data.companyphoto);
-          setLntlng(res.data);
-          setMarkers([
-            { lat: parseFloat(res.data.lat), lng: parseFloat(res.data.lng) },
-          ]);
+          // // setLntlng(res.data);
+          // setMarkers([
+          //   { lat: parseFloat(res.data.lat), lng: parseFloat(res.data.lng) },
+          // ]);
         })
         .catch((error) => console.log(error));
     }

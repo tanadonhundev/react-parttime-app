@@ -19,6 +19,16 @@ import { PickersDay } from "@mui/x-date-pickers/PickersDay";
 
 import toast from "react-hot-toast";
 
+import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+
+const libraries = ["places"];
+const mapContainerStyle = {
+  width: "100%",
+  height: "250px",
+};
+
 import dayjs from "dayjs";
 import "dayjs/locale/th";
 dayjs.locale("th");
@@ -30,6 +40,7 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { companyDescrip } from "../../../services/company";
 import { postWork } from "../../../services/work";
+import { profileUser } from "../../../services/user";
 
 function ServerDay(props) {
   const { highlightedDays = [], day, outsideCurrentMonth, ...other } = props;
@@ -70,6 +81,16 @@ export default function CompanyDescrip() {
     numOfEmployee: yup.number().required("จำนวนที่เปิดรับ ห้ามเป็นค่าว่าง"),
   });
 
+  const [data, setData] = useState([]);
+  const [clickedLatLng, setClickedLatLng] = useState({
+    lat: parseFloat(data.lat) || 0, // ใช้ค่าที่มีอยู่แล้วหรือค่าเริ่มต้น
+    lng: parseFloat(data.lng) || 0, // ใช้ค่าที่มีอยู่แล้วหรือค่าเริ่มต้น
+  });
+  const [center, setCenter] = useState({
+    lat: parseFloat(data.lat) || 13.7563,
+    lng: parseFloat(data.lng) || 100.5018,
+  });
+
   const {
     register,
     handleSubmit,
@@ -85,8 +106,17 @@ export default function CompanyDescrip() {
     loadData(token, params.id);
   }, []);
 
+  useEffect(() => {
+    if (data.lat && data.lng) {
+      setCenter({
+        lat: parseFloat(data.lat),
+        lng: parseFloat(data.lng),
+      });
+    }
+  }, [data]);
+
   const loadData = async (token, id) => {
-    companyDescrip(token, id)
+    await companyDescrip(token, id)
       .then((res) => {
         setCompany(res.data);
         setLoading(false);
@@ -137,6 +167,8 @@ export default function CompanyDescrip() {
       workDress: company.workDress,
       workDay: highlightedDays,
       companyphoto: company.companyphoto,
+      lat: clickedLatLng.lat,
+      lng: clickedLatLng.lng,
     };
     postWork(token, value)
       .then((res) => {
@@ -169,6 +201,27 @@ export default function CompanyDescrip() {
 
   // Format ผลลัพธ์
   const workDuration = `${hoursWithoutBreak} ชั่วโมง ${minutesWithoutBreak} นาที`;
+
+  const { isLoaded, loadError } = useLoadScript({
+    googleMapsApiKey: "AIzaSyBk7hWPDP_TF3J_FsnRaDC8JHOSElW9Ayk",
+    libraries,
+  });
+
+  const handleMapClick = (e) => {
+    console.log("Map clicked:", e.latLng.lat(), e.latLng.lng());
+    setClickedLatLng({
+      lat: e.latLng.lat(),
+      lng: e.latLng.lng(),
+    });
+
+    setCenter({
+      lat: e.latLng.lat(),
+      lng: e.latLng.lng(),
+    });
+  };
+
+  if (loadError) return "Error loading maps";
+  if (!isLoaded) return "Loading Maps";
 
   return (
     <>
@@ -326,6 +379,27 @@ export default function CompanyDescrip() {
                 </Grid>
               </Paper>
             </Box>
+            <Grid item xs={12}>
+              <Card>
+                <CardContent>
+                  <GoogleMap
+                    mapContainerStyle={mapContainerStyle}
+                    zoom={15}
+                    center={center}
+                    onClick={handleMapClick}
+                  >
+                    {clickedLatLng.lat !== 0 && clickedLatLng.lng !== 0 && (
+                      <Marker
+                        position={{
+                          lat: clickedLatLng.lat,
+                          lng: clickedLatLng.lng,
+                        }}
+                      />
+                    )}
+                  </GoogleMap>
+                </CardContent>
+              </Card>
+            </Grid>
             <Grid item xs={6} sm={6}>
               <InputLabel>จำนวนที่เปิดรับ</InputLabel>
               <Stack direction={"row"} spacing={11}>

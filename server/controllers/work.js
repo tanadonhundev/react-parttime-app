@@ -5,7 +5,7 @@ const dayjs = require("dayjs")
 exports.postWork = async (req, res) => {
     try {
         const { companyId, companyName, workPosition, workStartTime, workEndTime, workBreakTime, dailyWage, workDay, numOfEmployee,
-            workScope, workWelfare, workDress, companyphoto } = req.body;
+            workScope, workWelfare, workDress, companyphoto, lat, lng } = req.body;
         // ตรวจสอบว่า workDay มีค่าหรือไม่ และความยาวมากกว่า 0
         if (workDay && workDay.length > 0) {
             // สร้างและบันทึกข้อมูลงานสำหรับแต่ละวันใน workDay
@@ -24,6 +24,8 @@ exports.postWork = async (req, res) => {
                     workWelfare,
                     workDress,
                     companyphoto,
+                    lat,
+                    lng,
                 });
                 return work.save();
             });
