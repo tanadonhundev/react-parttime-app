@@ -23,12 +23,19 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Slide from "@mui/material/Slide";
 import Divider from "@mui/material/Divider";
 import Rating from "@mui/material/Rating";
-
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import TextField from "@mui/material/TextField";
 import BadgeIcon from "@mui/icons-material/Badge";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import NotInterestedIcon from "@mui/icons-material/NotInterested";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 
 import { Link, useNavigate } from "react-router-dom";
 
@@ -66,6 +73,12 @@ export default function WorkAnnounce() {
   const [employeeId, setEmployeeId] = useState("");
   const [employeeId1, setEmployeeId1] = useState("");
   const [nameCompany, setNameCompany] = useState("");
+  const [selectedJobTitle, setSelectedJobTitle] = useState("");
+  const [timeRange, setTimeRange] = useState({
+    startTime: "",
+    endTime: "",
+  });
+  const [searchTerm, setSearchTerm] = useState("");
 
   const navigate = useNavigate();
 
@@ -168,26 +181,46 @@ export default function WorkAnnounce() {
   };
 
   const onSubmit = async (workDay, tabIndex) => {
-    // Check if any Checkbox is selected
     const isAnyCheckboxSelected = Object.values(workPositionChecked).some(
       (checked) => checked
     );
 
-    if (isAnyCheckboxSelected) {
-      // Filter the data based on the selected checkboxes and the selected date
-      const filteredData = data.filter((work) => {
-        return (
-          work.workDay === workDay && workPositionChecked[work.workPosition]
-        );
-      });
-      setWork(filteredData);
-    } else {
-      // Set the work data based on the selected date only
-      const dateFilteredData = data.filter((work) => work.workDay === workDay);
-      setWork(dateFilteredData);
-    }
+    const filteredData = data.filter((work) => {
+      const isWithinTimeRange =
+        (!timeRange.startTime ||
+          dayjs(work.workStartTime).isAfter(
+            dayjs()
+              .hour(timeRange.startTime.split(":")[0])
+              .minute(timeRange.startTime.split(":")[1])
+          )) &&
+        (!timeRange.endTime ||
+          dayjs(work.workEndTime).isBefore(
+            dayjs()
+              .hour(timeRange.endTime.split(":")[0])
+              .minute(timeRange.endTime.split(":")[1])
+          ));
+
+      return (
+        work.workDay === workDay &&
+        (isAnyCheckboxSelected
+          ? workPositionChecked[work.workPosition]
+          : true) &&
+        (selectedJobTitle ? work.workPosition === selectedJobTitle : true) &&
+        isWithinTimeRange &&
+        (searchTerm
+          ? work.companyName.toLowerCase().includes(searchTerm.toLowerCase())
+          : true) // Filter by company name
+      );
+    });
+
+    setWork(filteredData);
     setSelectedTab(tabIndex);
   };
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    loadData(token); // Reload data when search term changes
+  }, [searchTerm]);
 
   const crateChat = async (companyId, nameCompany) => {
     const data = {
@@ -253,22 +286,71 @@ export default function WorkAnnounce() {
         <Typography variant="h6" gutterBottom>
           ประกาศจ้างงาน
         </Typography>
+
         {uniqueDates.length === 0 ? null : (
           <FormGroup>
-            กรองข้อมูล:
-            <Stack direction={"row"} spacing={1}>
-              {Object.keys(workPositionChecked).map((position) => (
-                <FormControlLabel
-                  key={position}
-                  control={
-                    <Checkbox
-                      checked={workPositionChecked[position]}
-                      onChange={() => handleCheckboxChange(position)}
-                    />
-                  }
-                  label={position}
-                />
-              ))}
+            <Stack direction="row" spacing={0.5}>
+              <TextField
+                label="ค้นหาร้านอาหาร"
+                variant="outlined"
+                fullWidth
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <FormControl fullWidth>
+                <InputLabel>เลือกต่ำแหน่งาน</InputLabel>
+                <Select
+                  value={selectedJobTitle}
+                  onChange={(e) => setSelectedJobTitle(e.target.value)}
+                  displayEmpty
+                  label="เลือกต่ำแหน่งาน"
+                >
+                  {Object.keys(workPositionChecked).map((position) => (
+                    <MenuItem key={position} value={position}>
+                      {position}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+
+              {/* Time Range Filter */}
+              <Stack direction="row" spacing={1}>
+                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                  <TimePicker
+                    label="เวลาเริ่ม"
+                    ampm={false}
+                    value={
+                      timeRange.startTime
+                        ? dayjs(`2023-01-01T${timeRange.startTime}`)
+                        : null
+                    }
+                    onChange={(newValue) => {
+                      const timeString = newValue
+                        ? newValue.format("HH:mm")
+                        : "";
+                      setTimeRange({ ...timeRange, startTime: timeString });
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+
+                  <TimePicker
+                    label="เวลาสิ้นสุด"
+                    ampm={false}
+                    value={
+                      timeRange.endTime
+                        ? dayjs(`2023-01-01T${timeRange.endTime}`)
+                        : null
+                    }
+                    onChange={(newValue) => {
+                      const timeString = newValue
+                        ? newValue.format("HH:mm")
+                        : "";
+                      setTimeRange({ ...timeRange, endTime: timeString });
+                    }}
+                    renderInput={(params) => <TextField {...params} />}
+                  />
+                </LocalizationProvider>
+              </Stack>
             </Stack>
           </FormGroup>
         )}
