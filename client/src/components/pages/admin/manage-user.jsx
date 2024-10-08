@@ -275,7 +275,12 @@ export default function ManageUser() {
                   <TableCell style={{ textAlign: "center" }}>
                     สถานะการตรวจสอบ
                   </TableCell>
-                  <TableCell>สถานะการแบน</TableCell>
+                  <TableCell style={{ textAlign: "center" }}>
+                    สถานะยืนยันอีเมล
+                  </TableCell>
+                  <TableCell style={{ textAlign: "center" }}>
+                    สถานะการแบน
+                  </TableCell>
                   <TableCell style={{ textAlign: "center" }}>จัดการ</TableCell>
                 </TableRow>
               </TableHead>
@@ -318,6 +323,14 @@ export default function ManageUser() {
                             >
                               {item.statusVerify}
                             </Typography>
+                          </TableCell>
+                          <TableCell
+                            style={{
+                              color: item.isVerified ? "green" : "red",
+                              textAlign: "center",
+                            }}
+                          >
+                            {item.isVerified ? "ยืนยันแล้ว" : "ยังไม่ได้ยืนยัน"}
                           </TableCell>
                           <TableCell>
                             <Switch

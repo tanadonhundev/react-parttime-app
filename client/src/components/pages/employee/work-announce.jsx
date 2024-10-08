@@ -291,19 +291,19 @@ export default function WorkAnnounce() {
           <FormGroup>
             <Stack direction="row" spacing={0.5}>
               <TextField
-                label="ค้นหาร้านอาหาร"
+                label="ค้นหาร้านอาหาร/คลังสินค้า"
                 variant="outlined"
                 fullWidth
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <FormControl fullWidth>
-                <InputLabel>เลือกต่ำแหน่งาน</InputLabel>
+                <InputLabel>เลือกต่ำแหน่งงาน</InputLabel>
                 <Select
                   value={selectedJobTitle}
                   onChange={(e) => setSelectedJobTitle(e.target.value)}
                   displayEmpty
-                  label="เลือกต่ำแหน่งาน"
+                  label="เลือกตำแหน่งงาน"
                 >
                   {Object.keys(workPositionChecked).map((position) => (
                     <MenuItem key={position} value={position}>
