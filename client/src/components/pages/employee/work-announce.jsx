@@ -298,7 +298,7 @@ export default function WorkAnnounce() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
               <FormControl fullWidth>
-                <InputLabel>เลือกต่ำแหน่งงาน</InputLabel>
+                <InputLabel>เลือกตำแหน่งงาน</InputLabel>
                 <Select
                   value={selectedJobTitle}
                   onChange={(e) => setSelectedJobTitle(e.target.value)}
