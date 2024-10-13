@@ -9,11 +9,8 @@ import Grid from "@mui/material/Grid";
 import Stack from "@mui/material/Stack";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
-import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
 import FormGroup from "@mui/material/FormGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
 import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -33,17 +30,17 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import HowToRegIcon from "@mui/icons-material/HowToReg";
 import NotInterestedIcon from "@mui/icons-material/NotInterested";
-import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { TimePicker } from "@mui/x-date-pickers/TimePicker";
 
 import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
 
 import dayjs from "dayjs";
 import "dayjs/locale/th";
 
 import { workList } from "../../../services/work";
-import { loadPhoto } from "../../../services/user";
 import { currentUser } from "../../../services/auth";
 import { getReviewOwner } from "../../../services/review";
 import { createChat } from "../../../services/chat";
@@ -53,39 +50,36 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
 });
 
+const jobPositions = [
+  { value: "", label: "ทั้งหมด" },
+  { value: "เสิร์ฟ", label: "เสิร์ฟ" },
+  { value: "ล้างจาน", label: "ล้างจาน" },
+  { value: "ครัว", label: "ครัว" },
+  { value: "แพ็คสินค้า", label: "แพ็คสินค้า" },
+  { value: "สต๊อกสินค้า", label: "สต๊อกสินค้า" },
+  { value: "คัดแยกสินค้า", label: "คัดแยกสินค้า" },
+];
+
 export default function WorkAnnounce() {
   const [data, setData] = useState([]);
   const [work, setWork] = useState([]);
-  const [selectedTab, setSelectedTab] = useState();
-  const [workPositionChecked, setWorkPositionChecked] = useState({
-    เสิร์ฟ: false,
-    ล้างจาน: false,
-    ครัว: false,
-    แพ็คสินค้า: false,
-    สต๊อกสินค้า: false,
-    คัดแยกสินค้า: false,
-  });
-  const [companyId, setCompanyId] = useState([]);
-  const [image, setImage] = useState("");
+  const [selectedTab, setSelectedTab] = useState(0);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [review, setReview] = useState([]);
   const [employeeId, setEmployeeId] = useState("");
   const [employeeId1, setEmployeeId1] = useState("");
   const [nameCompany, setNameCompany] = useState("");
-  const [selectedJobTitle, setSelectedJobTitle] = useState("");
-  const [timeRange, setTimeRange] = useState({
-    startTime: "",
-    endTime: "",
-  });
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedJobPosition, setSelectedJobPosition] = useState("");
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
 
   const navigate = useNavigate();
 
   const baseURL = import.meta.env.VITE_API;
 
   const handleClickOpen = (ownerID) => {
-    console.log(ownerID);
     const token = localStorage.getItem("token");
     setOpen(true);
     getReviewOwner(token, ownerID)
@@ -115,17 +109,19 @@ export default function WorkAnnounce() {
     pointerEvents: "none",
   };
 
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    mode: "onBlur",
+  });
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     loadData(token);
   }, []);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (companyId.length > 0) {
-      loadDataOwner(token);
-    }
-  }, [companyId]);
 
   const loadData = (token) => {
     currentUser(token)
@@ -141,87 +137,12 @@ export default function WorkAnnounce() {
         const filteredData = workListResponse.data.filter((item) =>
           dayjs(item.workDay).isAfter(dayjs().subtract(1, "day"))
         );
-
-        const uniqueCompanyIdArray = Array.from(
-          new Set(filteredData.map((item) => item.companyId))
-        );
-
-        setCompanyId(uniqueCompanyIdArray);
         setData(filteredData);
         setWork(filteredData);
         setLoading(false);
       })
       .catch((error) => console.log(error));
   };
-
-  const loadDataOwner = (token) => {
-    const promises = companyId.map((id) => {
-      return loadPhoto(token, id)
-        .then((res) => ({ id, image: res.data.companyphoto }))
-        .catch((error) => console.log(error));
-    });
-
-    Promise.all(promises)
-      .then((images) => {
-        const imagesMap = images.reduce((acc, { id, image }) => {
-          acc[id] = image;
-          return acc;
-        }, {});
-
-        setImage(imagesMap);
-      })
-      .catch((error) => console.log(error));
-  };
-
-  const handleCheckboxChange = (position) => {
-    setWorkPositionChecked((prev) => ({
-      ...prev,
-      [position]: !prev[position],
-    }));
-  };
-
-  const onSubmit = async (workDay, tabIndex) => {
-    const isAnyCheckboxSelected = Object.values(workPositionChecked).some(
-      (checked) => checked
-    );
-
-    const filteredData = data.filter((work) => {
-      const isWithinTimeRange =
-        (!timeRange.startTime ||
-          dayjs(work.workStartTime).isAfter(
-            dayjs()
-              .hour(timeRange.startTime.split(":")[0])
-              .minute(timeRange.startTime.split(":")[1])
-          )) &&
-        (!timeRange.endTime ||
-          dayjs(work.workEndTime).isBefore(
-            dayjs()
-              .hour(timeRange.endTime.split(":")[0])
-              .minute(timeRange.endTime.split(":")[1])
-          ));
-
-      return (
-        work.workDay === workDay &&
-        (isAnyCheckboxSelected
-          ? workPositionChecked[work.workPosition]
-          : true) &&
-        (selectedJobTitle ? work.workPosition === selectedJobTitle : true) &&
-        isWithinTimeRange &&
-        (searchTerm
-          ? work.companyName.toLowerCase().includes(searchTerm.toLowerCase())
-          : true) // Filter by company name
-      );
-    });
-
-    setWork(filteredData);
-    setSelectedTab(tabIndex);
-  };
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    loadData(token); // Reload data when search term changes
-  }, [searchTerm]);
-
   const crateChat = async (companyId, nameCompany) => {
     const data = {
       firstId: employeeId,
@@ -261,18 +182,72 @@ export default function WorkAnnounce() {
       .catch((error) => console.log(error));
   };
 
-  const currentDate = dayjs();
-  // Filter out dates with no data
-  const datesWithData = data
-    .map((item) => item.workDay)
-    .filter((date) =>
-      dayjs(date).isAfter(currentDate.subtract(1, "day"), "day")
+  const handleSearch = (data) => {
+    setSearchTerm(data.searchTerm);
+    setSelectedJobPosition(data.jobPosition); // Store the selected job position
+    setStartTime(data.startTime);
+    setEndTime(data.endTime);
+  };
+
+  const onSubmit = (date, index) => {
+    setSelectedTab(index); // Set the selected tab
+
+    // Filter the data based on the provided date
+    const filteredByDate = data.filter((item) =>
+      dayjs(item.workDay).isSame(dayjs(date.workDay), "day")
     );
 
-  const uniqueDates = Array.from(new Set(datesWithData));
+    // Update the filtered work based on the filteredByDate
+    setWork(filteredByDate);
+  };
 
-  // Sort uniqueDates in ascending order
-  uniqueDates.sort((a, b) => (dayjs(a).isBefore(dayjs(b)) ? -1 : 1));
+  const filteredWork = data.filter((item) => {
+    const matchesSearchTerm = item.companyName
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase());
+    const matchesJobPosition = selectedJobPosition
+      ? item.workPosition === selectedJobPosition
+      : true;
+
+    // Convert workStartTime and workEndTime to Date objects
+    const workStartTime = new Date(item.workStartTime);
+    const workEndTime = new Date(item.workEndTime);
+
+    // Get only the time portion in milliseconds
+    const workStartHours =
+      workStartTime.getHours() * 3600000 +
+      workStartTime.getMinutes() * 60000 +
+      workStartTime.getSeconds() * 1000;
+    const workEndHours =
+      workEndTime.getHours() * 3600000 +
+      workEndTime.getMinutes() * 60000 +
+      workEndTime.getSeconds() * 1000;
+    // Get only the time portion for startTime and endTime
+    const startTimeHours = startTime
+      ? new Date(startTime).getHours() * 3600000 +
+        new Date(startTime).getMinutes() * 60000 +
+        new Date(startTime).getSeconds() * 1000
+      : null;
+    const endTimeHours = endTime
+      ? new Date(endTime).getHours() * 3600000 +
+        new Date(endTime).getMinutes() * 60000 +
+        new Date(endTime).getSeconds() * 1000
+      : null;
+
+    const matchesStartTime = startTimeHours
+      ? workStartHours >= startTimeHours
+      : true;
+    const matchesEndTime = endTimeHours ? workEndHours <= endTimeHours : true;
+
+    return (
+      matchesSearchTerm &&
+      matchesJobPosition &&
+      matchesStartTime &&
+      matchesEndTime
+    );
+  });
+
+  const uniqueDates = Array.from(new Set(filteredWork));
 
   const averageRating =
     review.length === 0
@@ -282,94 +257,93 @@ export default function WorkAnnounce() {
 
   return (
     <>
-      <Box component="form" noValidate>
-        <Typography variant="h6" gutterBottom>
-          ประกาศจ้างงาน
-        </Typography>
-
-        {uniqueDates.length === 0 ? null : (
-          <FormGroup>
-            <Stack direction="row" spacing={0.5}>
-              <TextField
-                label="ค้นหาร้านอาหาร/คลังสินค้า"
-                variant="outlined"
-                fullWidth
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-              <FormControl fullWidth>
-                <InputLabel>เลือกตำแหน่งงาน</InputLabel>
-                <Select
-                  value={selectedJobTitle}
-                  onChange={(e) => setSelectedJobTitle(e.target.value)}
-                  displayEmpty
-                  label="เลือกตำแหน่งงาน"
-                >
-                  {Object.keys(workPositionChecked).map((position) => (
-                    <MenuItem key={position} value={position}>
-                      {position}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              {/* Time Range Filter */}
-              <Stack direction="row" spacing={1}>
-                <LocalizationProvider dateAdapter={AdapterDayjs}>
-                  <TimePicker
-                    label="เวลาเริ่ม"
-                    ampm={false}
-                    value={
-                      timeRange.startTime
-                        ? dayjs(`2023-01-01T${timeRange.startTime}`)
-                        : null
-                    }
-                    onChange={(newValue) => {
-                      const timeString = newValue
-                        ? newValue.format("HH:mm")
-                        : "";
-                      setTimeRange({ ...timeRange, startTime: timeString });
-                    }}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-
-                  <TimePicker
-                    label="เวลาสิ้นสุด"
-                    ampm={false}
-                    value={
-                      timeRange.endTime
-                        ? dayjs(`2023-01-01T${timeRange.endTime}`)
-                        : null
-                    }
-                    onChange={(newValue) => {
-                      const timeString = newValue
-                        ? newValue.format("HH:mm")
-                        : "";
-                      setTimeRange({ ...timeRange, endTime: timeString });
-                    }}
-                    renderInput={(params) => <TextField {...params} />}
-                  />
-                </LocalizationProvider>
-              </Stack>
-            </Stack>
-          </FormGroup>
-        )}
-        <Tabs
-          value={selectedTab}
-          variant="scrollable"
-          scrollButtons="auto"
-          onChange={(event, newValue) =>
-            onSubmit(uniqueDates[newValue], newValue)
-          }
-        >
-          {uniqueDates.map((date, index) => (
-            <Tab
-              key={index}
-              label={dayjs(date).locale("th").format("ddd DD MMM")}
+      <Typography variant="h6" gutterBottom>
+        ประกาศจ้างงาน
+      </Typography>
+      <form onSubmit={handleSubmit(handleSearch)}>
+        <FormGroup sx={{ padding: 2 }}>
+          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+            <TextField
+              label="ค้นหาชื่อร้านอาหาร/คลังสินค้า"
+              variant="outlined"
+              {...register("searchTerm")}
+              fullWidth
+              error={!!errors.searchTerm}
+              helperText={
+                errors.searchTerm ? "กรุณากรอกชื่อร้านอาหารหรือคลังสินค้า" : ""
+              }
             />
-          ))}
-        </Tabs>
-      </Box>
+            <FormControl fullWidth>
+              <InputLabel id="job-position-label">เลือกตำแหน่งงาน</InputLabel>
+              <Select
+                labelId="job-position-label"
+                {...register("jobPosition")}
+                defaultValue=""
+                label="เลือกตำแหน่งงาน"
+                error={!!errors.jobPosition}
+              >
+                {jobPositions.map((position) => (
+                  <MenuItem key={position.value} value={position.value}>
+                    {position.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Stack>
+          <Grid container spacing={2} mt={2}>
+            <Grid item xs={12} sm={6}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <TimePicker
+                  {...register("startTime")}
+                  onChange={(newValue) => {
+                    setValue("startTime", newValue);
+                  }}
+                  label="เวลาเริ่มงาน"
+                  ampm={false}
+                  fullWidth
+                />
+              </LocalizationProvider>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <TimePicker
+                  {...register("endTime")}
+                  onChange={(newValue) => {
+                    setValue("endTime", newValue);
+                  }}
+                  label="เวลาเลิกงาน"
+                  ampm={false}
+                  fullWidth
+                />
+              </LocalizationProvider>
+            </Grid>
+          </Grid>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            sx={{ marginTop: 2 }}
+          >
+            ค้นหา
+          </Button>
+        </FormGroup>
+      </form>
+
+      <Tabs
+        value={selectedTab}
+        variant="scrollable"
+        scrollButtons="auto"
+        onChange={(event, newValue) =>
+          onSubmit(uniqueDates[newValue], newValue)
+        }
+      >
+        {uniqueDates.map((date, index) => (
+          <Tab
+            key={index}
+            label={dayjs(date.workDay).locale("th").format("ddd DD MMM")}
+          />
+        ))}
+      </Tabs>
       <Stack spacing={{ xl: 1, sm: 2, md: 4 }} justifyContent="center">
         {loading ? (
           <Stack alignItems={"center"}>
@@ -391,9 +365,7 @@ export default function WorkAnnounce() {
                         <CardMedia
                           component="img"
                           height="140"
-                          src={`${baseURL}/uploads/company/${
-                            image[item.companyId]
-                          }`}
+                          src={`${baseURL}/uploads/company/${item.companyPhoto}`}
                           alt="Company Image"
                           sx={
                             item.numOfReady === item.numOfEmployee
@@ -457,14 +429,14 @@ export default function WorkAnnounce() {
                               <Typography variant="body1">
                                 {dayjs(item.workEndTime)
                                   .locale("th")
-                                  .format("HH:mm")}
+                                  .format("HH:mm")}{" "}
                                 น.
                               </Typography>
                             </Stack>
                             <Stack direction={"row"}>
                               <LocalAtmIcon />
                               <Typography variant="body1">
-                                {item.dailyWage}บาท/ชั่วโมง
+                                {item.dailyWage} บาท/ชั่วโมง
                               </Typography>
                             </Stack>
                             <Stack
