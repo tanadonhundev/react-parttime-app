@@ -1,5 +1,6 @@
 const cron = require('node-cron');
 const Work = require("../models/work");
+const User = require("../models/user");
 const dayjs = require("dayjs")
 
 exports.postWork = async (req, res) => {
@@ -47,12 +48,26 @@ exports.postWork = async (req, res) => {
 exports.workList = async (req, res) => {
     try {
         const work = await Work.find({}).exec();
-        res.status(200).send(work);
+        const users = await User.find({}).exec();
+
+        // Create a mapping of user ID to company photo
+        const userMap = {};
+        users.forEach(user => {
+            userMap[user._id] = user.companyphoto;
+        });
+
+        // Map through the work array and add companyPhoto
+        const workWithCompanyPhoto = work.map(item => ({
+            ...item.toObject(), // Convert mongoose document to plain object
+            companyPhoto: userMap[item.companyId] || null // Add company photo or null if not found
+        }));
+        res.status(200).send(workWithCompanyPhoto);
     } catch (error) {
         console.log(error);
         res.status(500).send('Server Error');
     }
 }
+
 
 exports.workDescrip = async (req, res) => {
     try {
