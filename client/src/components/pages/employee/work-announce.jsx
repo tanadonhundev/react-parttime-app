@@ -63,7 +63,7 @@ const jobPositions = [
 export default function WorkAnnounce() {
   const [data, setData] = useState([]);
   const [work, setWork] = useState([]);
-  const [selectedTab, setSelectedTab] = useState(0);
+  const [selectedTab, setSelectedTab] = useState();
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [review, setReview] = useState([]);
@@ -183,6 +183,8 @@ export default function WorkAnnounce() {
   };
 
   const handleSearch = (data) => {
+    setWork([]);
+    setSelectedTab();
     setSearchTerm(data.searchTerm);
     setSelectedJobPosition(data.jobPosition); // Store the selected job position
     setStartTime(data.startTime);
