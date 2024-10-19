@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { styled } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import MuiDrawer from "@mui/material/Drawer";
@@ -21,6 +21,8 @@ import AccountMenu from "./d-account-menu";
 import { useNavigate } from "react-router-dom";
 
 import { currentUser } from "../../../services/auth";
+
+import { io } from "socket.io-client";
 
 const drawerWidth = 240;
 
@@ -70,6 +72,12 @@ const Drawer = styled(MuiDrawer, {
 
 function DashboardContent() {
   const [open, setOpen] = React.useState(true);
+  const [userId, setUserId] = useState("");
+  const [socket, setSocket] = useState(null);
+  const [onlineUsers, setOnlineUsers] = useState([]);
+
+  const socketURL = import.meta.env.VITE_API_SOCKET;
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -97,6 +105,35 @@ function DashboardContent() {
         }
       });
   }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    currentUser(token)
+      .then((res) => {
+        setUserId(res.data._id);
+      })
+      .catch((error) => console.log(error));
+  }, []);
+  useEffect(() => {
+    const newSocket = io(socketURL);
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.disconnect();
+    };
+  }, [userId]);
+
+  useEffect(() => {
+    if (socket === null) return;
+    socket.emit("addNewUser", userId);
+    socket.on("getOnlineUsers", (res) => {
+      // setOnlineUsers(res);
+    });
+
+    return () => {
+      socket.off("getOnlineUsers");
+    };
+  }, [socket]);
 
   return (
     <>

@@ -34,6 +34,7 @@ export default function ChatPage() {
   const [newMessage, setNewMessage] = useState(null);
   const [indexMsg, setIndexMsg] = useState("");
   const [unreadMessages, setUnreadMessages] = useState({});
+  const [selectedChatId, setSelectedChatId] = useState(null);
 
   const baseURL = import.meta.env.VITE_API;
   const socketURL = import.meta.env.VITE_API_SOCKET;
@@ -176,6 +177,7 @@ export default function ChatPage() {
       setMessageText("");
       setCurrentChatId(chatId);
       setIndexMsg(index);
+      setSelectedChatId(chatId); // Set the selected chat ID
 
       // Reset unread count in the database
       await unreadMessage({ chatId, userId, count: 0 });
@@ -298,7 +300,7 @@ export default function ChatPage() {
               ?.count || 0;
 
           // ตรวจสอบว่าผู้รับอยู่ในช่องแชทเดียวกันหรือไม่
-          if (currentChatId !== chat._id) {
+          if (currentChatId !== chats._id) {
             // เพิ่มจำนวนข้อความใหม่ที่ยังไม่ได้อ่าน
             const newCount = unreadCount + 1;
 
@@ -350,6 +352,8 @@ export default function ChatPage() {
                       ? `${data[index]?.data.firstName} ${data[index]?.data.lastName} (${data[index]?.data.role} - ${data[index]?.data.companyName})`
                       : `${data[index]?.data.firstName} ${data[index]?.data.lastName} (${data[index]?.data.role})`;
 
+                  const isSelected = selectedChatId === chat._id; // Check if this chat is selected
+
                   return (
                     <Paper key={chat._id} sx={{ marginBottom: 1 }}>
                       <Stack
@@ -361,7 +365,7 @@ export default function ChatPage() {
                           overflow: "hidden",
                           textOverflow: "ellipsis",
                           whiteSpace: "nowrap",
-                          bgcolor: "lavender",
+                          bgcolor: isSelected ? "skyblue" : "lavender",
                         }}
                       >
                         <Typography
@@ -411,18 +415,20 @@ export default function ChatPage() {
                             >
                               {displayName}
                             </Typography>
-                            <Badge
-                              badgeContent={unreadCount}
-                              color="primary"
-                              invisible={unreadCount === 0}
-                              sx={{ marginLeft: 1 }}
-                              anchorOrigin={{
-                                vertical: "top",
-                                horizontal: "left",
-                              }}
-                            >
-                              <MailIcon color="action" />
-                            </Badge>
+                            {!isSelected && (
+                              <Badge
+                                badgeContent={unreadCount}
+                                color="primary"
+                                invisible={unreadCount === 0}
+                                sx={{ marginLeft: 1 }}
+                                anchorOrigin={{
+                                  vertical: "top",
+                                  horizontal: "left",
+                                }}
+                              >
+                                <MailIcon color="action" />
+                              </Badge>
+                            )}
                           </Stack>
                         </Typography>
                       </Stack>
