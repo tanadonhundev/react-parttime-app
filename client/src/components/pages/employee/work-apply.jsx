@@ -312,24 +312,31 @@ export default function WorkApply() {
                               >
                                 {item.companyName}
                               </Typography>
-                              <Button
-                                variant="contained"
-                                color="warning"
-                                onClick={() =>
-                                  crateChat(item.companyId, item.companyName)
-                                }
+                              <Stack
+                                direction="row"
+                                spacing={1}
+                                alignItems="center"
                               >
-                                แชท
-                              </Button>
-                              <Button
-                                component={Link}
-                                to={`/dashboard-employee/work-descrip/${item._id}`}
-                                variant="contained"
-                                color="success"
-                              >
-                                ดูข้อมูล
-                              </Button>
+                                <Button
+                                  variant="contained"
+                                  color="warning"
+                                  onClick={() =>
+                                    crateChat(item.companyId, item.companyName)
+                                  }
+                                >
+                                  แชท
+                                </Button>
+                                <Button
+                                  component={Link}
+                                  to={`/dashboard-employee/work-descrip/${item._id}`}
+                                  variant="contained"
+                                  color="success"
+                                >
+                                  ดูข้อมูล
+                                </Button>
+                              </Stack>
                             </Stack>
+
                             <Stack direction={"column"} spacing={1}>
                               <Stack direction={"row"}>
                                 <AccessTimeIcon />
