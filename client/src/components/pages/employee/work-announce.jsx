@@ -448,9 +448,6 @@ export default function WorkAnnounce() {
                               <Button
                                 variant="contained"
                                 color="warning"
-                                disabled={
-                                  item.numOfReady === item.numOfEmployee
-                                }
                                 onClick={() =>
                                   crateChat(item.companyId, item.companyName)
                                 }

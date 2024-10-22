@@ -25,7 +25,7 @@ import LocalAtmIcon from "@mui/icons-material/LocalAtm";
 import NotInterestedIcon from "@mui/icons-material/NotInterested";
 import CancelIcon from "@mui/icons-material/Cancel";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import toast from "react-hot-toast";
 
@@ -40,6 +40,7 @@ import {
 } from "../../../services/work";
 import { currentUser } from "../../../services/auth";
 import { loadPhoto, profileUser } from "../../../services/user";
+import { createChat } from "../../../services/chat";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="down" ref={ref} {...props} />;
@@ -56,6 +57,8 @@ export default function WorkApply() {
   const [userToCancel, setUserToCancel] = useState([]);
   const [countdowns, setCountdowns] = useState({});
   const [employeeId, setEmployeeId] = useState();
+
+  const navigate = useNavigate();
 
   const baseURL = import.meta.env.VITE_API;
 
@@ -232,6 +235,23 @@ export default function WorkApply() {
     setUserToCancel(null);
   };
 
+  const crateChat = async (companyId, nameCompany) => {
+    const data = {
+      firstId: employeeId,
+      secondId: companyId,
+    };
+    createChat(data)
+      .then(() => {
+        const queryParams = new URLSearchParams({
+          employeeId: employeeId,
+          companyId: companyId,
+          nameCompany: nameCompany,
+        }).toString();
+        navigate(`/dashboard-employee/chat?${queryParams}`);
+      })
+      .catch((error) => console.log(error));
+  };
+
   return (
     <>
       <Box component="form" noValidate>
@@ -292,6 +312,15 @@ export default function WorkApply() {
                               >
                                 {item.companyName}
                               </Typography>
+                              <Button
+                                variant="contained"
+                                color="warning"
+                                onClick={() =>
+                                  crateChat(item.companyId, item.companyName)
+                                }
+                              >
+                                แชท
+                              </Button>
                               <Button
                                 component={Link}
                                 to={`/dashboard-employee/work-descrip/${item._id}`}
