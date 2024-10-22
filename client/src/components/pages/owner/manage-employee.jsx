@@ -207,7 +207,6 @@ export default function ManageEmployee() {
       };
       await CancelWork1(token, values)
         .then((res) => {
-          console.log(res.data);
           loadData(token, companyId);
           toast.success(res.data);
           handleClose1();
@@ -235,7 +234,9 @@ export default function ManageEmployee() {
           ยังไม่มีประกาศจ้างงาน
         </Typography>
       ) : uniqueDates.length === 0 ? (
-        <Typography variant="h5">ไม่มีข้อมูล</Typography>
+        <Typography variant="h6" align="center">
+          ยังไม่มีประกาศจ้างงาน
+        </Typography>
       ) : (
         <>
           <Tabs
@@ -425,7 +426,7 @@ export default function ManageEmployee() {
                                               employee.employmentStatus ===
                                                 "พร้อมเริ่มงาน" ||
                                               employee.employmentStatus ===
-                                                "ถูกยกเลิก"
+                                                "ตำแหน่งเต็ม"
                                             }
                                           >
                                             ปฎิเสธ
