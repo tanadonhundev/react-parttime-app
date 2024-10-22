@@ -195,46 +195,34 @@ export default function WorkAnnounce() {
     setSelectedTab(index); // Set the selected tab
 
     // Filter the data based on the provided date
-    const filteredByDate = data.filter((item) =>
-      dayjs(item.workDay).isSame(dayjs(date.workDay), "day")
+    const filteredByDate = filteredWork.filter(
+      (item) => dayjs(item.workDay).isSame(dayjs(date), "day") // ใช้ filteredWork แทน data
     );
 
     // Update the filtered work based on the filteredByDate
     setWork(filteredByDate);
   };
 
+  const getTimeInMilliseconds = (date) => {
+    const d = new Date(date);
+    return (
+      d.getHours() * 3600000 + d.getMinutes() * 60000 + d.getSeconds() * 1000
+    );
+  };
+
   const filteredWork = data.filter((item) => {
     const matchesSearchTerm = item.companyName
       .toLowerCase()
       .includes(searchTerm.toLowerCase());
+
     const matchesJobPosition = selectedJobPosition
       ? item.workPosition === selectedJobPosition
       : true;
 
-    // Convert workStartTime and workEndTime to Date objects
-    const workStartTime = new Date(item.workStartTime);
-    const workEndTime = new Date(item.workEndTime);
-
-    // Get only the time portion in milliseconds
-    const workStartHours =
-      workStartTime.getHours() * 3600000 +
-      workStartTime.getMinutes() * 60000 +
-      workStartTime.getSeconds() * 1000;
-    const workEndHours =
-      workEndTime.getHours() * 3600000 +
-      workEndTime.getMinutes() * 60000 +
-      workEndTime.getSeconds() * 1000;
-    // Get only the time portion for startTime and endTime
-    const startTimeHours = startTime
-      ? new Date(startTime).getHours() * 3600000 +
-        new Date(startTime).getMinutes() * 60000 +
-        new Date(startTime).getSeconds() * 1000
-      : null;
-    const endTimeHours = endTime
-      ? new Date(endTime).getHours() * 3600000 +
-        new Date(endTime).getMinutes() * 60000 +
-        new Date(endTime).getSeconds() * 1000
-      : null;
+    const workStartHours = getTimeInMilliseconds(item.workStartTime);
+    const workEndHours = getTimeInMilliseconds(item.workEndTime);
+    const startTimeHours = startTime ? getTimeInMilliseconds(startTime) : null;
+    const endTimeHours = endTime ? getTimeInMilliseconds(endTime) : null;
 
     const matchesStartTime = startTimeHours
       ? workStartHours >= startTimeHours
@@ -249,7 +237,20 @@ export default function WorkAnnounce() {
     );
   });
 
-  const uniqueDates = Array.from(new Set(filteredWork));
+  // Get unique workDays from filteredWork that are after the current date
+  const currentDate = dayjs();
+  const uniqueDates = Array.from(
+    new Set(
+      filteredWork
+        .map((item) => item.workDay)
+        .filter((date) =>
+          dayjs(date).isAfter(currentDate.subtract(1, "day"), "day")
+        )
+    )
+  );
+
+  // Sort unique dates in ascending order
+  uniqueDates.sort((a, b) => dayjs(a).diff(dayjs(b)));
 
   const averageRating =
     review.length === 0
@@ -330,7 +331,6 @@ export default function WorkAnnounce() {
           </Button>
         </FormGroup>
       </form>
-
       <Tabs
         value={selectedTab}
         variant="scrollable"
@@ -342,7 +342,7 @@ export default function WorkAnnounce() {
         {uniqueDates.map((date, index) => (
           <Tab
             key={index}
-            label={dayjs(date.workDay).locale("th").format("ddd DD MMM")}
+            label={dayjs(date).locale("th").format("ddd DD MMM")}
           />
         ))}
       </Tabs>
