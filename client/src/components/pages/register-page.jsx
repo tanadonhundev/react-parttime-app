@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import CameraIcon from "@mui/icons-material/PhotoCamera";
@@ -10,6 +10,7 @@ import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
+import CircularProgress from "@mui/material/CircularProgress";
 
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
@@ -26,6 +27,7 @@ import { registerUser } from "../../services/auth";
 import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const schema = yup.object().shape({
@@ -52,12 +54,14 @@ export default function RegisterPage() {
   });
 
   const onSubmit = async (data) => {
+    setLoading(true);
     registerUser(data)
       .then((res) => {
         toast.success(res.data);
         navigate("/");
       })
       .catch((error) => {
+        setLoading(false);
         console.error(error);
         toast.error(error.response.data);
       });
@@ -161,6 +165,7 @@ export default function RegisterPage() {
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
+              disabled={loading}
             >
               ลงทะเบียน
             </Button>
@@ -177,6 +182,11 @@ export default function RegisterPage() {
               </Grid>
             </Grid>
           </Box>
+          {
+            loading && (
+              <CircularProgress />
+            ) /* Show loading indicator while isLoading is true */
+          }
         </Box>
       </Container>
     </>
