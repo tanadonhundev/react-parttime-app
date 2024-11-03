@@ -102,14 +102,15 @@ exports.verifyEmail = async (req, res) => {
         // HTML response with a button to redirect to the login page
         const responseHtml = `
             <html>
-                <body>
-                    <h2>อีเมลของคุณได้รับการยืนยันแล้ว</h2>
-                    <p>คุณสามารถเข้าสู่ระบบได้โดยคลิกปุ่มด้านล่าง:</p>
-                    <a href="${process.env.LOGIN_URL}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 5px;">เข้าสู่ระบบ</a>
+                <body style="display: flex; justify-content: center; align-items: center; height: 100vh; text-align: center;">
+                    <div>
+                        <h2>อีเมลของคุณได้รับการยืนยันแล้ว</h2>
+                        <p>คุณสามารถเข้าสู่ระบบได้โดยคลิกปุ่มด้านล่าง:</p>
+                        <a href="${process.env.LOGIN_URL}" style="display: inline-block; padding: 10px 20px; font-size: 16px; color: #ffffff; background-color: #007bff; text-decoration: none; border-radius: 5px;">เข้าสู่ระบบ</a>
+                    </div>
                 </body>
             </html>
         `;
-
         res.status(200).send(responseHtml);
     } catch (error) {
         console.log(error);
